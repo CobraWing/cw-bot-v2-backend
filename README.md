@@ -18,7 +18,7 @@ Docker image and run
 docker run --name cobrawing -e POSTGRES_USER=docker -e POSTGRES_PASSWORD=docker -p 5432:5432 -d postgres
 ```
 
-### To start:
+### 🚀 To start:
 
 ```bash
 # Install node dependencies
