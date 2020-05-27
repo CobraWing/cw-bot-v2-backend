@@ -1,6 +1,6 @@
 # Cobra Wing bot V2.0 - Work in progress
 
-## 📌 Requirements and tips:
+### 📌 Requirements and tips:
 
 - [Node.js 12+](https://nodejs.org/en/)
 - [Yarn 1.22+](https://yarnpkg.com/)
@@ -31,9 +31,9 @@ yarn typeorm migration:run
 yarn dev:server
 ```
 
-## 🤓 Dev support stuffs...
+### 🤓 Dev support stuffs...
 
-### Migration commands:
+#### Migration commands:
 
 | Command                                           | Description                     |
 | ------------------------------------------------- | ------------------------------- |
