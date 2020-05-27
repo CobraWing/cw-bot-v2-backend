@@ -1,4 +1,4 @@
-# Cobra Wing bot V2.0 - Work in progress
+# Cobra Wing bot V2.0 - Work in progress ⏳
 
 ### 📌 Requirements and tips:
 
