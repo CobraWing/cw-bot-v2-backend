@@ -37,6 +37,7 @@ yarn dev:server
 
 | Command                                           | Description                     |
 | ------------------------------------------------- | ------------------------------- |
+| yarn typeorm migration:run                        | To run migrations               |
 | yarn typeorm migration:create -n <migration_name> | To create a new migration       |
 | yarn typeorm migration:show                       | To show all migrations executed |
 | yarn typeorm migration:revert                     | To revert migration             |
