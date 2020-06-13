@@ -5,12 +5,12 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateDefaultCommand1592010375282
+export default class CreateCommandCategory1592012154909
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'default_commands',
+        name: 'command_categories',
         columns: [
           {
             name: 'id',
@@ -28,50 +28,24 @@ export default class CreateDefaultCommand1592010375282
             type: 'varchar',
           },
           {
-            name: 'description',
-            type: 'varchar',
-          },
-          {
-            name: 'content',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'embeded',
-            type: 'boolean',
-          },
-          {
-            name: 'color',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'enabled',
-            type: 'boolean',
-          },
-          {
             name: 'created_at',
             type: 'timestamp',
             default: 'now()',
           },
+
           {
             name: 'updated_at',
             type: 'timestamp',
             default: 'now()',
-          },
-          {
-            name: 'updated_by',
-            type: 'varchar',
-            isNullable: true,
           },
         ],
       }),
     );
 
     await queryRunner.createForeignKey(
-      'default_commands',
+      'command_categories',
       new TableForeignKey({
-        name: 'FK_DefaultCommands_Servers',
+        name: 'FK_CommandCategories_Servers',
         columnNames: ['server_id'],
         referencedColumnNames: ['id'],
         referencedTableName: 'servers',
@@ -81,12 +55,5 @@ export default class CreateDefaultCommand1592010375282
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey(
-      'default_commands',
-      'FK_DefaultCommands_Servers',
-    );
-
-    await queryRunner.dropTable('default_commands');
-  }
+  public async down(queryRunner: QueryRunner): Promise<void> {}
 }
