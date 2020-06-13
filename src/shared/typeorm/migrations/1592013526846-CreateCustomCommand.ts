@@ -5,12 +5,12 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateDefaultCommand1592010375282
+export default class CreateCustomCommand1592013526846
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'default_commands',
+        name: 'custom_commands',
         columns: [
           {
             name: 'id',
@@ -21,6 +21,10 @@ export default class CreateDefaultCommand1592010375282
           },
           {
             name: 'server_id',
+            type: 'uuid',
+          },
+          {
+            name: 'category_id',
             type: 'uuid',
           },
           {
@@ -90,12 +94,24 @@ export default class CreateDefaultCommand1592010375282
     );
 
     await queryRunner.createForeignKey(
-      'default_commands',
+      'custom_commands',
       new TableForeignKey({
-        name: 'FK_DefaultCommands_Servers',
+        name: 'FK_CustomCommands_Servers',
         columnNames: ['server_id'],
         referencedColumnNames: ['id'],
         referencedTableName: 'servers',
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      }),
+    );
+
+    await queryRunner.createForeignKey(
+      'custom_commands',
+      new TableForeignKey({
+        name: 'FK_CustomCommands_Categories',
+        columnNames: ['category_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'command_categories',
         onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
       }),
@@ -104,10 +120,15 @@ export default class CreateDefaultCommand1592010375282
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropForeignKey(
-      'default_commands',
-      'FK_DefaultCommands_Servers',
+      'custom_commands',
+      'FK_CustomCommands_Categories',
     );
 
-    await queryRunner.dropTable('default_commands');
+    await queryRunner.dropForeignKey(
+      'custom_commands',
+      'FK_CustomCommands_Servers',
+    );
+
+    await queryRunner.dropTable('custom_commands');
   }
 }

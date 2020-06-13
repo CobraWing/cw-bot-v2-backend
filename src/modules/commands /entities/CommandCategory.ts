@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity('command_categories')
-class DefaultCommand {
+class CommandCategory {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -32,4 +32,4 @@ class DefaultCommand {
   updated_at: Date;
 }
 
-export default DefaultCommand;
+export default CommandCategory;

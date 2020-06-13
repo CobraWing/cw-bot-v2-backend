@@ -1,5 +1,3 @@
-import Server from '@modules/servers/entities/Server';
-
 import {
   Entity,
   Column,
@@ -10,8 +8,11 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-@Entity('default_commands')
-class DefaultCommand {
+import Server from '@modules/servers/entities/Server';
+import CommandCategory from './CommandCategory';
+
+@Entity('custom_commands')
+class CustomCommand {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -21,6 +22,13 @@ class DefaultCommand {
   @ManyToOne(() => Server)
   @JoinColumn({ name: 'server_id' })
   server: Server;
+
+  @Column()
+  category_id: string;
+
+  @ManyToOne(() => CommandCategory)
+  @JoinColumn({ name: 'server_id' })
+  category: CommandCategory;
 
   @Column()
   name: string;
@@ -62,4 +70,4 @@ class DefaultCommand {
   updated_by: string;
 }
 
-export default DefaultCommand;
+export default CustomCommand;

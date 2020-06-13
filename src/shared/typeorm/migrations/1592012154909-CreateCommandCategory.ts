@@ -55,5 +55,12 @@ export default class CreateCommandCategory1592012154909
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropForeignKey(
+      'command_categories',
+      'FK_CommandCategories_Servers',
+    );
+
+    await queryRunner.dropTable('command_categories');
+  }
 }
