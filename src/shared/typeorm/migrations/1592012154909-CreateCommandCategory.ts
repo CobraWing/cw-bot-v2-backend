@@ -28,11 +28,23 @@ export default class CreateCommandCategory1592012154909
             type: 'varchar',
           },
           {
+            name: 'description',
+            type: 'varchar',
+          },
+          {
+            name: 'enabled',
+            type: 'boolean',
+          },
+          {
+            name: 'show_in_menu',
+            type: 'boolean',
+            default: true,
+          },
+          {
             name: 'created_at',
             type: 'timestamp',
             default: 'now()',
           },
-
           {
             name: 'updated_at',
             type: 'timestamp',

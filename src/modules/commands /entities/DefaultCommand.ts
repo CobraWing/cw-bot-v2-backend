@@ -32,7 +32,7 @@ class DefaultCommand {
   content: string;
 
   @Column()
-  embeded: boolean;
+  embedded: boolean;
 
   @Column()
   color: string;

@@ -37,7 +37,7 @@ export default class CreateDefaultCommand1592010375282
             isNullable: true,
           },
           {
-            name: 'embeded',
+            name: 'embedded',
             type: 'boolean',
             default: false,
           },

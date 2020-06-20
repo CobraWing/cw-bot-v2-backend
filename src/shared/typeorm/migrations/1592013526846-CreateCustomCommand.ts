@@ -41,7 +41,7 @@ export default class CreateCustomCommand1592013526846
             isNullable: true,
           },
           {
-            name: 'embeded',
+            name: 'embedded',
             type: 'boolean',
             default: false,
           },
@@ -73,6 +73,11 @@ export default class CreateCustomCommand1592013526846
             name: 'footer_text',
             type: 'varchar',
             isNullable: true,
+          },
+          {
+            name: 'show_in_menu',
+            type: 'boolean',
+            default: true,
           },
           {
             name: 'created_at',

@@ -25,6 +25,15 @@ class CommandCategory {
   @Column()
   name: string;
 
+  @Column()
+  description: string;
+
+  @Column()
+  enabled: boolean;
+
+  @Column()
+  show_in_menu: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 

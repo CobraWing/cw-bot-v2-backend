@@ -40,7 +40,7 @@ class CustomCommand {
   content: string;
 
   @Column()
-  embeded: boolean;
+  embedded: boolean;
 
   @Column()
   color: string;
@@ -59,6 +59,9 @@ class CustomCommand {
 
   @Column()
   footer_text: string;
+
+  @Column()
+  show_in_menu: boolean;
 
   @CreateDateColumn()
   created_at: Date;
