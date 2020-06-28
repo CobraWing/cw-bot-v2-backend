@@ -1,4 +1,4 @@
-import { getRepository, Repository, Not } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 
 import ICategoriesRepository from '@modules/commands/repositories/ICategoriesRepository';
 import ICreateCategoryDTO from '@modules/commands/dtos/ICreateCategoryDTO';
