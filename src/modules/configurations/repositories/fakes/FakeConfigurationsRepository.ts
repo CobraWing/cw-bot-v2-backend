@@ -22,6 +22,7 @@ class ConfigurationsRepository implements IConfigurationsRepository {
     server_id,
     key,
     value,
+    updated_by,
   }: ICreateConfigurationDTO): Promise<Configurations> {
     const configuration = new Configurations();
 
@@ -30,6 +31,7 @@ class ConfigurationsRepository implements IConfigurationsRepository {
       server_id,
       key,
       value,
+      updated_by,
     });
 
     this.configurations.push(configuration);
