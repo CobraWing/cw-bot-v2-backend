@@ -31,6 +31,12 @@ class CustomCommand {
   category: CommandCategory;
 
   @Column()
+  enabled: boolean;
+
+  @Column()
+  show_in_menu: boolean;
+
+  @Column()
   name: string;
 
   @Column()
@@ -40,28 +46,37 @@ class CustomCommand {
   content: string;
 
   @Column()
-  embedded: boolean;
-
-  @Column()
-  color: string;
-
-  @Column()
-  enabled: boolean;
-
-  @Column()
-  aliases: string;
-
-  @Column()
   image_content: string;
 
   @Column()
   image_thumbnail: string;
 
   @Column()
+  embedded: boolean;
+
+  @Column()
+  color: string;
+
+  @Column()
   footer_text: string;
 
   @Column()
-  show_in_menu: boolean;
+  role_limited: boolean;
+
+  @Column()
+  role_blacklist: string;
+
+  @Column()
+  role_whitelist: string;
+
+  @Column()
+  channel_limited: boolean;
+
+  @Column()
+  channel_blacklist: string;
+
+  @Column()
+  channel_whitelist: string;
 
   @CreateDateColumn()
   created_at: Date;

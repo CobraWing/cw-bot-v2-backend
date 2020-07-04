@@ -24,6 +24,15 @@ export default class CreateDefaultCommand1592010375282
             type: 'uuid',
           },
           {
+            name: 'enabled',
+            type: 'boolean',
+          },
+          {
+            name: 'show_in_menu',
+            type: 'boolean',
+            default: true,
+          },
+          {
             name: 'name',
             type: 'varchar',
           },
@@ -33,25 +42,6 @@ export default class CreateDefaultCommand1592010375282
           },
           {
             name: 'content',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'embedded',
-            type: 'boolean',
-            default: false,
-          },
-          {
-            name: 'color',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'enabled',
-            type: 'boolean',
-          },
-          {
-            name: 'aliases',
             type: 'varchar',
             isNullable: true,
           },
@@ -66,7 +56,47 @@ export default class CreateDefaultCommand1592010375282
             isNullable: true,
           },
           {
+            name: 'embedded',
+            type: 'boolean',
+            default: false,
+          },
+          {
+            name: 'color',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'footer_text',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'role_limited',
+            type: 'boolean',
+            default: false,
+          },
+          {
+            name: 'role_blacklist',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'role_whitelist',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'channel_limited',
+            type: 'boolean',
+            default: false,
+          },
+          {
+            name: 'channel_blacklist',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'channel_whitelist',
             type: 'varchar',
             isNullable: true,
           },
