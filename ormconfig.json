@@ -6,7 +6,7 @@
     "port": 5432,
     "username": "docker",
     "password": "docker",
-    "database": "pg_cobra_wing",
+    "database": "postgres",
     "entities": ["./src/modules/**/entities/*.ts"],
     "migrations": ["./src/shared/typeorm/migrations/*.ts"],
     "cli": {
