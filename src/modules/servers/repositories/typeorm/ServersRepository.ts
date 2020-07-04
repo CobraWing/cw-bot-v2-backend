@@ -12,6 +12,16 @@ class ServersRepository implements IServersRepository {
     this.ormRepository = getRepository(Server);
   }
 
+  public async findByIdDiscord(
+    id_discord: string,
+  ): Promise<Server | undefined> {
+    const server = await this.ormRepository.findOne({
+      where: { id_discord },
+    });
+
+    return server;
+  }
+
   public async create({ name, id_discord }: ICreateServerDTO): Promise<Server> {
     const server = this.ormRepository.create({
       name,
