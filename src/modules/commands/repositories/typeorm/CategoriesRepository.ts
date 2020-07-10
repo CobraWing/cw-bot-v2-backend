@@ -33,6 +33,16 @@ class CategoriesRepository implements ICategoriesRepository {
 
     return commandCategory;
   }
+
+  public async listByServerId(
+    server_id: string,
+  ): Promise<CommandCategory[] | undefined> {
+    const categories = await this.ormRepository.find({
+      where: { server_id },
+    });
+
+    return categories;
+  }
 }
 
 export default CategoriesRepository;

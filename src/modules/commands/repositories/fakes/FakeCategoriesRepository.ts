@@ -26,6 +26,16 @@ class FakeCategoriesRepository implements ICategoriesRepository {
 
     return category;
   }
+
+  public async listByServerId(
+    server_id: string,
+  ): Promise<CommandCategory[] | undefined> {
+    const categories = this.categories.filter(
+      category => category.server_id === server_id,
+    );
+
+    return categories;
+  }
 }
 
 export default FakeCategoriesRepository;

@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 import { classToClass } from 'class-transformer';
 
 import CreateCategoryService from '@modules/commands/services/CreateCategoryService';
+import ListCategoriesService from '@modules/commands/services/ListCategoriesService';
 
 export default class UsersController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -18,5 +19,20 @@ export default class UsersController {
     });
 
     return response.json(classToClass(category));
+  }
+
+  public async index(request: Request, response: Response): Promise<Response> {
+    const { server_id } = request.params;
+
+    const listCategory = container.resolve(ListCategoriesService);
+
+    const categories = await listCategory.execute({
+      server_id,
+    });
+
+    if (categories) {
+      return response.json(classToClass(categories));
+    }
+    return response.status(204).json([]);
   }
 }

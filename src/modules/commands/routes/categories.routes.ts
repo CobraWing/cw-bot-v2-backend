@@ -17,5 +17,14 @@ categoriesRouter.post(
   }),
   categoriesController.create,
 );
+categoriesRouter.get(
+  '/server/:server_id',
+  celebrate({
+    [Segments.PARAMS]: {
+      server_id: Joi.string().required().uuid(),
+    },
+  }),
+  categoriesController.index,
+);
 
 export default categoriesRouter;

@@ -29,6 +29,12 @@ class FakeServersRepository implements IServersRepository {
 
     return server;
   }
+
+  public async findByServerId(server_id: string): Promise<Server | undefined> {
+    const server = this.servers.find(s => s.id === server_id);
+
+    return server;
+  }
 }
 
 export default FakeServersRepository;

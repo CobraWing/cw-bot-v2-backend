@@ -8,4 +8,6 @@ export default interface ICategoriesRepository {
   ): Promise<CommandCategory | undefined>;
 
   create(data: ICreateCategoryDTO): Promise<CommandCategory>;
+
+  listByServerId(server_id: string): Promise<CommandCategory[] | undefined>;
 }

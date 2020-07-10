@@ -33,6 +33,14 @@ class ServersRepository implements IServersRepository {
 
     return server;
   }
+
+  public async findByServerId(server_id: string): Promise<Server | undefined> {
+    const server = await this.ormRepository.findOne({
+      where: { id: server_id },
+    });
+
+    return server;
+  }
 }
 
 export default ServersRepository;
