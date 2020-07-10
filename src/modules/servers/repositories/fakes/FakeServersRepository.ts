@@ -10,19 +10,21 @@ class FakeServersRepository implements IServersRepository {
   public async findByIdDiscord(
     id_discord: string,
   ): Promise<Server | undefined> {
-    const server = this.servers.find(s => s.id_discord === id_discord);
-
-    return server;
+    return this.servers.find(s => s.id_discord === id_discord);
   }
 
-  public async create({ name, id_discord }: ICreateServerDTO): Promise<Server> {
+  public async create({
+    name,
+    id_discord,
+    enabled,
+  }: ICreateServerDTO): Promise<Server> {
     const server = new Server();
 
     Object.assign(server, {
       id: uuid(),
       name,
       id_discord,
-      enabled: true,
+      enabled,
     });
 
     this.servers.push(server);
@@ -31,9 +33,11 @@ class FakeServersRepository implements IServersRepository {
   }
 
   public async findByServerId(server_id: string): Promise<Server | undefined> {
-    const server = this.servers.find(s => s.id === server_id);
+    return this.servers.find(s => s.id === server_id);
+  }
 
-    return server;
+  public async findAll(enabled: boolean): Promise<Server[] | undefined> {
+    return this.servers.filter(s => s.enabled === enabled);
   }
 }
 

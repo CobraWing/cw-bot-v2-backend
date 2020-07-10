@@ -6,5 +6,7 @@ export default interface IServersRepository {
 
   findByServerId(server_id: string): Promise<Server | undefined>;
 
+  findAll(enabled: boolean): Promise<Server[] | undefined>;
+
   create(data: ICreateServerDTO): Promise<Server>;
 }

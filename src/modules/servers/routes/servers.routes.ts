@@ -17,4 +17,6 @@ serversRouter.post(
   serversController.create,
 );
 
+serversRouter.get('/', serversController.index);
+
 export default serversRouter;

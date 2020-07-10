@@ -41,6 +41,14 @@ class ServersRepository implements IServersRepository {
 
     return server;
   }
+
+  public async findAll(enabled: boolean): Promise<Server[] | undefined> {
+    const servers = await this.ormRepository.find({
+      where: { enabled },
+    });
+
+    return servers;
+  }
 }
 
 export default ServersRepository;

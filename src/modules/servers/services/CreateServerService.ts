@@ -28,6 +28,7 @@ class CreateServerService {
     const server = await this.serversRepository.create({
       name,
       id_discord,
+      enabled: true,
     });
 
     return server;
