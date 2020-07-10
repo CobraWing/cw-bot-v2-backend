@@ -12,8 +12,22 @@ class CategoriesRepository implements ICategoriesRepository {
     this.ormRepository = getRepository(CommandCategory);
   }
 
+  public async findByNameAndServerId(
+    name: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    const commandCategory = this.ormRepository.findOne({
+      where: { name, server_id },
+    });
+
+    return commandCategory;
+  }
+
   public async create(data: ICreateCategoryDTO): Promise<CommandCategory> {
-    const commandCategory = this.ormRepository.create(data);
+    const commandCategory = this.ormRepository.create({
+      ...data,
+      enabled: true,
+    });
 
     await this.ormRepository.save(commandCategory);
 

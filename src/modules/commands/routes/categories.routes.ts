@@ -9,10 +9,9 @@ categoriesRouter.post(
   '/',
   celebrate({
     [Segments.BODY]: {
-      server_id: Joi.string().required(),
+      server_id: Joi.string().required().uuid(),
       name: Joi.string().required(),
       description: Joi.string().required(),
-      enabled: Joi.boolean().required(),
       show_in_menu: Joi.boolean().required(),
     },
   }),
