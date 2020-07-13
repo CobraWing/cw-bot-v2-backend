@@ -1,34 +1,32 @@
 import { Request, Response } from 'express';
-import axios from 'axios';
+import { container } from 'tsyringe';
+import { classToClass } from 'class-transformer';
+
+import AuthenticateUserService from '@modules/authorizations/services/AuthenticateUserService';
 
 import authConfig from '@config/authConfig';
 
-const { authorizeUrl, tokenUrl, oauth } = authConfig.discord;
-const params =
-  `client_id=${oauth.clientId}&redirect_uri=${oauth.clientRedirect}` +
-  `&scope=${oauth.clientScopes}&response_type=code`;
+const { authorizeUrl, authorizeParams } = authConfig.discord;
 
 class AuthorizationsController {
-  public async create(request: Request, response: Response): Promise<void> {
-    return response.redirect(`${authorizeUrl}?${params}`);
+  public async request(request: Request, response: Response): Promise<void> {
+    return response.redirect(`${authorizeUrl}?${authorizeParams}`);
   }
 
-  public async callback(
-    request: Request,
-    response: Response,
-  ): Promise<Response> {
+  public async create(request: Request, response: Response): Promise<Response> {
+    const authenticateUserService = container.resolve(AuthenticateUserService);
+
     const { code } = request.query;
-    const data = `${params}&code=${code}&client_secret=${oauth.clientSecret}&grant_type=authorization_code`;
-    const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    };
+
+    if (!code) {
+      return response.status(400).json({ error: 'Bad request' });
+    }
 
     try {
-      const callbackResponse = await axios.post(tokenUrl, data, {
-        headers,
+      const authorization = await authenticateUserService.execute({
+        code: `${code}`,
       });
-
-      return response.status(201).json(callbackResponse.data);
+      return response.status(201).json(classToClass(authorization));
     } catch {
       return response.status(401).json({ error: 'Not authorized' });
     }

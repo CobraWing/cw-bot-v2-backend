@@ -4,7 +4,7 @@ import AuthorizationsController from '../controllers/AuthorizationsController';
 const authRouter = Router();
 const authorizationsController = new AuthorizationsController();
 
-authRouter.get('/discord', authorizationsController.create);
-authRouter.get('/discord/authorized', authorizationsController.callback);
+authRouter.get('/discord', authorizationsController.request);
+authRouter.get('/discord/authorized', authorizationsController.create);
 
 export default authRouter;
