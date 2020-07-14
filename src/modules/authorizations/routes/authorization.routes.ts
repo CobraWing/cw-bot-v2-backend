@@ -5,6 +5,6 @@ const authRouter = Router();
 const authorizationsController = new AuthorizationsController();
 
 authRouter.get('/discord', authorizationsController.request);
-authRouter.get('/discord/authorized', authorizationsController.create);
+authRouter.post('/discord/authorized', authorizationsController.create);
 
 export default authRouter;
