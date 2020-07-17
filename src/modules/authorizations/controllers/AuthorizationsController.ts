@@ -19,7 +19,7 @@ class AuthorizationsController {
   public async create(request: Request, response: Response): Promise<Response> {
     const authenticateUserService = container.resolve(AuthenticateUserService);
 
-    const { code } = request.body;
+    const { code } = request.query;
 
     if (!code) {
       return response.status(400).json({ error: 'Bad request' });

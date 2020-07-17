@@ -10,6 +10,7 @@ import routes from './routes';
 
 import '@shared/typeorm';
 import '@shared/providers';
+import '@modules/discord';
 
 const app = express();
 
