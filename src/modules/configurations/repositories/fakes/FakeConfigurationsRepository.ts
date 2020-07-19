@@ -1,6 +1,7 @@
 import { uuid } from 'uuidv4';
 import IConfigurationsRepository from '@modules/configurations/repositories/IConfigurationsRepository';
 import IListConfigurationsDTO from '@modules/configurations/dtos/IListConfigurationsDTO';
+import IFindServerConfigurationByKeyDTO from '@modules/configurations/dtos/IFindServerConfigurationByKeyDTO';
 import ICreateConfigurationDTO from '@modules/configurations/dtos/ICreateConfigurationDTO';
 
 import Configurations from '../../entities/Configurations';
@@ -16,6 +17,17 @@ class ConfigurationsRepository implements IConfigurationsRepository {
     );
 
     return configurations;
+  }
+
+  public async findServerConfigurationByKey({
+    server_id,
+    key,
+  }: IFindServerConfigurationByKeyDTO): Promise<Configurations | undefined> {
+    const configuration = this.configurations.find(
+      config => config.server_id === key,
+    );
+
+    return configuration;
   }
 
   public async create({

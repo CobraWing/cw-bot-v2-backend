@@ -16,7 +16,7 @@ class ClientProvider {
     }
 
     this.client.on('ready', () => {
-      console.log('Bot Ready!');
+      console.log('🤖 Bot Ready!');
     });
   }
 

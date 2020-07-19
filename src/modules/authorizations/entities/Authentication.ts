@@ -1,5 +1,11 @@
 import { Exclude } from 'class-transformer';
 
+interface IGuild {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 interface IUser {
   id: string;
   name: string;
@@ -10,6 +16,8 @@ class Authentication {
   token: string;
 
   user: IUser;
+
+  guilds: IGuild[];
 
   @Exclude()
   access_token: string;

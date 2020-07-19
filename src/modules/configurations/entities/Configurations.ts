@@ -18,7 +18,7 @@ class Configurations {
   @Column()
   server_id: string;
 
-  @ManyToOne(() => Server)
+  @ManyToOne(() => Server, server => server.configurations)
   @JoinColumn({ name: 'server_id' })
   server: Server;
 

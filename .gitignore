@@ -3,3 +3,4 @@ tmp/*
 coverage
 node_modules
 .env
+dist
