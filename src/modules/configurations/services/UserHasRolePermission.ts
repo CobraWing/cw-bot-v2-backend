@@ -1,4 +1,5 @@
 import { injectable, inject, container } from 'tsyringe';
+import log from 'heroku-logger';
 
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
@@ -6,7 +7,7 @@ import IConfigurationsRepository from '../repositories/IConfigurationsRepository
 
 interface IRequest {
   user_id: string;
-  guild_id: string;
+  discord_id: string;
   configuration_key: string;
 }
 
@@ -21,53 +22,63 @@ class UserHasRolePermission {
 
   public async execute({
     user_id,
-    guild_id,
+    discord_id,
     configuration_key,
   }: IRequest): Promise<boolean> {
     try {
-      console.log(
-        `[UserHasRolePermission] Check if user id={${user_id}} has permit key={${configuration_key}} in server id={${guild_id}}`,
+      log.info(
+        `[UserHasRolePermission] Check if user id={${user_id}} has permit key={${configuration_key}} in discord id={${discord_id}}`,
       );
 
-      const server = await this.serversRepository.findByIdDiscord(guild_id);
+      const server = await this.serversRepository
+        .findByIdDiscord(discord_id)
+        .catch(err => {
+          log.error('Error while find by id discord', err);
+          throw new Error();
+        });
 
-      const configuration = server?.configurations.find(
+      if (!server) {
+        log.error(`Discord id={${discord_id}} not found`);
+        throw new Error();
+      }
+
+      const configuration = server.configurations.find(
         config => config.key === configuration_key,
       );
 
       if (!configuration) {
-        console.error(
-          `Server id={${guild_id}} does not have key={${configuration_key}}`,
+        log.error(
+          `Discord id={${discord_id}} does not have configured key={${configuration_key}}`,
         );
-        return false;
+        throw new Error();
       }
 
       const discordClient = await container.resolve(ClientProvider).getCLient();
 
       if (!discordClient.uptime || discordClient.uptime <= 0) {
-        console.error('Server does not connected.');
-        return false;
+        log.error('Server does not connected.');
+        throw new Error();
       }
 
       const userGuild = discordClient.guilds.cache.find(
-        guild => guild.id === guild_id,
+        guild => guild.id === discord_id,
       );
 
       if (!userGuild) {
-        console.error('guild not found');
-        return false;
+        log.error('guild not found');
+        throw new Error();
       }
 
       if (!userGuild.available) {
-        console.error('guild not available');
-        return false;
+        log.error('guild not available', userGuild);
+        throw new Error();
       }
 
       const member = await userGuild.members.fetch(user_id);
 
       if (!member) {
-        console.error('User not found in guild');
-        return false;
+        log.error(`User with id=${user_id} not found in guild`);
+        throw new Error();
       }
 
       const permissionRole = member.roles.cache.find(
@@ -76,7 +87,7 @@ class UserHasRolePermission {
 
       return !!permissionRole;
     } catch (err) {
-      console.error('[UserHasRolePermission] Error: ', err);
+      log.error('[UserHasRolePermission] Error: ', err);
       return false;
     }
   }

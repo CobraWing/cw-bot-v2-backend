@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import 'dotenv/config';
+import log from 'heroku-logger';
 
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
@@ -27,8 +28,7 @@ app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
     });
   }
 
-  // eslint-disable-next-line no-console
-  console.log(err);
+  log.error('An error occurs', err);
 
   return response.status(500).json({
     status: 'error',
@@ -37,6 +37,5 @@ app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
 });
 
 app.listen(3333, () => {
-  // eslint-disable-next-line no-console
-  console.log('🚀 Server started on port 3333!');
+  log.info('🚀 Server started on port 3333!');
 });

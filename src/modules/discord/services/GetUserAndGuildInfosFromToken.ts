@@ -1,5 +1,6 @@
 import { injectable } from 'tsyringe';
 import axios from 'axios';
+import log from 'heroku-logger';
 
 import discordConfig from '@config/discordConfig';
 
@@ -40,15 +41,20 @@ class GetUserAndGuildInfosFromToken {
       Promise.all([
         axios.get<IUser>(`${baseApiUrl}/users/@me`, data),
         axios.get(`${baseApiUrl}/users/@me/guilds`, data),
-      ]).then(([user, guilds]) => {
-        resolve({
-          user: {
-            ...user.data,
-            avatar: this.formatAvatarUrl(user.data),
-          },
-          guilds: guilds.data,
+      ])
+        .then(([user, guilds]) => {
+          resolve({
+            user: {
+              ...user.data,
+              avatar: this.formatAvatarUrl(user.data),
+            },
+            guilds: guilds.data,
+          });
+        })
+        .catch(err => {
+          log.error('Error while get user and guild infos using token', err);
+          throw new Error();
         });
-      });
     });
   }
 

@@ -20,6 +20,7 @@ describe('ListCategoriesService', () => {
     const server = await fakeServersRepository.create({
       id_discord: 'server-id',
       name: 'sever-name',
+      enabled: true,
     });
 
     const category1 = await fakeCategoriesRepository.create({
@@ -47,6 +48,7 @@ describe('ListCategoriesService', () => {
     const server = await fakeServersRepository.create({
       id_discord: 'server-id',
       name: 'sever-name',
+      enabled: true,
     });
 
     const categories = await listCategoriesService.execute({
@@ -60,6 +62,7 @@ describe('ListCategoriesService', () => {
     const server = await fakeServersRepository.create({
       id_discord: 'server-id',
       name: 'sever-name',
+      enabled: true,
     });
 
     await fakeCategoriesRepository.create({

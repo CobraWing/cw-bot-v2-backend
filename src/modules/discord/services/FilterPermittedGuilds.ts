@@ -2,6 +2,7 @@
 /* eslint-disable no-await-in-loop */
 import { injectable, container } from 'tsyringe';
 import { Permissions } from 'discord.js';
+import log from 'heroku-logger';
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import UserHasRolePermission from '@modules/configurations/services/UserHasRolePermission';
 import serverConfig from '@config/serverConfig';
@@ -29,43 +30,52 @@ class FilterPermittedGuilds {
     const userHasRolePermission = container.resolve(UserHasRolePermission);
     const { baseCDNUrl } = discordConfig.api;
 
-    const botGuilds = discordClient.guilds.cache;
-    const permittedGuilds: IGuild[] = [];
+    try {
+      const botGuilds = discordClient.guilds.cache;
+      const permittedGuilds: IGuild[] = [];
 
-    for (const botGuild of botGuilds.array()) {
-      const botGuildWithUser = userGuilds.find(
-        userGuild => userGuild.id === botGuild.id,
-      );
+      for (const botGuild of botGuilds.array()) {
+        const botGuildWithUser = userGuilds.find(
+          userGuild => userGuild.id === botGuild.id,
+        );
 
-      if (!botGuildWithUser) {
-        continue;
-      }
+        if (!botGuildWithUser) {
+          continue;
+        }
 
-      botGuildWithUser.icon = `${baseCDNUrl}/icons/${botGuildWithUser.id}/${botGuildWithUser.icon}.png`;
+        botGuildWithUser.icon = `${baseCDNUrl}/icons/${botGuildWithUser.id}/${botGuildWithUser.icon}.png`;
 
-      const userInGuild = await botGuild.members.fetch(user_id);
-      const userOwnerOrAdmin =
-        botGuildWithUser.owner ||
-        userInGuild.hasPermission(new Permissions('ADMINISTRATOR'));
+        const userInGuild = await botGuild.members.fetch(user_id);
+        const userOwnerOrAdmin =
+          botGuildWithUser.owner ||
+          userInGuild.hasPermission(new Permissions('ADMINISTRATOR'));
 
-      if (userOwnerOrAdmin) {
-        permittedGuilds.push(botGuildWithUser);
-      } else {
-        const { configuration_key } = serverConfig.server_admin_role;
-
-        const hasPermission = await userHasRolePermission.execute({
-          user_id,
-          guild_id: botGuild.id,
-          configuration_key,
-        });
-
-        if (hasPermission) {
+        if (userOwnerOrAdmin) {
           permittedGuilds.push(botGuildWithUser);
+        } else {
+          const { configuration_key } = serverConfig.server_admin_role;
+
+          const hasPermission = await userHasRolePermission
+            .execute({
+              user_id,
+              discord_id: botGuild.id,
+              configuration_key,
+            })
+            .catch(err => {
+              log.error('Error while check if user has role permission', err);
+            });
+
+          if (hasPermission) {
+            permittedGuilds.push(botGuildWithUser);
+          }
         }
       }
-    }
 
-    return permittedGuilds;
+      return permittedGuilds;
+    } catch (err) {
+      log.error('Error while filter permitted guilds', err);
+      throw new Error();
+    }
   }
 }
 

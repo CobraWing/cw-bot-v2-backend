@@ -1,6 +1,7 @@
 import { injectable, inject, container } from 'tsyringe';
 import { sign } from 'jsonwebtoken';
 import axios from 'axios';
+import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
 import IHashProvider from '@shared/providers/HashProvider/models/IHashProvider';
@@ -34,20 +35,35 @@ class AuthenticateUserService {
     };
 
     try {
-      const response = await axios.post(tokenUrl, requestData, {
-        headers,
-      });
+      const response = await axios
+        .post(tokenUrl, requestData, {
+          headers,
+        })
+        .catch(err => {
+          log.error('Error while get token', err);
+          throw new Error();
+        });
 
-      const { user, guilds } = await getUserAndGuildInfos.execute({
-        token: response.data.access_token,
-      });
+      const { user, guilds } = await getUserAndGuildInfos
+        .execute({
+          token: response.data.access_token,
+        })
+        .catch(err => {
+          log.error('Error while get user and guild infos', err);
+          throw new Error();
+        });
 
       const { id, username: name, avatar } = user;
 
-      const permittedGuilds = await filterPermittedGuilds.execute({
-        user_id: user.id,
-        guilds,
-      });
+      const permittedGuilds = await filterPermittedGuilds
+        .execute({
+          user_id: user.id,
+          guilds,
+        })
+        .catch(err => {
+          log.error('Error while filter permitted guilds', err);
+          throw new Error();
+        });
 
       const authorization = new Authentication();
       Object.assign(authorization, {
@@ -59,8 +75,9 @@ class AuthenticateUserService {
         guilds: permittedGuilds,
       });
       return authorization;
-    } catch {
-      throw new AppError('Not authorized');
+    } catch (err) {
+      log.error('Error while authenticate', err);
+      throw new AppError('Error while authenticate');
     }
   }
 }

@@ -1,5 +1,6 @@
 import { singleton } from 'tsyringe';
 import { Client } from 'discord.js';
+import log from 'heroku-logger';
 import discordConfig from '@config/discordConfig';
 
 @singleton()
@@ -12,11 +13,11 @@ class ClientProvider {
     if (botToken) {
       this.client.login(botToken);
     } else {
-      console.error('bot key not defined');
+      log.error('bot key not defined');
     }
 
     this.client.on('ready', () => {
-      console.log('🤖 Bot Ready!');
+      log.info('🤖 Bot Ready!');
     });
   }
 
