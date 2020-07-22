@@ -53,16 +53,19 @@ class FilterPermittedGuilds {
         if (userOwnerOrAdmin) {
           permittedGuilds.push(botGuildWithUser);
         } else {
-          const { configuration_key } = serverConfig.server_admin_role;
+          const { key } = serverConfig.manage_server_role;
 
           const hasPermission = await userHasRolePermission
             .execute({
               user_id,
               discord_id: botGuild.id,
-              configuration_key,
+              configuration_key: key,
             })
             .catch(err => {
-              log.error('Error while check if user has role permission', err);
+              log.error('Error while check if user has role permission', [
+                err.message,
+                err.stack,
+              ]);
             });
 
           if (hasPermission) {
@@ -73,8 +76,11 @@ class FilterPermittedGuilds {
 
       return permittedGuilds;
     } catch (err) {
-      log.error('Error while filter permitted guilds', err);
-      throw new Error();
+      log.error('Error while filter permitted guilds', [
+        err.message,
+        err.stack,
+      ]);
+      throw new Error('Error while filter permitted guilds');
     }
   }
 }

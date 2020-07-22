@@ -40,8 +40,8 @@ class AuthenticateUserService {
           headers,
         })
         .catch(err => {
-          log.error('Error while get token', err);
-          throw new Error();
+          log.error('Error while get token', [err.message, err.stack]);
+          throw new Error('Error while get token');
         });
 
       const { user, guilds } = await getUserAndGuildInfos
@@ -49,8 +49,11 @@ class AuthenticateUserService {
           token: response.data.access_token,
         })
         .catch(err => {
-          log.error('Error while get user and guild infos', err);
-          throw new Error();
+          log.error('Error while get user and guild infos', [
+            err.message,
+            err.stack,
+          ]);
+          throw new Error('Error while get user and guild infos');
         });
 
       const { id, username: name, avatar } = user;
@@ -61,8 +64,11 @@ class AuthenticateUserService {
           guilds,
         })
         .catch(err => {
-          log.error('Error while filter permitted guilds', err);
-          throw new Error();
+          log.error('Error while filter permitted guilds', [
+            err.message,
+            err.stack,
+          ]);
+          throw new Error('Error while filter permitted guilds');
         });
 
       const authorization = new Authentication();
@@ -76,7 +82,7 @@ class AuthenticateUserService {
       });
       return authorization;
     } catch (err) {
-      log.error('Error while authenticate', err);
+      log.error('Error while authenticate', [err.message, err.stack]);
       throw new AppError('Error while authenticate');
     }
   }

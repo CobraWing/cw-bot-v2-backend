@@ -33,8 +33,8 @@ class UserHasRolePermission {
       const server = await this.serversRepository
         .findByIdDiscord(discord_id)
         .catch(err => {
-          log.error('Error while find by id discord', err);
-          throw new Error();
+          log.error('Error while find by id discord', [err.message, err.stack]);
+          throw new Error('Error while find by id discord');
         });
 
       if (!server) {

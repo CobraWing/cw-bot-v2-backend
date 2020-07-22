@@ -52,8 +52,11 @@ class GetUserAndGuildInfosFromToken {
           });
         })
         .catch(err => {
-          log.error('Error while get user and guild infos using token', err);
-          throw new Error();
+          log.error('Error while get user and guild infos using token', [
+            err.message,
+            err.stack,
+          ]);
+          throw new Error('Error while get user and guild infos using token');
         });
     });
   }
