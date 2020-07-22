@@ -11,8 +11,9 @@
     "npm": "6.14.4"
   },
   "scripts": {
+    "postinstall": "yarn build && yarn typeorm migration:run",
     "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files",
-    "start": "yarn && yarn build && yarn typeorm migration:run && env NODE_ENV=production node ./dist/shared/http/server.js",
+    "start": "env NODE_ENV=production node ./dist/shared/http/server.js",
     "dev:server": "ts-node-dev -r tsconfig-paths/register --inspect --transpileOnly --ignore-watch node_modules src/shared/http/server.ts",
     "typeorm": "ts-node-dev -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "test": "jest"
