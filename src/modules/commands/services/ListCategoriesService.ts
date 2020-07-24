@@ -6,7 +6,7 @@ import IServersRepository from '../../servers/repositories/IServersRepository';
 import CommandCategory from '../entities/CommandCategory';
 
 interface IRequest {
-  server_id: string;
+  discord_id: string;
 }
 
 @injectable()
@@ -19,16 +19,18 @@ class ListCategoriesService {
   ) {}
 
   public async execute({
-    server_id,
+    discord_id,
   }: IRequest): Promise<CommandCategory[] | undefined> {
-    const serverExists = await this.serversRepository.findByServerId(server_id);
+    const serverExists = await this.serversRepository.findByIdDiscord(
+      discord_id,
+    );
 
     if (!serverExists) {
       throw new AppError('Server does not exists');
     }
 
     const categories = await this.categoriesRepository.listByServerId(
-      server_id,
+      serverExists.id,
     );
 
     return categories;

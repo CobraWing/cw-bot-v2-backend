@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { celebrate, Segments, Joi } from 'celebrate';
+import ensureAuthenticated from '@shared/http/middlewares/ensureAuthenticated';
 import CategoriesController from '../controllers/CategoriesController';
 
 const categoriesRouter = Router();
 const categoriesController = new CategoriesController();
+
+categoriesRouter.use(ensureAuthenticated);
 
 categoriesRouter.post(
   '/',
@@ -17,14 +20,6 @@ categoriesRouter.post(
   }),
   categoriesController.create,
 );
-categoriesRouter.get(
-  '/server/:server_id',
-  celebrate({
-    [Segments.PARAMS]: {
-      server_id: Joi.string().required().uuid(),
-    },
-  }),
-  categoriesController.index,
-);
+categoriesRouter.get('/', categoriesController.index);
 
 export default categoriesRouter;

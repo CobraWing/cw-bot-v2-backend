@@ -38,7 +38,7 @@ describe('ListCategoriesService', () => {
     });
 
     const categories = await listCategoriesService.execute({
-      server_id: server.id,
+      discord_id: server.id_discord,
     });
 
     expect(categories).toEqual(expect.arrayContaining([category1, category2]));
@@ -52,7 +52,7 @@ describe('ListCategoriesService', () => {
     });
 
     const categories = await listCategoriesService.execute({
-      server_id: server.id,
+      discord_id: server.id_discord,
     });
 
     expect(categories).toEqual([]);
@@ -81,7 +81,7 @@ describe('ListCategoriesService', () => {
 
     await expect(
       listCategoriesService.execute({
-        server_id: 'server-not-exists',
+        discord_id: 'server-not-exists',
       }),
     ).rejects.toEqual(new AppError('Server does not exists'));
   });

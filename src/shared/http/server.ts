@@ -36,6 +36,7 @@ app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
   });
 });
 
-app.listen(process.env.PORT || 3333, () => {
-  log.info('🚀 Server started on port 3333!');
+const port = process.env.PORT || 3333;
+app.listen(port, () => {
+  log.info(`🚀 Server started on port ${port}!`);
 });

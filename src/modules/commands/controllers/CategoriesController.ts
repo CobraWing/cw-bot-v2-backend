@@ -22,12 +22,12 @@ export default class UsersController {
   }
 
   public async index(request: Request, response: Response): Promise<Response> {
-    const { server_id } = request.params;
+    const { discordId: discord_id } = request.guild;
 
     const listCategory = container.resolve(ListCategoriesService);
 
     const categories = await listCategory.execute({
-      server_id,
+      discord_id,
     });
 
     if (categories) {
