@@ -67,7 +67,9 @@ class GetUserAndGuildInfosFromToken {
       const suffix = userData.avatar.startsWith('a_') ? 'gif' : 'png';
       return `${baseCDNUrl}/avatars/${userData.id}/${userData.avatar}.${suffix}`;
     }
-    return `${baseCDNUrl}/embed/avatars/0.png`;
+    const discriminator = Number(userData.discriminator.replace('#', ''));
+    const defaultAvatarId = discriminator % 5;
+    return `${baseCDNUrl}/embed/avatars/${defaultAvatarId}.png`;
   }
 }
 
