@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
+import log from 'heroku-logger';
 
 import authConfig from '@config/authConfig';
 
 import AppError from '@shared/errors/AppError';
 
 interface ITokenPayload {
+  uId: string;
+  uName: string;
+  gIds: string[];
   iat: number;
   exp: number;
   sub: string;
@@ -30,13 +34,20 @@ export default function ensureAuthenticated(
   try {
     const decoded = verify(token, authConfig.jwt.secret);
 
-    const { sub } = decoded as ITokenPayload;
+    const { uId, uName, gIds } = decoded as ITokenPayload;
 
-    request.user = { discordId: sub };
+    if (!gIds.includes(`${guildid}`)) {
+      log.error(
+        `User name=[${uName}] and id=[${uId}] has no permission to guild id=[${guildid}], his guilds ids=[${gIds}]`,
+      );
+      throw new Error();
+    }
+
+    request.user = { discordId: uId, name: uName };
     request.guild = { discordId: `${guildid}` };
 
     return next();
   } catch {
-    throw new AppError('Invalid JWT token', 401);
+    throw new AppError('Invalid credentials', 401);
   }
 }

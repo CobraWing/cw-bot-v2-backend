@@ -56,7 +56,7 @@ class AuthenticateUserService {
           throw new Error('Error while get user and guild infos');
         });
 
-      const { id, username: name, avatar } = user;
+      const { id: uId, username: name, avatar } = user;
 
       const permittedGuilds = await filterPermittedGuilds
         .execute({
@@ -72,12 +72,13 @@ class AuthenticateUserService {
         });
 
       const authorization = new Authentication();
+      const gIds = permittedGuilds.map(guild => guild.id);
       Object.assign(authorization, {
-        token: sign({ id }, secret, {
-          subject: id,
+        token: sign({ uId, uName: name, gIds }, secret, {
+          subject: uId,
           expiresIn,
         }),
-        user: { id, name, avatar },
+        user: { uId, name, avatar },
         guilds: permittedGuilds,
       });
       return authorization;

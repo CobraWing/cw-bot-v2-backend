@@ -8,9 +8,9 @@ import Authentication from '@modules/authorizations/entities/Authentication';
 
 class FakeAuthorizationController {
   public async create(request: Request, response: Response): Promise<Response> {
-    const { discordUserId: id } = request.body;
+    const { discordUserId: uId, discordServerId: gIds } = request.body;
 
-    if (!id) {
+    if (!uId || !gIds) {
       return response.status(400).json({ error: 'Bad request' });
     }
 
@@ -18,11 +18,11 @@ class FakeAuthorizationController {
       const { secret, expiresIn } = authConfig.jwt;
       const authorization = new Authentication();
       Object.assign(authorization, {
-        token: sign({ id }, secret, {
-          subject: id,
+        token: sign({ uId, uName: 'user fake', gIds }, secret, {
+          subject: uId,
           expiresIn,
         }),
-        user: { id, name: 'fake', avatar: '' },
+        user: { uId, name: 'fake', avatar: '' },
         guilds: [],
       });
       return response.status(201).json(classToClass(authorization));
