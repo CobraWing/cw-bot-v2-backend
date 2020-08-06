@@ -26,7 +26,7 @@ class UserHasRolePermission {
     configuration_key,
   }: IRequest): Promise<boolean> {
     try {
-      log.debug(
+      log.info(
         `[UserHasRolePermission] Check if user id={${user_id}} has permit key={${configuration_key}} in discord id={${discord_id}}`,
       );
 

@@ -1,4 +1,5 @@
 import { injectable, inject } from 'tsyringe';
+import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
@@ -26,6 +27,9 @@ class ListCategoriesService {
     );
 
     if (!serverExists) {
+      log.error(
+        `[ListCategoriesService] server does not exists with id: ${discord_id}`,
+      );
       throw new AppError('Server does not exists');
     }
 
