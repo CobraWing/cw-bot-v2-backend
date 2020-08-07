@@ -7,7 +7,14 @@ export default interface ICategoriesRepository {
     server_id: string,
   ): Promise<CommandCategory | undefined>;
 
+  findByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined>;
+
   create(data: ICreateCategoryDTO): Promise<CommandCategory>;
+
+  update(data: CommandCategory): Promise<CommandCategory>;
 
   listByServerId(server_id: string): Promise<CommandCategory[] | undefined>;
 }

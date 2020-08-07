@@ -6,6 +6,7 @@ import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import CommandCategory from '../entities/CommandCategory';
 
 interface IRequest {
+  categoryId: string;
   discordId: string;
   name: string;
   description: string;
@@ -14,7 +15,7 @@ interface IRequest {
 }
 
 @injectable()
-class CreateCategoryService {
+class UpdateCategoryService {
   constructor(
     @inject('CategoriesRepository')
     private categoriesRepository: ICategoriesRepository,
@@ -22,38 +23,30 @@ class CreateCategoryService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discordId,
-    name,
-    description,
-    enabled,
-    show_in_menu,
-  }: IRequest): Promise<CommandCategory> {
-    const server = await this.serversRepository.findByIdDiscord(discordId);
+  public async execute(data: IRequest): Promise<CommandCategory> {
+    const server = await this.serversRepository.findByIdDiscord(data.discordId);
 
     if (!server) {
       throw new AppError('Server not found');
     }
 
-    const checkCategoryExists = await this.categoriesRepository.findByNameAndServerId(
-      name,
+    const categoryFound = await this.categoriesRepository.findByIdAndServerId(
+      data.categoryId,
       server.id,
     );
 
-    if (checkCategoryExists) {
-      throw new AppError('Category already registered');
+    if (!categoryFound) {
+      throw new AppError('Category not found');
     }
 
-    const category = await this.categoriesRepository.create({
-      server_id: server.id,
-      name,
-      description,
-      enabled,
-      show_in_menu,
+    Object.assign(categoryFound, {
+      ...data,
     });
+
+    const category = await this.categoriesRepository.update(categoryFound);
 
     return category;
   }
 }
 
-export default CreateCategoryService;
+export default UpdateCategoryService;

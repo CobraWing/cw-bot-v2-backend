@@ -12,14 +12,31 @@ categoriesRouter.post(
   '/',
   celebrate({
     [Segments.BODY]: {
-      server_id: Joi.string().required().uuid(),
       name: Joi.string().required(),
       description: Joi.string().required(),
+      enabled: Joi.boolean().required(),
       show_in_menu: Joi.boolean().required(),
     },
   }),
   categoriesController.create,
 );
+
+categoriesRouter.put(
+  '/:category_id',
+  celebrate({
+    [Segments.PARAMS]: {
+      category_id: Joi.string().uuid().required(),
+    },
+    [Segments.BODY]: {
+      name: Joi.string().required(),
+      description: Joi.string().required(),
+      enabled: Joi.boolean().required(),
+      show_in_menu: Joi.boolean().required(),
+    },
+  }),
+  categoriesController.update,
+);
+
 categoriesRouter.get('/', categoriesController.index);
 
 export default categoriesRouter;

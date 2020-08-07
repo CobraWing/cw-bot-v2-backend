@@ -23,15 +23,29 @@ class CategoriesRepository implements ICategoriesRepository {
     return commandCategory;
   }
 
-  public async create(data: ICreateCategoryDTO): Promise<CommandCategory> {
-    const commandCategory = this.ormRepository.create({
-      ...data,
-      enabled: true,
+  public async findByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    const commandCategory = this.ormRepository.findOne({
+      where: { id, server_id },
     });
+
+    return commandCategory;
+  }
+
+  public async create(data: ICreateCategoryDTO): Promise<CommandCategory> {
+    const commandCategory = this.ormRepository.create(data);
 
     await this.ormRepository.save(commandCategory);
 
     return commandCategory;
+  }
+
+  public async update(category: CommandCategory): Promise<CommandCategory> {
+    const savedCategory = await this.ormRepository.save(category);
+
+    return savedCategory;
   }
 
   public async listByServerId(
