@@ -5,6 +5,7 @@ import { Permissions } from 'discord.js';
 import log from 'heroku-logger';
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import UserHasRolePermission from '@modules/configurations/services/UserHasRolePermission';
+import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
 import serverConfig from '@config/serverConfig';
 import discordConfig from '@config/discordConfig';
 
@@ -28,7 +29,14 @@ class FilterPermittedGuilds {
   }: IRequest): Promise<IGuild[]> {
     const discordClient = await container.resolve(ClientProvider).getCLient();
     const userHasRolePermission = container.resolve(UserHasRolePermission);
+    const findEnabledServerByDiscordId = container.resolve(
+      FindEnabledServerByDiscordIdService,
+    );
     const { baseCDNUrl } = discordConfig.api;
+
+    log.info(`[FilterPermittedGuilds] filter guilds for [user_id]`, {
+      user_id,
+    });
 
     try {
       const botGuilds = discordClient.guilds.cache;
@@ -51,9 +59,28 @@ class FilterPermittedGuilds {
           userInGuild.hasPermission(new Permissions('ADMINISTRATOR'));
 
         if (userOwnerOrAdmin) {
-          permittedGuilds.push(botGuildWithUser);
+          log.info(
+            `[FilterPermittedGuilds] user is owner or admin for guild: ${botGuild.name}, check if guild id: ${botGuild.id} is registered or enabled`,
+          );
+          const server = await findEnabledServerByDiscordId.execute({
+            discord_id: botGuild.id,
+          });
+
+          if (server) {
+            log.info(
+              '[FilterPermittedGuilds] guild is enabled, add to permitted guilds list',
+              { server },
+            );
+            permittedGuilds.push(botGuildWithUser);
+          } else {
+            log.info('[FilterPermittedGuilds] guild not exists or disabled');
+          }
         } else {
           const { key } = serverConfig.manage_server_role;
+
+          log.info(
+            `[FilterPermittedGuilds] check if user contains role: ${key} in guild ${botGuild.name}`,
+          );
 
           const hasPermission = await userHasRolePermission
             .execute({
@@ -69,6 +96,9 @@ class FilterPermittedGuilds {
             });
 
           if (hasPermission) {
+            log.info(
+              `[FilterPermittedGuilds] User contains role, add in permitted guilds list`,
+            );
             permittedGuilds.push(botGuildWithUser);
           }
         }

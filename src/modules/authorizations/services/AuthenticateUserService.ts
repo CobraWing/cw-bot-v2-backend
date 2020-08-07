@@ -1,10 +1,9 @@
-import { injectable, inject, container } from 'tsyringe';
+import { injectable, container } from 'tsyringe';
 import { sign } from 'jsonwebtoken';
 import axios from 'axios';
 import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
-import IHashProvider from '@shared/providers/HashProvider/models/IHashProvider';
 import authConfig from '@config/authConfig';
 import GetUserAndGuildInfosFromToken from '@modules/discord/services/GetUserAndGuildInfosFromToken';
 import FilterPermittedGuilds from '@modules/discord/services/FilterPermittedGuilds';
@@ -16,11 +15,6 @@ interface IRequest {
 
 @injectable()
 class AuthenticateUserService {
-  constructor(
-    @inject('HashProvider')
-    private hashProvider: IHashProvider,
-  ) {}
-
   public async execute({ code }: IRequest): Promise<Authentication> {
     const getUserAndGuildInfos = container.resolve(
       GetUserAndGuildInfosFromToken,
@@ -59,7 +53,8 @@ class AuthenticateUserService {
         });
 
       log.info(
-        `[AuthenticateUserService] found user: ${user} and guilds: ${guilds} from user`,
+        `[AuthenticateUserService] found user: [userInfo] and guilds: [guildsInfo] from user`,
+        { userInfo: user, guildsInfo: guilds },
       );
 
       const { id: uId, username: name, avatar } = user;
@@ -80,7 +75,8 @@ class AuthenticateUserService {
         });
 
       log.info(
-        `[AuthenticateUserService] guilds permitted: ${permittedGuilds}`,
+        `[AuthenticateUserService] guilds permitted: [permittedGuilds]`,
+        { permittedGuilds },
       );
 
       const authorization = new Authentication();
@@ -93,9 +89,9 @@ class AuthenticateUserService {
         user: { uId, name, avatar },
         guilds: permittedGuilds,
       });
-      log.info(
-        `[AuthenticateUserService] return authorization: ${authorization}`,
-      );
+      log.info(`[AuthenticateUserService] return [authorization]`, {
+        authorization,
+      });
       return authorization;
     } catch (err) {
       log.error('Error while authenticate', [err.message, err.stack]);
