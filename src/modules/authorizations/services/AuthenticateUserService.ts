@@ -44,6 +44,8 @@ class AuthenticateUserService {
           throw new Error('Error while get token');
         });
 
+      log.info('[AuthenticateUserService] getting user and guild infos');
+
       const { user, guilds } = await getUserAndGuildInfos
         .execute({
           token: response.data.access_token,
@@ -56,7 +58,13 @@ class AuthenticateUserService {
           throw new Error('Error while get user and guild infos');
         });
 
+      log.info(
+        `[AuthenticateUserService] found user: ${user} and guilds: ${guilds} from user`,
+      );
+
       const { id: uId, username: name, avatar } = user;
+
+      log.info('[AuthenticateUserService] filter permitted guilds...');
 
       const permittedGuilds = await filterPermittedGuilds
         .execute({
@@ -71,6 +79,10 @@ class AuthenticateUserService {
           throw new Error('Error while filter permitted guilds');
         });
 
+      log.info(
+        `[AuthenticateUserService] guilds permitted: ${permittedGuilds}`,
+      );
+
       const authorization = new Authentication();
       const gIds = permittedGuilds.map(guild => guild.id);
       Object.assign(authorization, {
@@ -81,6 +93,9 @@ class AuthenticateUserService {
         user: { uId, name, avatar },
         guilds: permittedGuilds,
       });
+      log.info(
+        `[AuthenticateUserService] return authorization: ${authorization}`,
+      );
       return authorization;
     } catch (err) {
       log.error('Error while authenticate', [err.message, err.stack]);
