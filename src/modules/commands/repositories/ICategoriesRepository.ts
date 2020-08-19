@@ -17,4 +17,9 @@ export default interface ICategoriesRepository {
   update(data: CommandCategory): Promise<CommandCategory>;
 
   listByServerId(server_id: string): Promise<CommandCategory[] | undefined>;
+
+  getByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined>;
 }

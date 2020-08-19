@@ -10,7 +10,7 @@ routes.use('/servers', serversRouter);
 routes.use('/categories', categoriesRouter);
 routes.use('/authorizations', authorizationRouter);
 
-routes.use('/', (request: Request, response: Response) => {
+routes.use('/alive', (request: Request, response: Response) => {
   response.send('Hello!');
 });
 

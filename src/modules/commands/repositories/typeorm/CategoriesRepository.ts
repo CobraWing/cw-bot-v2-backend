@@ -57,6 +57,17 @@ class CategoriesRepository implements ICategoriesRepository {
 
     return categories;
   }
+
+  public async getByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    const category = await this.ormRepository.findOne({
+      where: { id, server_id },
+    });
+
+    return category;
+  }
 }
 
 export default CategoriesRepository;

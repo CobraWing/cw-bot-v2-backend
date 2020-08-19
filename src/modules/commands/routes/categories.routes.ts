@@ -39,4 +39,24 @@ categoriesRouter.put(
 
 categoriesRouter.get('/', categoriesController.index);
 
+categoriesRouter.get(
+  '/:category_id',
+  celebrate({
+    [Segments.PARAMS]: {
+      category_id: Joi.string().uuid().required(),
+    },
+  }),
+  categoriesController.show,
+);
+
+categoriesRouter.delete(
+  '/:category_id',
+  celebrate({
+    [Segments.PARAMS]: {
+      category_id: Joi.string().uuid().required(),
+    },
+  }),
+  categoriesController.delete,
+);
+
 export default categoriesRouter;

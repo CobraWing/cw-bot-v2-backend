@@ -6,6 +6,7 @@ import log from 'heroku-logger';
 import CreateCategoryService from '@modules/commands/services/CreateCategoryService';
 import UpdateCategoryService from '@modules/commands/services/UpdateCategoryService';
 import ListCategoriesService from '@modules/commands/services/ListCategoriesService';
+import GetCategoryByIdService from '@modules/commands/services/GetCategoryByIdService';
 
 export default class CategoriesController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -62,5 +63,31 @@ export default class CategoriesController {
       return response.json(classToClass(categories));
     }
     return response.status(204).json([]);
+  }
+
+  public async show(request: Request, response: Response): Promise<Response> {
+    const { category_id } = request.params;
+    const { discordId: discord_id } = request.guild;
+
+    const getCategoryById = container.resolve(GetCategoryByIdService);
+
+    const category = await getCategoryById.execute({ discord_id, category_id });
+
+    if (category) {
+      return response.json(classToClass(category));
+    }
+
+    return response.status(404).json();
+  }
+
+  public async delete(request: Request, response: Response): Promise<Response> {
+    // const { category_id: categoryId } = request.params;
+    // const { discordId } = request.guild;
+
+    // const updateCategory = container.resolve(UpdateCategoryService);
+
+    // return response.json(classToClass(category));
+
+    return response.status(404).json();
   }
 }
