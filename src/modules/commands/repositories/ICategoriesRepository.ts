@@ -22,4 +22,6 @@ export default interface ICategoriesRepository {
     id: string,
     server_id: string,
   ): Promise<CommandCategory | undefined>;
+
+  deleteByIdAndServerId(id: string, server_id: string): Promise<void>;
 }

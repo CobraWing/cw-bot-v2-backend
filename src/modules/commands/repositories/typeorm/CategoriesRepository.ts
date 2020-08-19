@@ -68,6 +68,16 @@ class CategoriesRepository implements ICategoriesRepository {
 
     return category;
   }
+
+  public async deleteByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<void> {
+    await this.ormRepository.delete({
+      id,
+      server_id,
+    });
+  }
 }
 
 export default CategoriesRepository;

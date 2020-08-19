@@ -7,6 +7,7 @@ import CreateCategoryService from '@modules/commands/services/CreateCategoryServ
 import UpdateCategoryService from '@modules/commands/services/UpdateCategoryService';
 import ListCategoriesService from '@modules/commands/services/ListCategoriesService';
 import GetCategoryByIdService from '@modules/commands/services/GetCategoryByIdService';
+import DeleteCategoryByIdService from '@modules/commands/services/DeleteCategoryByIdService';
 
 export default class CategoriesController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -81,13 +82,15 @@ export default class CategoriesController {
   }
 
   public async delete(request: Request, response: Response): Promise<Response> {
-    // const { category_id: categoryId } = request.params;
-    // const { discordId } = request.guild;
+    const { category_id } = request.params;
+    const { discordId: discord_id } = request.guild;
 
-    // const updateCategory = container.resolve(UpdateCategoryService);
+    const deleteCategoryByIdService = container.resolve(
+      DeleteCategoryByIdService,
+    );
 
-    // return response.json(classToClass(category));
+    await deleteCategoryByIdService.execute({ discord_id, category_id });
 
-    return response.status(404).json();
+    return response.status(202).json();
   }
 }
