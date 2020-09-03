@@ -37,6 +37,10 @@ class ListCategoriesService {
       serverExists.id,
     );
 
+    if (categories) {
+      categories.sort((a, b) => (a.name > b.name ? 1 : -1));
+    }
+
     return categories;
   }
 }

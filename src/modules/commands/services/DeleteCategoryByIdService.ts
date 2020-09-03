@@ -4,7 +4,6 @@ import log from 'heroku-logger';
 import AppError from '@shared/errors/AppError';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import IServersRepository from '../../servers/repositories/IServersRepository';
-import CommandCategory from '../entities/CommandCategory';
 
 interface IRequest {
   discord_id: string;
