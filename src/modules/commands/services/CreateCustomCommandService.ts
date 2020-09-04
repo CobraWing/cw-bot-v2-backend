@@ -68,6 +68,8 @@ class CreateCustomCommandService {
       image_content,
       image_thumbnail,
       updated_by,
+      embedded: true,
+      color: '#EE0000',
     });
 
     return customCommand;
