@@ -47,12 +47,7 @@ export default class CategoriesController {
   }
 
   public async index(request: Request, response: Response): Promise<Response> {
-    const { name } = request.user;
     const { discordId: discord_id } = request.guild;
-
-    log.info(
-      `[CategoriesController.index] find categories by user: ${name} from discord id: ${discord_id}`,
-    );
 
     const listCategory = container.resolve(ListCategoriesService);
 

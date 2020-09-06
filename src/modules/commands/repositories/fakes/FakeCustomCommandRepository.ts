@@ -8,6 +8,16 @@ import CustomCommand from '../../entities/CustomCommand';
 class FakeCustomCommandRepository implements ICustomCommandRepository {
   private customCommands: CustomCommand[] = [];
 
+  public async findByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<CustomCommand | undefined> {
+    return this.customCommands.find(
+      customCommand =>
+        customCommand.id === id && customCommand.server_id === server_id,
+    );
+  }
+
   public async create(data: ICreateCustomCommandDTO): Promise<CustomCommand> {
     const customCommand = new CustomCommand();
 

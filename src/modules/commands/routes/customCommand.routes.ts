@@ -26,4 +26,14 @@ customCommandRouter.post(
   customCommandController.create,
 );
 
+customCommandRouter.get(
+  '/:id',
+  celebrate({
+    [Segments.PARAMS]: {
+      id: Joi.string().uuid().required(),
+    },
+  }),
+  customCommandController.show,
+);
+
 export default customCommandRouter;
