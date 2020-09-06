@@ -1,7 +1,7 @@
 import { uuid } from 'uuidv4';
 
-import ICategoriesRepository from '@modules/commands/repositories/ICategoriesRepository';
-import ICreateCategoryDTO from '@modules/commands/dtos/ICreateCategoryDTO';
+import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
+import ICreateCategoryDTO from '@modules/categories/dtos/ICreateCategoryDTO';
 
 import CommandCategory from '../../entities/CommandCategory';
 
@@ -17,6 +17,15 @@ class FakeCategoriesRepository implements ICategoriesRepository {
     );
   }
 
+  public async findByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    return this.categories.find(
+      category => category.id === id && category.server_id === server_id,
+    );
+  }
+
   public async create(data: ICreateCategoryDTO): Promise<CommandCategory> {
     const category = new CommandCategory();
 
@@ -27,6 +36,16 @@ class FakeCategoriesRepository implements ICategoriesRepository {
     return category;
   }
 
+  public async update(data: CommandCategory): Promise<CommandCategory> {
+    const categoryIndex = this.categories.findIndex(
+      category => category.id === data.id,
+    );
+
+    this.categories[categoryIndex] = data;
+
+    return data;
+  }
+
   public async listByServerId(
     server_id: string,
   ): Promise<CommandCategory[] | undefined> {
@@ -35,6 +54,17 @@ class FakeCategoriesRepository implements ICategoriesRepository {
     );
 
     return categories;
+  }
+
+  public async deleteByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<void> {
+    const categoryIndex = this.categories.findIndex(
+      category => category.id === id && category.server_id === server_id,
+    );
+
+    this.categories.splice(categoryIndex, 1);
   }
 }
 

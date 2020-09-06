@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 
-import categoriesRouter from '@modules/commands/routes/categories.routes';
+import categoriesRouter from '@modules/categories/routes/categories.routes';
 import customCommandRouter from '@modules/commands/routes/customCommand.routes';
 import serversRouter from '@modules/servers/routes/servers.routes';
 import authorizationRouter from '@modules/authorizations/routes/authorization.routes';

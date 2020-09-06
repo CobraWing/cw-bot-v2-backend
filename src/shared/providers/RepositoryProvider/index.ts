@@ -6,8 +6,8 @@ import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepo
 import IConfigurationsRepository from '@modules/configurations/repositories/IConfigurationsRepository';
 import ConfigurationsRepository from '@modules/configurations/repositories/typeorm/ConfigurationsRepository';
 
-import ICategoriesRepository from '@modules/commands/repositories/ICategoriesRepository';
-import CategoriesRepository from '@modules/commands/repositories/typeorm/CategoriesRepository';
+import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
+import CategoriesRepository from '@modules/categories/repositories/typeorm/CategoriesRepository';
 
 import ICustomCommandRepository from '@modules/commands/repositories/ICustomCommandRepository';
 import CustomCommandRepository from '@modules/commands/repositories/typeorm/CustomCommandRepository';

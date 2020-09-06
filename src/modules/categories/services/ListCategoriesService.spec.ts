@@ -27,6 +27,7 @@ describe('ListCategoriesService', () => {
       server_id: server.id,
       name: 'category_1',
       description: 'description',
+      enabled: true,
       show_in_menu: true,
     });
 
@@ -34,6 +35,7 @@ describe('ListCategoriesService', () => {
       server_id: server.id,
       name: 'category_2',
       description: 'description',
+      enabled: true,
       show_in_menu: true,
     });
 
@@ -69,6 +71,7 @@ describe('ListCategoriesService', () => {
       server_id: server.id,
       name: 'category_1',
       description: 'description',
+      enabled: true,
       show_in_menu: true,
     });
 
@@ -76,6 +79,7 @@ describe('ListCategoriesService', () => {
       server_id: server.id,
       name: 'category_2',
       description: 'description',
+      enabled: true,
       show_in_menu: true,
     });
 

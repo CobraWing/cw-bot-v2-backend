@@ -1,7 +1,7 @@
 import { getRepository, Repository } from 'typeorm';
 
-import ICategoriesRepository from '@modules/commands/repositories/ICategoriesRepository';
-import ICreateCategoryDTO from '@modules/commands/dtos/ICreateCategoryDTO';
+import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
+import ICreateCategoryDTO from '@modules/categories/dtos/ICreateCategoryDTO';
 
 import CommandCategory from '../../entities/CommandCategory';
 
@@ -56,17 +56,6 @@ class CategoriesRepository implements ICategoriesRepository {
     });
 
     return categories;
-  }
-
-  public async getByIdAndServerId(
-    id: string,
-    server_id: string,
-  ): Promise<CommandCategory | undefined> {
-    const category = await this.ormRepository.findOne({
-      where: { id, server_id },
-    });
-
-    return category;
   }
 
   public async deleteByIdAndServerId(

@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 import Server from '@modules/servers/entities/Server';
-import CommandCategory from './CommandCategory';
+import CommandCategory from '@modules/categories/entities/CommandCategory';
 
 @Entity('custom_commands')
 class CustomCommand {

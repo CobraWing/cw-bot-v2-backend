@@ -13,6 +13,22 @@ class FakeServersRepository implements IServersRepository {
     return this.servers.find(s => s.id_discord === id_discord);
   }
 
+  public async findByIdDiscordAndEnabledServer(
+    id_discord: string,
+  ): Promise<Server | undefined> {
+    return this.servers.find(
+      s => s.id_discord === id_discord && s.enabled === true,
+    );
+  }
+
+  public async findByServerId(server_id: string): Promise<Server | undefined> {
+    return this.servers.find(s => s.id === server_id);
+  }
+
+  public async findAll(enabled: boolean): Promise<Server[] | undefined> {
+    return this.servers.filter(s => s.enabled === enabled);
+  }
+
   public async create({
     name,
     id_discord,
@@ -30,14 +46,6 @@ class FakeServersRepository implements IServersRepository {
     this.servers.push(server);
 
     return server;
-  }
-
-  public async findByServerId(server_id: string): Promise<Server | undefined> {
-    return this.servers.find(s => s.id === server_id);
-  }
-
-  public async findAll(enabled: boolean): Promise<Server[] | undefined> {
-    return this.servers.filter(s => s.enabled === enabled);
   }
 }
 

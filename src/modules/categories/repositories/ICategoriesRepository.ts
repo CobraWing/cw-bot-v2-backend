@@ -18,10 +18,5 @@ export default interface ICategoriesRepository {
 
   listByServerId(server_id: string): Promise<CommandCategory[] | undefined>;
 
-  getByIdAndServerId(
-    id: string,
-    server_id: string,
-  ): Promise<CommandCategory | undefined>;
-
   deleteByIdAndServerId(id: string, server_id: string): Promise<void>;
 }

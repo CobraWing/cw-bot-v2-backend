@@ -35,7 +35,7 @@ class GetCategoryByIdService {
       throw new AppError('Server does not exists');
     }
 
-    const category = await this.categoriesRepository.getByIdAndServerId(
+    const category = await this.categoriesRepository.findByIdAndServerId(
       category_id,
       serverExists.id,
     );

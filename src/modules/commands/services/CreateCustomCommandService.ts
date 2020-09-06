@@ -2,9 +2,9 @@ import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
+import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
+import CommandCategory from '@modules/categories/entities/CommandCategory';
 import ICustomCommandRepository from '../repositories/ICustomCommandRepository';
-import ICategoriesRepository from '../repositories/ICategoriesRepository';
-import CommandCategory from '../entities/CommandCategory';
 
 interface IRequest {
   discordId: string;

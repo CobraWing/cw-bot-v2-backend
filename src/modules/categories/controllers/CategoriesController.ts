@@ -3,11 +3,11 @@ import { container } from 'tsyringe';
 import { classToClass } from 'class-transformer';
 import log from 'heroku-logger';
 
-import CreateCategoryService from '@modules/commands/services/CreateCategoryService';
-import UpdateCategoryService from '@modules/commands/services/UpdateCategoryService';
-import ListCategoriesService from '@modules/commands/services/ListCategoriesService';
-import GetCategoryByIdService from '@modules/commands/services/GetCategoryByIdService';
-import DeleteCategoryByIdService from '@modules/commands/services/DeleteCategoryByIdService';
+import CreateCategoryService from '@modules/categories/services/CreateCategoryService';
+import UpdateCategoryService from '@modules/categories/services/UpdateCategoryService';
+import ListCategoriesService from '@modules/categories/services/ListCategoriesService';
+import GetCategoryByIdService from '@modules/categories/services/GetCategoryByIdService';
+import DeleteCategoryByIdService from '@modules/categories/services/DeleteCategoryByIdService';
 
 export default class CategoriesController {
   public async create(request: Request, response: Response): Promise<Response> {
