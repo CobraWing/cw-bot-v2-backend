@@ -27,6 +27,16 @@ class FakeCustomCommandRepository implements ICustomCommandRepository {
 
     return customCommand;
   }
+
+  public async update(data: CustomCommand): Promise<CustomCommand> {
+    const commandIndex = this.customCommands.findIndex(
+      command => command.id === data.id,
+    );
+
+    this.customCommands[commandIndex] = data;
+
+    return data;
+  }
 }
 
 export default FakeCustomCommandRepository;

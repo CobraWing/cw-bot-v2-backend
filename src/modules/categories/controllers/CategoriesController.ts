@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
 import { classToClass } from 'class-transformer';
-import log from 'heroku-logger';
 
 import CreateCategoryService from '@modules/categories/services/CreateCategoryService';
 import UpdateCategoryService from '@modules/categories/services/UpdateCategoryService';

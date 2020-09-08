@@ -30,6 +30,12 @@ class CustomCommandRepository implements ICustomCommandRepository {
 
     return customCommand;
   }
+
+  public async update(data: CustomCommand): Promise<CustomCommand> {
+    const savedCustomCommand = await this.ormRepository.save(data);
+
+    return savedCustomCommand;
+  }
 }
 
 export default CustomCommandRepository;

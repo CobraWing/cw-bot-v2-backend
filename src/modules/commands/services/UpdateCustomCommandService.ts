@@ -3,11 +3,12 @@ import { injectable, inject } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
-import CommandCategory from '@modules/categories/entities/CommandCategory';
 import ICustomCommandRepository from '../repositories/ICustomCommandRepository';
+import CustomCommand from '../entities/CustomCommand';
 
 interface IRequest {
   discordId: string;
+  id: string;
   category_id: string;
   enabled: boolean;
   show_in_menu: boolean;
@@ -16,20 +17,20 @@ interface IRequest {
   content: string;
   image_content: string;
   image_thumbnail: string;
-  embedded?: boolean;
-  color?: string;
-  footer_text?: string;
-  role_limited?: boolean;
-  role_blacklist?: string;
-  role_whitelist?: string;
-  channel_limited?: boolean;
-  channel_blacklist?: string;
-  channel_whitelist?: string;
+  embedded: boolean;
+  color: string;
+  footer_text: string;
+  role_limited: boolean;
+  role_blacklist: string;
+  role_whitelist: string;
+  channel_limited: boolean;
+  channel_blacklist: string;
+  channel_whitelist: string;
   updated_by: string;
 }
 
 @injectable()
-class CreateCustomCommandService {
+class UpdateCustomCommandService {
   constructor(
     @inject('CustomCommandRepository')
     private customCommandRepository: ICustomCommandRepository,
@@ -39,26 +40,15 @@ class CreateCustomCommandService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discordId,
-    category_id,
-    enabled,
-    show_in_menu,
-    name,
-    description,
-    content,
-    image_content,
-    image_thumbnail,
-    updated_by,
-  }: IRequest): Promise<CommandCategory> {
-    const server = await this.serversRepository.findByIdDiscord(discordId);
+  public async execute(data: IRequest): Promise<CustomCommand> {
+    const server = await this.serversRepository.findByIdDiscord(data.discordId);
 
     if (!server) {
       throw new AppError('Server not found');
     }
 
     const categoryExists = await this.categoriesRepository.findByIdAndServerId(
-      category_id,
+      data.category_id,
       server.id,
     );
 
@@ -66,23 +56,25 @@ class CreateCustomCommandService {
       throw new AppError('Category not found');
     }
 
-    const customCommand = await this.customCommandRepository.create({
-      server_id: server.id,
-      category_id,
-      enabled,
-      show_in_menu,
-      name,
-      description,
-      content,
-      image_content,
-      image_thumbnail,
-      updated_by,
-      embedded: true,
-      color: '#EE0000',
+    const customCommandExists = await this.customCommandRepository.findByIdAndServerId(
+      data.id,
+      server.id,
+    );
+
+    if (!customCommandExists) {
+      throw new AppError('Custom command not found to edit');
+    }
+
+    Object.assign(customCommandExists, {
+      ...data,
     });
 
-    return customCommand;
+    const customCommandUpdated = await this.customCommandRepository.update(
+      customCommandExists,
+    );
+
+    return customCommandUpdated;
   }
 }
 
-export default CreateCustomCommandService;
+export default UpdateCustomCommandService;

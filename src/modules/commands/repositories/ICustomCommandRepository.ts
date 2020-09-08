@@ -8,4 +8,6 @@ export default interface ICustomCommandRepository {
   ): Promise<CustomCommand | undefined>;
 
   create(data: ICreateCustomCommandDTO): Promise<CustomCommand>;
+
+  update(data: CustomCommand): Promise<CustomCommand>;
 }
