@@ -13,6 +13,7 @@ interface IRequest {
   show_in_menu: boolean;
   name: string;
   description: string;
+  title: string;
   content: string;
   image_content: string;
   image_thumbnail: string;
@@ -39,26 +40,15 @@ class CreateCustomCommandService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discordId,
-    category_id,
-    enabled,
-    show_in_menu,
-    name,
-    description,
-    content,
-    image_content,
-    image_thumbnail,
-    updated_by,
-  }: IRequest): Promise<CommandCategory> {
-    const server = await this.serversRepository.findByIdDiscord(discordId);
+  public async execute(data: IRequest): Promise<CommandCategory> {
+    const server = await this.serversRepository.findByIdDiscord(data.discordId);
 
     if (!server) {
       throw new AppError('Server not found');
     }
 
     const categoryExists = await this.categoriesRepository.findByIdAndServerId(
-      category_id,
+      data.category_id,
       server.id,
     );
 
@@ -68,15 +58,7 @@ class CreateCustomCommandService {
 
     const customCommand = await this.customCommandRepository.create({
       server_id: server.id,
-      category_id,
-      enabled,
-      show_in_menu,
-      name,
-      description,
-      content,
-      image_content,
-      image_thumbnail,
-      updated_by,
+      ...data,
       embedded: true,
       color: '#EE0000',
     });

@@ -52,6 +52,10 @@ class CustomCommand {
 
   @Expose()
   @Column()
+  title: string;
+
+  @Expose()
+  @Column()
   content: string;
 
   @Expose()

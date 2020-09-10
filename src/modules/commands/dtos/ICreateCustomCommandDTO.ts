@@ -5,6 +5,7 @@ export default interface ICreateCustomCommandDTO {
   show_in_menu: boolean;
   name: string;
   description: string;
+  title: string;
   content?: string;
   image_content?: string;
   image_thumbnail?: string;
