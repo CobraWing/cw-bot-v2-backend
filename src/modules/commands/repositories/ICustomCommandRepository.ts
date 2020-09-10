@@ -10,4 +10,8 @@ export default interface ICustomCommandRepository {
   create(data: ICreateCustomCommandDTO): Promise<CustomCommand>;
 
   update(data: CustomCommand): Promise<CustomCommand>;
+
+  listByServerId(server_id: string): Promise<CustomCommand[] | undefined>;
+
+  deleteByIdAndServerId(id: string, server_id: string): Promise<void>;
 }

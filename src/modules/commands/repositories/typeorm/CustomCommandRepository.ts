@@ -36,6 +36,26 @@ class CustomCommandRepository implements ICustomCommandRepository {
 
     return savedCustomCommand;
   }
+
+  public async listByServerId(
+    server_id: string,
+  ): Promise<CustomCommand[] | undefined> {
+    const customCommands = await this.ormRepository.find({
+      where: { server_id },
+    });
+
+    return customCommands;
+  }
+
+  public async deleteByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<void> {
+    await this.ormRepository.delete({
+      id,
+      server_id,
+    });
+  }
 }
 
 export default CustomCommandRepository;

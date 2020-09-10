@@ -66,4 +66,16 @@ customCommandRouter.get(
   customCommandController.show,
 );
 
+customCommandRouter.get('/', customCommandController.index);
+
+customCommandRouter.delete(
+  '/:id',
+  celebrate({
+    [Segments.PARAMS]: {
+      id: Joi.string().uuid().required(),
+    },
+  }),
+  customCommandController.delete,
+);
+
 export default customCommandRouter;

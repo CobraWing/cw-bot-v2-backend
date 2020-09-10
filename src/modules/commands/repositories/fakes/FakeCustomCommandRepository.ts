@@ -37,6 +37,27 @@ class FakeCustomCommandRepository implements ICustomCommandRepository {
 
     return data;
   }
+
+  public async listByServerId(
+    server_id: string,
+  ): Promise<CustomCommand[] | undefined> {
+    const filteredCustomCommands = this.customCommands.filter(
+      command => command.server_id === server_id,
+    );
+
+    return filteredCustomCommands;
+  }
+
+  public async deleteByIdAndServerId(
+    id: string,
+    server_id: string,
+  ): Promise<void> {
+    const customCommandIndex = this.customCommands.findIndex(
+      command => command.id === id && command.server_id === server_id,
+    );
+
+    this.customCommands.splice(customCommandIndex, 1);
+  }
 }
 
 export default FakeCustomCommandRepository;

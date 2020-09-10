@@ -5,6 +5,8 @@ import { classToClass } from 'class-transformer';
 import CreateCustomCommandService from '@modules/commands/services/CreateCustomCommandService';
 import UpdateCustomCommandService from '@modules/commands/services/UpdateCustomCommandService';
 import GetCustomCommandByIdService from '@modules/commands/services/GetCustomCommandByIdService';
+import ListCustomCommandService from '@modules/commands/services/ListCustomCommandService';
+import DeleteCustomCommandByIdService from '@modules/commands/services/DeleteCustomCommandByIdService';
 
 export default class CustomCommandController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -111,5 +113,33 @@ export default class CustomCommandController {
     }
 
     return response.status(404).json();
+  }
+
+  public async index(request: Request, response: Response): Promise<Response> {
+    const { discordId: discord_id } = request.guild;
+
+    const listCustomCommand = container.resolve(ListCustomCommandService);
+
+    const customCommands = await listCustomCommand.execute({
+      discord_id,
+    });
+
+    if (customCommands) {
+      return response.json(classToClass(customCommands));
+    }
+    return response.status(204).json([]);
+  }
+
+  public async delete(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
+    const { discordId: discord_id } = request.guild;
+
+    const deleteCustomCommandById = container.resolve(
+      DeleteCustomCommandByIdService,
+    );
+
+    await deleteCustomCommandById.execute({ id, discord_id });
+
+    return response.status(202).json();
   }
 }
