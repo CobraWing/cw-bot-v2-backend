@@ -42,6 +42,7 @@ class CustomCommandRepository implements ICustomCommandRepository {
   ): Promise<CustomCommand[] | undefined> {
     const customCommands = await this.ormRepository.find({
       where: { server_id },
+      relations: ['category'],
     });
 
     return customCommands;

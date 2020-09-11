@@ -1,4 +1,5 @@
 import Server from '@modules/servers/entities/Server';
+import CustomCommand from '@modules/commands/entities/CustomCommand';
 import { Exclude, Expose } from 'class-transformer';
 
 import {
@@ -8,6 +9,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 
@@ -24,6 +26,9 @@ class CommandCategory {
   @ManyToOne(() => Server)
   @JoinColumn({ name: 'server_id' })
   server: Server;
+
+  @OneToMany(() => CustomCommand, customCommands => customCommands.category_id)
+  customCommands: CustomCommand[];
 
   @Expose()
   @Column()
