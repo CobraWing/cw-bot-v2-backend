@@ -3,7 +3,7 @@ import { injectable, inject } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
-import CommandCategory from '@modules/categories/entities/CommandCategory';
+import CustomCommand from '@modules/commands/entities/CustomCommand';
 import ICustomCommandRepository from '../repositories/ICustomCommandRepository';
 
 interface IRequest {
@@ -40,7 +40,7 @@ class CreateCustomCommandService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute(data: IRequest): Promise<CommandCategory> {
+  public async execute(data: IRequest): Promise<CustomCommand> {
     const server = await this.serversRepository.findByIdDiscord(data.discordId);
 
     if (!server) {

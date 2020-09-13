@@ -12,6 +12,7 @@ export default class CategoriesController {
   public async create(request: Request, response: Response): Promise<Response> {
     const { name, description, enabled, show_in_menu } = request.body;
     const { discordId } = request.guild;
+    const { name: updated_by } = request.user;
 
     const createCategory = container.resolve(CreateCategoryService);
 
@@ -21,6 +22,7 @@ export default class CategoriesController {
       description,
       enabled,
       show_in_menu,
+      updated_by,
     });
 
     return response.status(201).json(classToClass(category));
@@ -30,6 +32,7 @@ export default class CategoriesController {
     const { category_id: categoryId } = request.params;
     const { name, description, enabled, show_in_menu } = request.body;
     const { discordId } = request.guild;
+    const { name: updated_by } = request.user;
 
     const updateCategory = container.resolve(UpdateCategoryService);
 
@@ -40,6 +43,7 @@ export default class CategoriesController {
       description,
       enabled,
       show_in_menu,
+      updated_by,
     });
 
     return response.json(classToClass(category));

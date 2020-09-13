@@ -29,6 +29,7 @@ describe('ListCategoriesService', () => {
       description: 'description',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     const category2 = await fakeCategoriesRepository.create({
@@ -37,6 +38,7 @@ describe('ListCategoriesService', () => {
       description: 'description',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     const categories = await listCategoriesService.execute({
@@ -73,6 +75,7 @@ describe('ListCategoriesService', () => {
       description: 'description',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     await fakeCategoriesRepository.create({
@@ -81,6 +84,7 @@ describe('ListCategoriesService', () => {
       description: 'description',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     await expect(

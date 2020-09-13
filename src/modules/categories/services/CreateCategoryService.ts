@@ -11,6 +11,7 @@ interface IRequest {
   description: string;
   enabled: boolean;
   show_in_menu: boolean;
+  updated_by: string;
 }
 
 @injectable()
@@ -28,6 +29,7 @@ class CreateCategoryService {
     description,
     enabled,
     show_in_menu,
+    updated_by,
   }: IRequest): Promise<CommandCategory> {
     const server = await this.serversRepository.findByIdDiscord(discordId);
 
@@ -50,6 +52,7 @@ class CreateCategoryService {
       description,
       enabled,
       show_in_menu,
+      updated_by,
     });
 
     return category;

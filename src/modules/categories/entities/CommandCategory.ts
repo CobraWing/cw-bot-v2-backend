@@ -52,6 +52,10 @@ class CommandCategory {
   @Expose()
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Expose()
+  @Column()
+  updated_by: string;
 }
 
 export default CommandCategory;

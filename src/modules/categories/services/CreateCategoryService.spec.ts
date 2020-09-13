@@ -29,6 +29,7 @@ describe('CreateCategoryService', () => {
       description: 'description',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     expect(category).toHaveProperty('id');
@@ -47,6 +48,7 @@ describe('CreateCategoryService', () => {
       description: 'description 1',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     await expect(
@@ -56,6 +58,7 @@ describe('CreateCategoryService', () => {
         description: 'description 2',
         enabled: true,
         show_in_menu: true,
+        updated_by: 'user-test',
       }),
     ).rejects.toEqual(new AppError('Category already registered'));
   });
@@ -79,6 +82,7 @@ describe('CreateCategoryService', () => {
       description: 'description 1',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     const category_server_2 = await createCategoryService.execute({
@@ -87,6 +91,7 @@ describe('CreateCategoryService', () => {
       description: 'description 2',
       enabled: true,
       show_in_menu: true,
+      updated_by: 'user-test',
     });
 
     expect(category_server_1).toHaveProperty('id');

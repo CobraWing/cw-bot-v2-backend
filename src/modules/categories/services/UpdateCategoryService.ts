@@ -12,6 +12,7 @@ interface IRequest {
   description: string;
   enabled: boolean;
   show_in_menu: boolean;
+  updated_by: string;
 }
 
 @injectable()

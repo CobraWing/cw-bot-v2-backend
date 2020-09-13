@@ -4,4 +4,5 @@ export default interface ICreateCategoryDTO {
   description: string;
   enabled: boolean;
   show_in_menu: boolean;
+  updated_by: string;
 }
