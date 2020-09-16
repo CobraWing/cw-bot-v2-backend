@@ -1,11 +1,12 @@
 import { singleton } from 'tsyringe';
-import { Client } from 'discord.js';
+import 'discord.js';
+import Commando from 'discord.js-commando';
 import log from 'heroku-logger';
 import discordConfig from '@config/discordConfig';
 
 @singleton()
 class ClientProvider {
-  private client: Client = new Client();
+  private client: Commando.CommandoClient = new Commando.CommandoClient();
 
   constructor() {
     const { botToken } = discordConfig.authentication;
@@ -21,7 +22,7 @@ class ClientProvider {
     });
   }
 
-  public getCLient(): Promise<Client> {
+  public getCLient(): Promise<Commando.CommandoClient> {
     return new Promise((resolve, reject) => {
       if (this.client.uptime && this.client.uptime > 0) {
         resolve(this.client);
