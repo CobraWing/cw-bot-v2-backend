@@ -48,6 +48,17 @@ class CustomCommandRepository implements ICustomCommandRepository {
     return customCommands;
   }
 
+  public async listEnabledByServerId(
+    server_id: string,
+  ): Promise<CustomCommand[] | undefined> {
+    const customCommands = await this.ormRepository.find({
+      where: { server_id, enabled: true },
+      relations: ['category'],
+    });
+
+    return customCommands;
+  }
+
   public async deleteByIdAndServerId(
     id: string,
     server_id: string,

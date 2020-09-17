@@ -48,6 +48,16 @@ class FakeCustomCommandRepository implements ICustomCommandRepository {
     return filteredCustomCommands;
   }
 
+  public async listEnabledByServerId(
+    server_id: string,
+  ): Promise<CustomCommand[] | undefined> {
+    const filteredCustomCommands = this.customCommands.filter(
+      command => command.server_id === server_id && command.enabled,
+    );
+
+    return filteredCustomCommands;
+  }
+
   public async deleteByIdAndServerId(
     id: string,
     server_id: string,

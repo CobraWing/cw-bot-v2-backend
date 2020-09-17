@@ -13,5 +13,9 @@ export default interface ICustomCommandRepository {
 
   listByServerId(server_id: string): Promise<CustomCommand[] | undefined>;
 
+  listEnabledByServerId(
+    server_id: string,
+  ): Promise<CustomCommand[] | undefined>;
+
   deleteByIdAndServerId(id: string, server_id: string): Promise<void>;
 }

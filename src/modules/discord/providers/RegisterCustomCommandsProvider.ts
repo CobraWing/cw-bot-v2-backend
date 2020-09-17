@@ -2,24 +2,38 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import { injectable, container } from 'tsyringe';
-import { ChannelManager, Message, TextChannel } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import Commando, { CommandInfo, CommandoMessage } from 'discord.js-commando';
 
 // import log from 'heroku-logger';
 import ClientProvider from '@modules/discord/providers/ClientProvider';
+import ListEnabledCustomCommandService from '@modules/commands/services/ListEnabledCustomCommandService';
+
+interface IGuildEnabledCommands {
+  [key: string]: string[];
+}
 
 class CustomCommand extends Commando.Command {
-  constructor(client: Commando.CommandoClient, info: CommandInfo) {
+  constructor(
+    private guildEnabledCommands: IGuildEnabledCommands,
+    client: Commando.CommandoClient,
+    info: CommandInfo,
+  ) {
     super(client, info);
   }
 
   async run(
     msg: CommandoMessage,
-    args: string | string[] | object,
+    _: string | string[] | object,
   ): Promise<Message | Message[]> {
-    console.log('msg, args', msg, args);
+    const [commandName] = msg.content.replace('!', '').split(' ');
+    const guildRegisterCommands = this.guildEnabledCommands[msg.guild.id];
 
-    return msg.say('hello test');
+    if (guildRegisterCommands && guildRegisterCommands.includes(commandName)) {
+      return msg.say('hello test');
+    }
+
+    return msg.message;
   }
 }
 
@@ -27,27 +41,43 @@ class CustomCommand extends Commando.Command {
 class RegisterCustomCommandsProvider {
   public async execute(): Promise<void> {
     const commandoClient = await container.resolve(ClientProvider).getCLient();
+    const listEnabledCustomCommandService = container.resolve(
+      ListEnabledCustomCommandService,
+    );
 
-    commandoClient.guilds.cache.forEach(guild => {
-      // console.log(guild.id);
+    const guildEnabledCommands = {};
+    const uniqueCommands = new Set();
 
-      commandoClient.registry.registerGroup(guild.id, guild.name);
-
-      const command = new CustomCommand(commandoClient, {
-        name: 'test',
-        aliases: ['test2'],
-        group: guild.id,
-        memberName: 'test',
-        description: `Custom Commands for ${guild.name}`,
-        guildOnly: true,
+    for await (const [id] of commandoClient.guilds.cache) {
+      const commands = await listEnabledCustomCommandService.execute({
+        discord_id: id,
       });
-      commandoClient.registry.registerCommand(command);
 
-      const c = guild.channels.cache.find(
-        channel => channel.name === 'admin',
-      ) as TextChannel;
-      c.send('hello');
+      Object.assign(guildEnabledCommands, {
+        ...guildEnabledCommands,
+        [id]: commands?.map(command => command.name),
+      });
+    }
+
+    Object.values(guildEnabledCommands).forEach((values: any) => {
+      for (const value of values) {
+        uniqueCommands.add(value);
+      }
     });
+
+    commandoClient.registry.registerGroup('customcommands');
+
+    const group = new Commando.CommandGroup(commandoClient, 'customcommands');
+
+    const command = new CustomCommand(guildEnabledCommands, commandoClient, {
+      name: `@customcommands`,
+      group: group.id,
+      memberName: `customcommands`,
+      description: `Custom Commands`,
+      guildOnly: true,
+      aliases: Array.from(uniqueCommands.values()) as string[],
+    });
+    commandoClient.registry.registerCommand(command);
   }
 }
 
