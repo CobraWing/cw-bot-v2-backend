@@ -8,11 +8,11 @@ import CustomCommand from '../entities/CustomCommand';
 
 interface IRequest {
   discord_id: string;
-  id: string;
+  name: string;
 }
 
 @injectable()
-class GetCustomCommandByIdService {
+class GetCustomCommandByNameService {
   constructor(
     @inject('CustomCommandRepository')
     private customCommandRepository: ICustomCommandRepository,
@@ -22,26 +22,26 @@ class GetCustomCommandByIdService {
 
   public async execute({
     discord_id,
-    id,
+    name,
   }: IRequest): Promise<CustomCommand | undefined> {
-    const serverExists = await this.serversRepository.findByIdDiscord(
+    const serverEnabled = await this.serversRepository.findByIdDiscordAndEnabledServer(
       discord_id,
     );
 
-    if (!serverExists) {
+    if (!serverEnabled) {
       log.error(
-        `[GetCustomCommandByIdService] server does not exists with id: ${discord_id}`,
+        `[GetCustomCommandByNameService] server id: ${discord_id} is not enabled`,
       );
-      throw new AppError('Server does not exists');
+      throw new AppError('Server isnot enabled');
     }
 
-    const customCommandFound = await this.customCommandRepository.findByIdAndServerId(
-      id,
-      serverExists.id,
+    const customCommandFound = await this.customCommandRepository.findByNameAndServerId(
+      name,
+      serverEnabled.id,
     );
 
     return customCommandFound;
   }
 }
 
-export default GetCustomCommandByIdService;
+export default GetCustomCommandByNameService;

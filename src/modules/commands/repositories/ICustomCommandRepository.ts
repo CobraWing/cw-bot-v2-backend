@@ -7,6 +7,11 @@ export default interface ICustomCommandRepository {
     server_id: string,
   ): Promise<CustomCommand | undefined>;
 
+  findByNameAndServerId(
+    name: string,
+    server_id: string,
+  ): Promise<CustomCommand | undefined>;
+
   create(data: ICreateCustomCommandDTO): Promise<CustomCommand>;
 
   update(data: CustomCommand): Promise<CustomCommand>;

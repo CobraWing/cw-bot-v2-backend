@@ -18,6 +18,16 @@ class FakeCustomCommandRepository implements ICustomCommandRepository {
     );
   }
 
+  public async findByNameAndServerId(
+    name: string,
+    server_id: string,
+  ): Promise<CustomCommand | undefined> {
+    return this.customCommands.find(
+      customCommand =>
+        customCommand.name === name && customCommand.server_id === server_id,
+    );
+  }
+
   public async create(data: ICreateCustomCommandDTO): Promise<CustomCommand> {
     const customCommand = new CustomCommand();
 

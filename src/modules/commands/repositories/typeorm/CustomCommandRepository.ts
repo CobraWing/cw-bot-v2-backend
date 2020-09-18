@@ -23,6 +23,17 @@ class CustomCommandRepository implements ICustomCommandRepository {
     return customCommand;
   }
 
+  public async findByNameAndServerId(
+    name: string,
+    server_id: string,
+  ): Promise<CustomCommand | undefined> {
+    const customCommand = this.ormRepository.findOne({
+      where: { name, server_id },
+    });
+
+    return customCommand;
+  }
+
   public async create(data: ICreateCustomCommandDTO): Promise<CustomCommand> {
     const customCommand = this.ormRepository.create(data);
 
