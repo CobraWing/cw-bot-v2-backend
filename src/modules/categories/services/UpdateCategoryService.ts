@@ -2,6 +2,7 @@ import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
+import ICustomCommandRepository from '@modules/commands/repositories/ICustomCommandRepository';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import CommandCategory from '../entities/CommandCategory';
 
@@ -20,6 +21,8 @@ class UpdateCategoryService {
   constructor(
     @inject('CategoriesRepository')
     private categoriesRepository: ICategoriesRepository,
+    @inject('CustomCommandRepository')
+    private customCommandRepository: ICustomCommandRepository,
     @inject('ServersRepository')
     private serversRepository: IServersRepository,
   ) {}
@@ -58,6 +61,19 @@ class UpdateCategoryService {
         message: 'Category name already exists.',
         statusCode: 409,
         message_ptbr: 'Já existe uma categoria com esse nome.',
+      });
+    }
+
+    const existsCommandWithSameName = await this.customCommandRepository.findByNameAndServerId(
+      data.name,
+      server.id,
+    );
+
+    if (existsCommandWithSameName) {
+      throw new AppError({
+        message: 'Exists a custom command with the same name.',
+        statusCode: 409,
+        message_ptbr: 'Já existe um comando customizado com o mesmo nome.',
       });
     }
 
