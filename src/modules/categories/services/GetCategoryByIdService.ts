@@ -32,7 +32,10 @@ class GetCategoryByIdService {
       log.error(
         `[GetCategoryByIdService] server does not exists with id: ${discord_id}`,
       );
-      throw new AppError('Server does not exists');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const category = await this.categoriesRepository.findByIdAndServerId(

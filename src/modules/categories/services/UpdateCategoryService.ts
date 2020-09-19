@@ -28,7 +28,10 @@ class UpdateCategoryService {
     const server = await this.serversRepository.findByIdDiscord(data.discordId);
 
     if (!server) {
-      throw new AppError('Server not found');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const categoryFound = await this.categoriesRepository.findByIdAndServerId(
@@ -37,7 +40,25 @@ class UpdateCategoryService {
     );
 
     if (!categoryFound) {
-      throw new AppError('Category not found');
+      throw new AppError({
+        message: 'Category not found.',
+        statusCode: 409,
+        message_ptbr: 'Categoria não encontrada para atualizar.',
+      });
+    }
+
+    const categoryNameAlreadyExists = await this.categoriesRepository.findByNotInIdAndNameAndServerId(
+      data.categoryId,
+      data.name,
+      server.id,
+    );
+
+    if (categoryNameAlreadyExists) {
+      throw new AppError({
+        message: 'Category name already exists.',
+        statusCode: 409,
+        message_ptbr: 'Já existe uma categoria com esse nome.',
+      });
     }
 
     Object.assign(categoryFound, {

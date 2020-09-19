@@ -32,7 +32,10 @@ class GetCustomCommandByIdService {
       log.error(
         `[GetCustomCommandByIdService] server does not exists with id: ${discord_id}`,
       );
-      throw new AppError('Server does not exists');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const customCommandFound = await this.customCommandRepository.findByIdAndServerId(

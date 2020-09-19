@@ -26,6 +26,19 @@ class FakeCategoriesRepository implements ICategoriesRepository {
     );
   }
 
+  public async findByNotInIdAndNameAndServerId(
+    id: string,
+    name: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    return this.categories.find(
+      category =>
+        category.id !== id &&
+        category.name === name &&
+        category.server_id === server_id,
+    );
+  }
+
   public async create(data: ICreateCategoryDTO): Promise<CommandCategory> {
     const category = new CommandCategory();
 

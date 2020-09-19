@@ -7,6 +7,12 @@ export default interface ICategoriesRepository {
     server_id: string,
   ): Promise<CommandCategory | undefined>;
 
+  findByNotInIdAndNameAndServerId(
+    id: string,
+    name: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined>;
+
   findByIdAndServerId(
     id: string,
     server_id: string,

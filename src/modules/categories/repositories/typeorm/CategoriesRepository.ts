@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, Repository, Not } from 'typeorm';
 
 import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
 import ICreateCategoryDTO from '@modules/categories/dtos/ICreateCategoryDTO';
@@ -29,6 +29,22 @@ class CategoriesRepository implements ICategoriesRepository {
   ): Promise<CommandCategory | undefined> {
     const commandCategory = this.ormRepository.findOne({
       where: { id, server_id },
+    });
+
+    return commandCategory;
+  }
+
+  public async findByNotInIdAndNameAndServerId(
+    id: string,
+    name: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    const commandCategory = this.ormRepository.findOne({
+      where: {
+        id: Not(id),
+        name,
+        server_id,
+      },
     });
 
     return commandCategory;

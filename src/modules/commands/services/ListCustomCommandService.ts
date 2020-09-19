@@ -30,7 +30,10 @@ class ListCustomCommandService {
       log.error(
         `[ListCustomCommandService] server does not exists with id: ${discord_id}`,
       );
-      throw new AppError('Server does not exists');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const customCommands = await this.customCommandRepository.listByServerId(

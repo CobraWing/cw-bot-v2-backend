@@ -32,7 +32,10 @@ class GetCustomCommandByNameService {
       log.error(
         `[GetCustomCommandByNameService] server id: ${discord_id} is not enabled`,
       );
-      throw new AppError('Server isnot enabled');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const customCommandFound = await this.customCommandRepository.findByNameAndServerId(

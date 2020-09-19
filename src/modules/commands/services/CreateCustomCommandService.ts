@@ -51,7 +51,10 @@ class CreateCustomCommandService {
     const server = await this.serversRepository.findByIdDiscord(data.discordId);
 
     if (!server) {
-      throw new AppError('Server not found');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const categoryExists = await this.categoriesRepository.findByIdAndServerId(
@@ -60,7 +63,11 @@ class CreateCustomCommandService {
     );
 
     if (!categoryExists) {
-      throw new AppError('Category not found');
+      throw new AppError({
+        message: 'Category not found',
+        statusCode: 409,
+        message_ptbr: 'Categoria não encontrada.',
+      });
     }
 
     const customCommand = await this.customCommandRepository.create({

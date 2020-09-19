@@ -91,6 +91,11 @@ describe('ListCategoriesService', () => {
       listCategoriesService.execute({
         discord_id: 'server-not-exists',
       }),
-    ).rejects.toEqual(new AppError('Server does not exists'));
+    ).rejects.toEqual(
+      new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      }),
+    );
   });
 });

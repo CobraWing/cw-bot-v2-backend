@@ -30,7 +30,10 @@ class ListEnabledCustomCommandService {
       log.warn(
         `[ListEnabledCustomCommandService] server id: ${discord_id} is not enabled`,
       );
-      throw new AppError('Server does not exists');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const customCommands = await this.customCommandRepository.listEnabledByServerId(

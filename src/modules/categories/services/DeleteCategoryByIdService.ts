@@ -35,7 +35,10 @@ class DeleteCategoryByIdService {
       log.error(
         `[DeleteCategoryByIdService] server does not exists with id: ${discord_id}`,
       );
-      throw new AppError('Server does not exists');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     await this.categoriesRepository.deleteByIdAndServerId(

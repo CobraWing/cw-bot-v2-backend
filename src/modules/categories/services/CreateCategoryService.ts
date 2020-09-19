@@ -34,7 +34,10 @@ class CreateCategoryService {
     const server = await this.serversRepository.findByIdDiscord(discordId);
 
     if (!server) {
-      throw new AppError('Server not found');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const checkCategoryExists = await this.categoriesRepository.findByNameAndServerId(
@@ -43,7 +46,11 @@ class CreateCategoryService {
     );
 
     if (checkCategoryExists) {
-      throw new AppError('Category already registered');
+      throw new AppError({
+        message: 'Category already registered.',
+        statusCode: 409,
+        message_ptbr: 'Já existe uma categoria com esse nome.',
+      });
     }
 
     const category = await this.categoriesRepository.create({

@@ -30,7 +30,10 @@ class ListCategoriesService {
       log.error(
         `[ListCategoriesService] server does not exists with id: ${discord_id}`,
       );
-      throw new AppError('Server does not exists');
+      throw new AppError({
+        message: 'Server not found.',
+        message_ptbr: 'Servidor não encontrado.',
+      });
     }
 
     const categories = await this.categoriesRepository.listByServerId(

@@ -22,7 +22,11 @@ class CreateServerService {
     );
 
     if (checkServerExists) {
-      throw new AppError('Server already registered');
+      throw new AppError({
+        message: 'Server already registered.',
+        statusCode: 409,
+        message_ptbr: 'Já existe um servidor registrado com esse id.',
+      });
     }
 
     const server = await this.serversRepository.create({

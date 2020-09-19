@@ -60,7 +60,13 @@ describe('CreateCategoryService', () => {
         show_in_menu: true,
         updated_by: 'user-test',
       }),
-    ).rejects.toEqual(new AppError('Category already registered'));
+    ).rejects.toEqual(
+      new AppError({
+        message: 'Category already registered.',
+        statusCode: 409,
+        message_ptbr: 'Já existe uma categoria com esse nome.',
+      }),
+    );
   });
 
   it('should be able to create category with same name in different servers', async () => {

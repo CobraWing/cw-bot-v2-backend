@@ -30,6 +30,12 @@ describe('CreateServerService', () => {
         name: 'myServer2',
         id_discord: '123456',
       }),
-    ).rejects.toEqual(new AppError('Server already registered'));
+    ).rejects.toEqual(
+      new AppError({
+        message: 'Server already registered.',
+        statusCode: 409,
+        message_ptbr: 'Já existe um servidor registrado com esse id.',
+      }),
+    );
   });
 });

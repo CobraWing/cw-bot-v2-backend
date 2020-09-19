@@ -95,7 +95,9 @@ class AuthenticateUserService {
       return authorization;
     } catch (err) {
       log.error('Error while authenticate', [err.message, err.stack]);
-      throw new AppError('Error while authenticate');
+      throw new AppError({
+        message: 'Error while authenticate.',
+      });
     }
   }
 }
