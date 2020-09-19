@@ -52,7 +52,8 @@ class CreateCategoryService {
       throw new AppError({
         message: 'Category already registered.',
         statusCode: 409,
-        message_ptbr: 'Já existe uma categoria com esse nome.',
+        message_ptbr:
+          'Já existe uma outra categoria com esse nome, escolha um nome diferente.',
       });
     }
 
@@ -65,7 +66,8 @@ class CreateCategoryService {
       throw new AppError({
         message: 'Exists a custom command with the same name.',
         statusCode: 409,
-        message_ptbr: 'Já existe um comando customizado com o mesmo nome.',
+        message_ptbr:
+          'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
       });
     }
 

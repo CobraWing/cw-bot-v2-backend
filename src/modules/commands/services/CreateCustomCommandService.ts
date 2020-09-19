@@ -70,6 +70,34 @@ class CreateCustomCommandService {
       });
     }
 
+    const checkCustomCommandAlreadyExists = await this.customCommandRepository.findByNameAndServerId(
+      data.name,
+      server.id,
+    );
+
+    if (checkCustomCommandAlreadyExists) {
+      throw new AppError({
+        message: 'Custom command name already registered.',
+        statusCode: 409,
+        message_ptbr:
+          'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
+      });
+    }
+
+    const checkNameAlreadyExists = await this.categoriesRepository.findByNameAndServerId(
+      data.name,
+      server.id,
+    );
+
+    if (checkNameAlreadyExists) {
+      throw new AppError({
+        message: 'Category already registered.',
+        statusCode: 409,
+        message_ptbr:
+          'Já existe uma categoria com o mesmo nome, escolha um nome diferente.',
+      });
+    }
+
     const customCommand = await this.customCommandRepository.create({
       server_id: server.id,
       ...data,

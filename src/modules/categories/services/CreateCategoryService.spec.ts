@@ -68,7 +68,8 @@ describe('CreateCategoryService', () => {
       new AppError({
         message: 'Category already registered.',
         statusCode: 409,
-        message_ptbr: 'Já existe uma categoria com esse nome.',
+        message_ptbr:
+          'Já existe uma outra categoria com esse nome, escolha um nome diferente.',
       }),
     );
   });

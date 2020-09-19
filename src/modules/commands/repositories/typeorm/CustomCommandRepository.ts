@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, Repository, Not } from 'typeorm';
 
 import ICustomCommandRepository from '@modules/commands/repositories/ICustomCommandRepository';
 import ICreateCustomCommandDTO from '@modules/commands/dtos/ICreateCustomCommandDTO';
@@ -32,6 +32,22 @@ class CustomCommandRepository implements ICustomCommandRepository {
     });
 
     return customCommand;
+  }
+
+  public async findByNotInIdAndNameAndServerId(
+    id: string,
+    name: string,
+    server_id: string,
+  ): Promise<CustomCommand | undefined> {
+    const commandCategory = this.ormRepository.findOne({
+      where: {
+        id: Not(id),
+        name,
+        server_id,
+      },
+    });
+
+    return commandCategory;
   }
 
   public async create(data: ICreateCustomCommandDTO): Promise<CustomCommand> {

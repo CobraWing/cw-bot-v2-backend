@@ -71,6 +71,35 @@ class UpdateCustomCommandService {
       });
     }
 
+    const checkCategoryNameAlreadyExists = await this.categoriesRepository.findByNameAndServerId(
+      data.name,
+      server.id,
+    );
+
+    if (checkCategoryNameAlreadyExists) {
+      throw new AppError({
+        message: 'Category already registered.',
+        statusCode: 409,
+        message_ptbr:
+          'Já existe uma categoria com o mesmo nome, escolha um nome diferente.',
+      });
+    }
+
+    const commandNameAlreadyExists = await this.customCommandRepository.findByNotInIdAndNameAndServerId(
+      data.id,
+      data.name,
+      server.id,
+    );
+
+    if (commandNameAlreadyExists) {
+      throw new AppError({
+        message: 'Custom command name already exists.',
+        statusCode: 409,
+        message_ptbr:
+          'Já existe um outro comando customizado com o mesmo nome, escolha um nome diferente.',
+      });
+    }
+
     const customCommandExists = await this.customCommandRepository.findByIdAndServerId(
       data.id,
       server.id,
