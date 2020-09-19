@@ -84,7 +84,8 @@ class CustomCommandRunner extends Commando.Command {
       .replace(/<p>|<\/p>/g, '')
       .replace(/http:\/\/www\.|https:\/\/www\./g, 'www.')
       .replace(/www\./g, 'https://www.')
-      .replace(/&gt;/g, '<')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
       .replace(/&amp;/g, '&');
   }
 }
