@@ -95,6 +95,16 @@ class CustomCommandRepository implements ICustomCommandRepository {
       server_id,
     });
   }
+
+  public async countByCategoryId(
+    category_id: string,
+  ): Promise<[CustomCommand[], number]> {
+    return this.ormRepository.findAndCount({
+      where: {
+        category_id,
+      },
+    });
+  }
 }
 
 export default CustomCommandRepository;

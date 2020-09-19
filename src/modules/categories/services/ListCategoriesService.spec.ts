@@ -1,18 +1,22 @@
 import AppError from '@shared/errors/AppError';
+import FakeCustomCommandRepository from '@modules/commands/repositories/fakes/FakeCustomCommandRepository';
 import FakeCategoriesRepository from '../repositories/fakes/FakeCategoriesRepository';
 import FakeServersRepository from '../../servers/repositories/fakes/FakeServersRepository';
 import ListCategoriesService from './ListCategoriesService';
 
 let fakeCategoriesRepository: FakeCategoriesRepository;
+let fakeCustomCommandRepository: FakeCustomCommandRepository;
 let fakeServersRepository: FakeServersRepository;
 let listCategoriesService: ListCategoriesService;
 describe('ListCategoriesService', () => {
   beforeEach(() => {
     fakeCategoriesRepository = new FakeCategoriesRepository();
+    fakeCustomCommandRepository = new FakeCustomCommandRepository();
     fakeServersRepository = new FakeServersRepository();
 
     listCategoriesService = new ListCategoriesService(
       fakeCategoriesRepository,
+      fakeCustomCommandRepository,
       fakeServersRepository,
     );
   });

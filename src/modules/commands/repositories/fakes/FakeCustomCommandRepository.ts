@@ -91,6 +91,15 @@ class FakeCustomCommandRepository implements ICustomCommandRepository {
 
     this.customCommands.splice(customCommandIndex, 1);
   }
+
+  public async countByCategoryId(
+    category_id: string,
+  ): Promise<[CustomCommand[], number]> {
+    const commandsByCategoryId = this.customCommands.filter(
+      command => command.category_id === category_id,
+    );
+    return [commandsByCategoryId, commandsByCategoryId.length];
+  }
 }
 
 export default FakeCustomCommandRepository;

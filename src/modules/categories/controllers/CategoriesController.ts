@@ -51,11 +51,13 @@ export default class CategoriesController {
 
   public async index(request: Request, response: Response): Promise<Response> {
     const { discordId: discord_id } = request.guild;
+    const { count } = request.query;
 
     const listCategory = container.resolve(ListCategoriesService);
 
     const categories = await listCategory.execute({
       discord_id,
+      countCommands: !!count,
     });
 
     if (categories) {

@@ -56,6 +56,9 @@ class CommandCategory {
   @Expose()
   @Column()
   updated_by: string;
+
+  @Expose()
+  commands_count: number;
 }
 
 export default CommandCategory;

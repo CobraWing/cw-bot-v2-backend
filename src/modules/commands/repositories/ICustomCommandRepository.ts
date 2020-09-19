@@ -29,4 +29,6 @@ export default interface ICustomCommandRepository {
   ): Promise<CustomCommand[] | undefined>;
 
   deleteByIdAndServerId(id: string, server_id: string): Promise<void>;
+
+  countByCategoryId(category_id: string): Promise<[CustomCommand[], number]>;
 }
