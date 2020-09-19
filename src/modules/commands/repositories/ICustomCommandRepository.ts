@@ -7,11 +7,20 @@ export default interface ICustomCommandRepository {
     server_id: string,
   ): Promise<CustomCommand | undefined>;
 
+  findByNameAndServerId(
+    name: string,
+    server_id: string,
+  ): Promise<CustomCommand | undefined>;
+
   create(data: ICreateCustomCommandDTO): Promise<CustomCommand>;
 
   update(data: CustomCommand): Promise<CustomCommand>;
 
   listByServerId(server_id: string): Promise<CustomCommand[] | undefined>;
+
+  listEnabledByServerId(
+    server_id: string,
+  ): Promise<CustomCommand[] | undefined>;
 
   deleteByIdAndServerId(id: string, server_id: string): Promise<void>;
 }

@@ -23,6 +23,17 @@ class CustomCommandRepository implements ICustomCommandRepository {
     return customCommand;
   }
 
+  public async findByNameAndServerId(
+    name: string,
+    server_id: string,
+  ): Promise<CustomCommand | undefined> {
+    const customCommand = this.ormRepository.findOne({
+      where: { name, server_id },
+    });
+
+    return customCommand;
+  }
+
   public async create(data: ICreateCustomCommandDTO): Promise<CustomCommand> {
     const customCommand = this.ormRepository.create(data);
 
@@ -42,6 +53,17 @@ class CustomCommandRepository implements ICustomCommandRepository {
   ): Promise<CustomCommand[] | undefined> {
     const customCommands = await this.ormRepository.find({
       where: { server_id },
+      relations: ['category'],
+    });
+
+    return customCommands;
+  }
+
+  public async listEnabledByServerId(
+    server_id: string,
+  ): Promise<CustomCommand[] | undefined> {
+    const customCommands = await this.ormRepository.find({
+      where: { server_id, enabled: true },
       relations: ['category'],
     });
 
