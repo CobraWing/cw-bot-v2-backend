@@ -70,6 +70,9 @@ class CustomCommandRepository implements ICustomCommandRepository {
     const customCommands = await this.ormRepository.find({
       where: { server_id },
       relations: ['category'],
+      order: {
+        name: 'ASC',
+      },
     });
 
     return customCommands;
@@ -78,10 +81,15 @@ class CustomCommandRepository implements ICustomCommandRepository {
   public async listEnabledByServerId(
     server_id: string,
   ): Promise<CustomCommand[] | undefined> {
-    const customCommands = await this.ormRepository.find({
-      where: { server_id, enabled: true },
-      relations: ['category'],
-    });
+    const customCommands = await this.ormRepository
+      .createQueryBuilder('custom_commands')
+      .leftJoinAndSelect('custom_commands.category', 'category')
+      .where('custom_commands.server_id = :server_id', {
+        server_id,
+      })
+      .andWhere('custom_commands.enabled = true')
+      .andWhere('category.enabled = true')
+      .getMany();
 
     return customCommands;
   }

@@ -1,7 +1,8 @@
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, container } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
+import RegisterCustomCommandsProvider from '@modules/discord/providers/RegisterCustomCommandsProvider';
 import ICustomCommandRepository from '@modules/commands/repositories/ICustomCommandRepository';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import CommandCategory from '../entities/CommandCategory';
@@ -18,6 +19,8 @@ interface IRequest {
 
 @injectable()
 class UpdateCategoryService {
+  private registerCustomCommandsProvider: RegisterCustomCommandsProvider;
+
   constructor(
     @inject('CategoriesRepository')
     private categoriesRepository: ICategoriesRepository,
@@ -25,7 +28,11 @@ class UpdateCategoryService {
     private customCommandRepository: ICustomCommandRepository,
     @inject('ServersRepository')
     private serversRepository: IServersRepository,
-  ) {}
+  ) {
+    this.registerCustomCommandsProvider = container.resolve(
+      RegisterCustomCommandsProvider,
+    );
+  }
 
   public async execute(data: IRequest): Promise<CommandCategory> {
     const server = await this.serversRepository.findByIdDiscord(data.discordId);
@@ -84,6 +91,8 @@ class UpdateCategoryService {
     });
 
     const category = await this.categoriesRepository.update(categoryFound);
+
+    this.registerCustomCommandsProvider.execute();
 
     return category;
   }

@@ -40,10 +40,6 @@ class ListCustomCommandService {
       serverExists.id,
     );
 
-    if (customCommands) {
-      customCommands.sort((a, b) => (a.name > b.name ? 1 : -1));
-    }
-
     return customCommands;
   }
 }
