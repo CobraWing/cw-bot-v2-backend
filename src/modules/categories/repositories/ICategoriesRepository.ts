@@ -24,5 +24,10 @@ export default interface ICategoriesRepository {
 
   listByServerId(server_id: string): Promise<CommandCategory[] | undefined>;
 
+  listEnabledByServerIdAndEnableCustomCommand(
+    server_id: string,
+    show_in_menu: boolean,
+  ): Promise<CommandCategory[] | undefined>;
+
   deleteByIdAndServerId(id: string, server_id: string): Promise<void>;
 }

@@ -3,6 +3,7 @@ import { getRepository, Repository, Not } from 'typeorm';
 import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
 import ICreateCategoryDTO from '@modules/categories/dtos/ICreateCategoryDTO';
 
+import CustomCommand from '@modules/commands/entities/CustomCommand';
 import CommandCategory from '../../entities/CommandCategory';
 
 class CategoriesRepository implements ICategoriesRepository {
@@ -82,6 +83,34 @@ class CategoriesRepository implements ICategoriesRepository {
       id,
       server_id,
     });
+  }
+
+  public async listEnabledByServerIdAndEnableCustomCommand(
+    server_id: string,
+    show_in_menu: boolean,
+  ): Promise<CommandCategory[] | undefined> {
+    const categoriesEnabled = await this.ormRepository
+      .createQueryBuilder('command_categories')
+      .innerJoinAndSelect(
+        CustomCommand,
+        'customCommands',
+        'customCommands.category_id = command_categories.id',
+      )
+      .where('command_categories.server_id = :server_id', {
+        server_id,
+      })
+      .andWhere('command_categories.enabled = true')
+      .andWhere('command_categories.show_in_menu = :show_in_menu', {
+        show_in_menu,
+      })
+      .andWhere('customCommands.enabled = true')
+      .andWhere('customCommands.show_in_menu = :show_in_menu', {
+        show_in_menu,
+      })
+      .orderBy('command_categories.name', 'ASC')
+      .getMany();
+
+    return categoriesEnabled;
   }
 }
 
