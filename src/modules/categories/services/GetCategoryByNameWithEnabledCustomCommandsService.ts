@@ -9,11 +9,11 @@ import CommandCategory from '../entities/CommandCategory';
 
 interface IRequest {
   discord_id: string;
-  show_in_menu?: boolean;
+  name: string;
 }
 
 @injectable()
-class ListEnabledCategoriesWithEnabledCustomCommandsService {
+class GetCategoryByNameWithEnabledCustomCommandsService {
   constructor(
     @inject('CategoriesRepository')
     private categoriesRepository: ICategoriesRepository,
@@ -23,15 +23,15 @@ class ListEnabledCategoriesWithEnabledCustomCommandsService {
 
   public async execute({
     discord_id,
-    show_in_menu,
-  }: IRequest): Promise<CommandCategory[] | undefined> {
+    name,
+  }: IRequest): Promise<CommandCategory | undefined> {
     const serverExists = await this.serversRepository.findByIdDiscord(
       discord_id,
     );
 
     if (!serverExists) {
       log.error(
-        `[ListEnabledCategoriesWithEnabledCustomCommandsService] server does not exists with id: ${discord_id}`,
+        `[GetCategoryByNameWithEnabledCustomCommandsService] server does not exists with id: ${discord_id}`,
       );
       throw new AppError({
         message: 'Server not found.',
@@ -39,13 +39,13 @@ class ListEnabledCategoriesWithEnabledCustomCommandsService {
       });
     }
 
-    const categories = await this.categoriesRepository.listEnabledByServerIdAndEnableCustomCommand(
+    const category = await this.categoriesRepository.getCategoryByNameAndServerIdAndListCommandsEnabled(
+      name,
       serverExists.id,
-      show_in_menu,
     );
 
-    return categories;
+    return category;
   }
 }
 
-export default ListEnabledCategoriesWithEnabledCustomCommandsService;
+export default GetCategoryByNameWithEnabledCustomCommandsService;

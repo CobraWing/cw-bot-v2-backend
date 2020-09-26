@@ -31,7 +31,7 @@ class CustomCommand {
   category_id: string;
 
   @Expose()
-  @ManyToOne(() => CommandCategory, category => category.id)
+  @ManyToOne(() => CommandCategory, category => category.customCommands)
   @JoinColumn({ name: 'category_id' })
   category: CommandCategory;
 

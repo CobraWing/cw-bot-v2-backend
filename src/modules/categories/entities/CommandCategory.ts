@@ -27,7 +27,7 @@ class CommandCategory {
   @JoinColumn({ name: 'server_id' })
   server: Server;
 
-  @OneToMany(() => CustomCommand, customCommands => customCommands.category_id)
+  @OneToMany(() => CustomCommand, customCommands => customCommands.category)
   customCommands: CustomCommand[];
 
   @Expose()

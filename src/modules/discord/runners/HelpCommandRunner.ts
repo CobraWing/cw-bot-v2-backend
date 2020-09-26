@@ -46,7 +46,6 @@ class HelpCommandRunner extends Commando.Command {
     msg: CommandoMessage,
     categories: CommandCategory[],
   ): MessageEmbed {
-    console.log('categories', categories);
     const embed = new MessageEmbed();
     embed.setColor('#EE0000');
     embed.setTitle('Comando de ajuda do Cobra Wing Bot');

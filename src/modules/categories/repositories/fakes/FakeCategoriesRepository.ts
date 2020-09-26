@@ -82,7 +82,7 @@ class FakeCategoriesRepository implements ICategoriesRepository {
 
   public async listEnabledByServerIdAndEnableCustomCommand(
     server_id: string,
-    show_in_menu: boolean,
+    show_in_menu?: boolean,
   ): Promise<CommandCategory[] | undefined> {
     const categories = this.categories.filter(
       category =>
@@ -94,6 +94,24 @@ class FakeCategoriesRepository implements ICategoriesRepository {
     );
 
     return categories;
+  }
+
+  public async getCategoryByNameAndServerIdAndListCommandsEnabled(
+    name: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    const categoryFound = this.categories.find(
+      category =>
+        category.server_id === server_id &&
+        category.name === name &&
+        category.customCommands.filter(
+          customCommands =>
+            customCommands.enabled === true &&
+            customCommands.show_in_menu === true,
+        ).length > 0,
+    );
+
+    return categoryFound;
   }
 }
 

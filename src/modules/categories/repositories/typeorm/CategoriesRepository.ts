@@ -87,9 +87,9 @@ class CategoriesRepository implements ICategoriesRepository {
 
   public async listEnabledByServerIdAndEnableCustomCommand(
     server_id: string,
-    show_in_menu: boolean,
+    show_in_menu?: boolean,
   ): Promise<CommandCategory[] | undefined> {
-    const categoriesEnabled = await this.ormRepository
+    const query = this.ormRepository
       .createQueryBuilder('command_categories')
       .innerJoinAndSelect(
         CustomCommand,
@@ -100,17 +100,47 @@ class CategoriesRepository implements ICategoriesRepository {
         server_id,
       })
       .andWhere('command_categories.enabled = true')
-      .andWhere('command_categories.show_in_menu = :show_in_menu', {
+      .andWhere('customCommands.enabled = true');
+
+    if (show_in_menu) {
+      query.andWhere('command_categories.show_in_menu = :show_in_menu', {
         show_in_menu,
-      })
-      .andWhere('customCommands.enabled = true')
-      .andWhere('customCommands.show_in_menu = :show_in_menu', {
+      });
+      query.andWhere('customCommands.show_in_menu = :show_in_menu', {
         show_in_menu,
-      })
-      .orderBy('command_categories.name', 'ASC')
-      .getMany();
+      });
+    }
+
+    query.orderBy('command_categories.name', 'ASC');
+
+    const categoriesEnabled = await query.getMany();
 
     return categoriesEnabled;
+  }
+
+  public async getCategoryByNameAndServerIdAndListCommandsEnabled(
+    name: string,
+    server_id: string,
+  ): Promise<CommandCategory | undefined> {
+    const category = await this.ormRepository
+      .createQueryBuilder('command_categories')
+      .leftJoinAndSelect(
+        'command_categories.customCommands',
+        'customCommands',
+        'customCommands.category_id = command_categories.id',
+      )
+      .where('command_categories.server_id = :server_id', {
+        server_id,
+      })
+      .where('command_categories.name = :name', {
+        name,
+      })
+      .andWhere('customCommands.enabled = true')
+      .andWhere('customCommands.show_in_menu = true')
+      .orderBy('customCommands.name', 'ASC')
+      .getOne();
+
+    return category;
   }
 }
 
