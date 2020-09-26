@@ -2,7 +2,7 @@ import { injectable, inject, container } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
-import RegisterCustomCommandsProvider from '@modules/discord/providers/RegisterCustomCommandsProvider';
+import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICustomCommandRepository from '@modules/commands/repositories/ICustomCommandRepository';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import CommandCategory from '../entities/CommandCategory';
@@ -19,7 +19,7 @@ interface IRequest {
 
 @injectable()
 class UpdateCategoryService {
-  private registerCustomCommandsProvider: RegisterCustomCommandsProvider;
+  private registerCustomsProvider: RegisterCustomsProvider;
 
   constructor(
     @inject('CategoriesRepository')
@@ -29,9 +29,7 @@ class UpdateCategoryService {
     @inject('ServersRepository')
     private serversRepository: IServersRepository,
   ) {
-    this.registerCustomCommandsProvider = container.resolve(
-      RegisterCustomCommandsProvider,
-    );
+    this.registerCustomsProvider = container.resolve(RegisterCustomsProvider);
   }
 
   public async execute(data: IRequest): Promise<CommandCategory> {
@@ -92,7 +90,7 @@ class UpdateCategoryService {
 
     const category = await this.categoriesRepository.update(categoryFound);
 
-    this.registerCustomCommandsProvider.execute();
+    this.registerCustomsProvider.execute();
 
     return category;
   }

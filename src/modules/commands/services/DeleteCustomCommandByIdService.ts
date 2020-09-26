@@ -2,7 +2,7 @@ import { injectable, inject, container } from 'tsyringe';
 import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
-import RegisterCustomCommandsProvider from '@modules/discord/providers/RegisterCustomCommandsProvider';
+import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICustomCommandRepository from '../repositories/ICustomCommandRepository';
 import IServersRepository from '../../servers/repositories/IServersRepository';
 
@@ -13,7 +13,7 @@ interface IRequest {
 
 @injectable()
 class DeleteCustomCommandByIdService {
-  private registerCustomCommandsProvider: RegisterCustomCommandsProvider;
+  private registerCustomsProvider: RegisterCustomsProvider;
 
   constructor(
     @inject('CustomCommandRepository')
@@ -21,9 +21,7 @@ class DeleteCustomCommandByIdService {
     @inject('ServersRepository')
     private serversRepository: IServersRepository,
   ) {
-    this.registerCustomCommandsProvider = container.resolve(
-      RegisterCustomCommandsProvider,
-    );
+    this.registerCustomsProvider = container.resolve(RegisterCustomsProvider);
   }
 
   public async execute({ id, discord_id }: IRequest): Promise<void> {
@@ -46,7 +44,7 @@ class DeleteCustomCommandByIdService {
       serverExists.id,
     );
 
-    this.registerCustomCommandsProvider.execute();
+    this.registerCustomsProvider.execute();
   }
 }
 

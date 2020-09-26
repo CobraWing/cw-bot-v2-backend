@@ -59,7 +59,7 @@ class HelpCommandRunner extends Commando.Command {
   getCategoriesDescription(categories: CommandCategory[]): string {
     let message = '\n';
     message +=
-      'Abaixo os menus de categorias que você pode acessar digitando **!nome_da_categoria**:\n\n';
+      'Abaixo os menus de categorias que você pode acessar digitando:\n\n';
     if (categories) {
       categories.forEach(category => {
         message += `**!${category.name}** - _${category.description}_`;

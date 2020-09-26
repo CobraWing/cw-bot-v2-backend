@@ -1,8 +1,9 @@
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, container } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import ICustomCommandRepository from '@modules/commands/repositories/ICustomCommandRepository';
+import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import CommandCategory from '../entities/CommandCategory';
 
@@ -17,6 +18,8 @@ interface IRequest {
 
 @injectable()
 class CreateCategoryService {
+  private registerCustoms: RegisterCustomsProvider;
+
   constructor(
     @inject('CategoriesRepository')
     private categoriesRepository: ICategoriesRepository,
@@ -24,7 +27,9 @@ class CreateCategoryService {
     private customCommandRepository: ICustomCommandRepository,
     @inject('ServersRepository')
     private serversRepository: IServersRepository,
-  ) {}
+  ) {
+    this.registerCustoms = container.resolve(RegisterCustomsProvider);
+  }
 
   public async execute({
     discordId,
@@ -79,6 +84,8 @@ class CreateCategoryService {
       show_in_menu,
       updated_by,
     });
+
+    this.registerCustoms.execute();
 
     return category;
   }

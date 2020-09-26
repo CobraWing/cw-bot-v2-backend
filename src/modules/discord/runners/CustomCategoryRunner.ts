@@ -69,7 +69,7 @@ class CustomCategoryRunner extends Commando.Command {
   ): MessageEmbed {
     const embed = new MessageEmbed();
     embed.setColor('#EE0000');
-    embed.setTitle(`Comandos da categoria ${category.name}`);
+    embed.setTitle(`Comandos da categoria: ${category.name}`);
     embed.setDescription(
       category.customCommands.map(customCommand => {
         return `**!${

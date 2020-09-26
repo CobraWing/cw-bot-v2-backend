@@ -3,7 +3,7 @@ import { injectable, inject, container } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import ICategoriesRepository from '@modules/categories/repositories/ICategoriesRepository';
-import RegisterCustomCommandsProvider from '@modules/discord/providers/RegisterCustomCommandsProvider';
+import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICustomCommandRepository from '../repositories/ICustomCommandRepository';
 import CustomCommand from '../entities/CustomCommand';
 
@@ -33,7 +33,7 @@ interface IRequest {
 
 @injectable()
 class UpdateCustomCommandService {
-  private registerCustomCommandsProvider: RegisterCustomCommandsProvider;
+  private registerCustomsProvider: RegisterCustomsProvider;
 
   constructor(
     @inject('CustomCommandRepository')
@@ -43,9 +43,7 @@ class UpdateCustomCommandService {
     @inject('ServersRepository')
     private serversRepository: IServersRepository,
   ) {
-    this.registerCustomCommandsProvider = container.resolve(
-      RegisterCustomCommandsProvider,
-    );
+    this.registerCustomsProvider = container.resolve(RegisterCustomsProvider);
   }
 
   public async execute(data: IRequest): Promise<CustomCommand> {
@@ -121,7 +119,7 @@ class UpdateCustomCommandService {
       customCommandExists,
     );
 
-    this.registerCustomCommandsProvider.execute();
+    this.registerCustomsProvider.execute();
 
     return customCommandUpdated;
   }

@@ -2,7 +2,7 @@ import { injectable, inject, container } from 'tsyringe';
 import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
-import RegisterCustomCommandsProvider from '@modules/discord/providers/RegisterCustomCommandsProvider';
+import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import IServersRepository from '../../servers/repositories/IServersRepository';
 
@@ -13,7 +13,7 @@ interface IRequest {
 
 @injectable()
 class DeleteCategoryByIdService {
-  private registerCustomCommandsProvider: RegisterCustomCommandsProvider;
+  private registerCustomsProvider: RegisterCustomsProvider;
 
   constructor(
     @inject('CategoriesRepository')
@@ -21,9 +21,7 @@ class DeleteCategoryByIdService {
     @inject('ServersRepository')
     private serversRepository: IServersRepository,
   ) {
-    this.registerCustomCommandsProvider = container.resolve(
-      RegisterCustomCommandsProvider,
-    );
+    this.registerCustomsProvider = container.resolve(RegisterCustomsProvider);
   }
 
   public async execute({ discord_id, category_id }: IRequest): Promise<void> {
@@ -46,7 +44,7 @@ class DeleteCategoryByIdService {
       serverExists.id,
     );
 
-    this.registerCustomCommandsProvider.execute();
+    this.registerCustomsProvider.execute();
   }
 }
 
