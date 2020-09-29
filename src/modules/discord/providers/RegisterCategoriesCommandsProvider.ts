@@ -12,7 +12,7 @@ import CustomCategoryRunner from '../runners/CustomCategoryRunner';
 class RegisterCategoriesCommandsProvider {
   public async execute(): Promise<void> {
     log.info(
-      '[RegisterCategoriesCommandsProvider] Starting to register commands',
+      '[RegisterCategoriesCommandsProvider] Starting to register categories',
     );
 
     try {

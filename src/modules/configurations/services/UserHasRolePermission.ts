@@ -42,8 +42,8 @@ class UserHasRolePermission {
         throw new Error();
       }
 
-      const configuration = server.configurations.find(
-        config => config.key === configuration_key,
+      const configuration = server.server_configurations.find(
+        config => config.configuration_id === configuration_key,
       );
 
       if (!configuration) {

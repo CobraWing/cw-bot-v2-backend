@@ -1,6 +1,5 @@
 export default interface ICreateConfigurationsDTO {
-  server_id: string;
-  key: string;
-  value: string;
-  updated_by: string;
+  id: string;
+  value_default: string;
+  value_default_alternative: string;
 }

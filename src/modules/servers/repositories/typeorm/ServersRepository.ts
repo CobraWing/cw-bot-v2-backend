@@ -17,7 +17,7 @@ class ServersRepository implements IServersRepository {
   ): Promise<Server | undefined> {
     const server = await this.ormRepository.findOne({
       where: { id_discord },
-      relations: ['configurations'],
+      relations: ['server_configurations'],
     });
 
     return server;
@@ -28,7 +28,7 @@ class ServersRepository implements IServersRepository {
   ): Promise<Server | undefined> {
     const server = await this.ormRepository.findOne({
       where: { id_discord, enabled: true },
-      relations: ['configurations'],
+      relations: ['server_configurations'],
     });
 
     return server;

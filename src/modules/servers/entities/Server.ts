@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import Configurations from '@modules/configurations/entities/Configurations';
+import ServerConfiguration from '@modules/configurations/entities/ServerConfiguration';
 
 @Entity('servers')
 class Server {
@@ -22,8 +22,15 @@ class Server {
   @Column()
   enabled: boolean;
 
-  @OneToMany(() => Configurations, configurations => configurations.server) // note: we will create author property in the Photo class below
-  configurations: Configurations[];
+  @OneToMany(
+    () => ServerConfiguration,
+    serverConfiguration => serverConfiguration.server,
+    {
+      cascade: true,
+      eager: true,
+    },
+  )
+  server_configurations: ServerConfiguration[];
 
   @CreateDateColumn()
   created_at: Date;

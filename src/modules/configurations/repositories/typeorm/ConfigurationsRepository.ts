@@ -1,39 +1,26 @@
 import { getRepository, Repository } from 'typeorm';
 
 import IConfigurationsRepository from '@modules/configurations/repositories/IConfigurationsRepository';
-import IListConfigurationsDTO from '@modules/configurations/dtos/IListConfigurationsDTO';
 import ICreateConfigurationDTO from '@modules/configurations/dtos/ICreateConfigurationDTO';
 
-import Configurations from '../../entities/Configurations';
+import Configuration from '../../entities/Configuration';
 
 class ConfigurationsRepository implements IConfigurationsRepository {
-  private ormRepository: Repository<Configurations>;
+  private ormRepository: Repository<Configuration>;
 
   constructor() {
-    this.ormRepository = getRepository(Configurations);
-  }
-
-  public async listServerConfigurations({
-    server_id,
-  }: IListConfigurationsDTO): Promise<Configurations[] | undefined> {
-    const configurations = await this.ormRepository.find({
-      where: { server_id },
-    });
-
-    return configurations;
+    this.ormRepository = getRepository(Configuration);
   }
 
   public async create({
-    server_id,
-    key,
-    value,
-    updated_by,
-  }: ICreateConfigurationDTO): Promise<Configurations> {
+    id,
+    value_default,
+    value_default_alternative,
+  }: ICreateConfigurationDTO): Promise<Configuration> {
     const configuration = this.ormRepository.create({
-      server_id,
-      key,
-      value,
-      updated_by,
+      id,
+      value_default,
+      value_default_alternative,
     });
 
     await this.ormRepository.save(configuration);
