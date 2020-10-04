@@ -12,6 +12,9 @@ import CategoriesRepository from '@modules/categories/repositories/typeorm/Categ
 import ICustomCommandRepository from '@modules/commands/repositories/ICustomCommandRepository';
 import CustomCommandRepository from '@modules/commands/repositories/typeorm/CustomCommandRepository';
 
+import IDefaultCommandRepository from '@modules/default-commands/repositories/IDefaultCommandRepository';
+import DefaultCommandRepository from '@modules/default-commands/repositories/typeorm/DefaultCommandRepository';
+
 container.registerSingleton<IServersRepository>(
   'ServersRepository',
   ServersRepository,
@@ -30,4 +33,9 @@ container.registerSingleton<ICategoriesRepository>(
 container.registerSingleton<ICustomCommandRepository>(
   'CustomCommandRepository',
   CustomCommandRepository,
+);
+
+container.registerSingleton<IDefaultCommandRepository>(
+  'DefaultCommandRepository',
+  DefaultCommandRepository,
 );

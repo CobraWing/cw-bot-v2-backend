@@ -39,7 +39,13 @@ class ServerDefaultCommand {
   show_in_menu: boolean;
 
   @Column()
+  custom: boolean;
+
+  @Column()
   description: string;
+
+  @Column()
+  title: string;
 
   @Column()
   content: string;

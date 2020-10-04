@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import ServerDefaultCommand from './ServerDefaultCommand';
 
@@ -6,6 +7,7 @@ class DefaultCommand {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Exclude()
   @OneToMany(
     () => ServerDefaultCommand,
     serverDefaultCommand => serverDefaultCommand.default_command,
@@ -23,10 +25,10 @@ class DefaultCommand {
   show_in_menu: boolean;
 
   @Column()
-  custom: boolean;
+  description: string;
 
   @Column()
-  description: string;
+  title: string;
 
   @Column()
   content: string;
@@ -54,6 +56,8 @@ class DefaultCommand {
 
   @Column()
   extra_3: string;
+
+  custom_default_command?: ServerDefaultCommand;
 }
 
 export default DefaultCommand;

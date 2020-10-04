@@ -1,11 +1,17 @@
 import { container } from 'tsyringe';
 import { Message, MessageEmbed } from 'discord.js';
 import Commando, { CommandoMessage } from 'discord.js-commando';
+import log from 'heroku-logger';
+
 import ListEnabledCategoriesWithEnabledCustomCommandsService from '@modules/categories/services/ListEnabledCategoriesWithEnabledCustomCommandsService';
+import GetDefaultCommandByIdAndDiscordIdService from '@modules/default-commands/services/GetDefaultCommandByIdAndDiscordIdService';
 import CommandCategory from '@modules/categories/entities/CommandCategory';
+import ServerDefaultCommand from '@modules/default-commands/entities/ServerDefaultCommand';
 
 class HelpCommandRunner extends Commando.Command {
   private listEnabledCategoriesWithEnabledCustomCommands: ListEnabledCategoriesWithEnabledCustomCommandsService;
+
+  private getDefaultCommandByIdAndDiscordIdService: GetDefaultCommandByIdAndDiscordIdService;
 
   constructor(client: Commando.CommandoClient) {
     super(client, {
@@ -19,6 +25,9 @@ class HelpCommandRunner extends Commando.Command {
     this.listEnabledCategoriesWithEnabledCustomCommands = container.resolve(
       ListEnabledCategoriesWithEnabledCustomCommandsService,
     );
+    this.getDefaultCommandByIdAndDiscordIdService = container.resolve(
+      GetDefaultCommandByIdAndDiscordIdService,
+    );
   }
 
   async run(
@@ -26,6 +35,21 @@ class HelpCommandRunner extends Commando.Command {
     _: string | string[] | object,
   ): Promise<Message | Message[]> {
     const { id: discord_id } = msg.guild;
+
+    const defaultCommandInfos = await this.getDefaultCommandByIdAndDiscordIdService.execute(
+      {
+        discord_id,
+        id: 'ajuda',
+      },
+    );
+
+    if (!defaultCommandInfos) {
+      log.error('Error while get default command by id and discord id');
+      return msg.message;
+    }
+
+    // console.log('defaultCommand', defaultCommandInfos);
+
     const categories = await this.listEnabledCategoriesWithEnabledCustomCommands.execute(
       {
         discord_id,
@@ -34,17 +58,43 @@ class HelpCommandRunner extends Commando.Command {
     );
 
     if (!categories) {
-      return msg.message;
+      log.error('Error while list enabled categories');
     }
 
-    const embedMessage = this.createEmbedMessage(msg, categories);
+    const embedMessage =
+      defaultCommandInfos.custom_default_command &&
+      defaultCommandInfos.custom_default_command.custom
+        ? this.createCustomEmbedMessage(
+            msg,
+            categories,
+            defaultCommandInfos.custom_default_command,
+          )
+        : this.createEmbedMessage(msg, categories);
 
     return msg.embed(embedMessage);
   }
 
+  createCustomEmbedMessage(
+    msg: CommandoMessage,
+    categories: CommandCategory[] | undefined,
+    customDefaultCommand: ServerDefaultCommand,
+  ): MessageEmbed {
+    const embed = new MessageEmbed();
+    embed.setColor(customDefaultCommand.color || '#EE0000');
+    embed.setTitle(customDefaultCommand.title);
+    embed.setDescription(
+      this.formatMessageContent(customDefaultCommand.content) +
+        this.getCategoriesDescription(categories),
+    );
+    embed.setAuthor(msg.member.displayName, msg.author.avatarURL() || '');
+    embed.setFooter(customDefaultCommand.footer_text || 'Fly safe cmdr!');
+    embed.setTimestamp(new Date());
+    return embed;
+  }
+
   createEmbedMessage(
     msg: CommandoMessage,
-    categories: CommandCategory[],
+    categories: CommandCategory[] | undefined,
   ): MessageEmbed {
     const embed = new MessageEmbed();
     embed.setColor('#EE0000');
@@ -56,8 +106,8 @@ class HelpCommandRunner extends Commando.Command {
     return embed;
   }
 
-  getCategoriesDescription(categories: CommandCategory[]): string {
-    let message = '\n';
+  getCategoriesDescription(categories: CommandCategory[] | undefined): string {
+    let message = '\n\n';
     message +=
       'Abaixo os menus de categorias que você pode acessar digitando:\n\n';
     if (categories) {
@@ -68,6 +118,21 @@ class HelpCommandRunner extends Commando.Command {
     }
 
     return message;
+  }
+
+  formatMessageContent(content: string): string {
+    return content
+      .replace(/<\/p><p>/g, '\n')
+      .replace(/<strong>|<\/strong>/g, '**')
+      .replace(/<del>|<\/del>/g, '~~')
+      .replace(/<u>|<\/u>/g, '__')
+      .replace(/<em>|<\/em>/g, '*')
+      .replace(/<p>|<\/p>/g, '')
+      .replace(/http:\/\/www\.|https:\/\/www\./g, 'www.')
+      .replace(/www\./g, 'https://www.')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
   }
 }
 
