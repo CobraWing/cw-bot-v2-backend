@@ -80,7 +80,7 @@ class CustomCategoryRunner extends Commando.Command {
     embed.setAuthor(msg.member.displayName, msg.author.avatarURL() || '');
     embed.setFooter('Fly safe cmdr!');
     embed.setThumbnail(
-      'https://cdn.discordapp.com/attachments/340949096011399179/762496001063387146/icon-support.png',
+      'https://cdn.discordapp.com/attachments/340949096011399179/762792375814324224/list-512.png',
     );
     embed.setTimestamp(new Date());
     return embed;
