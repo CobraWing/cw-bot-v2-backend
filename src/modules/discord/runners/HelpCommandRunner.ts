@@ -7,6 +7,7 @@ import ListEnabledCategoriesWithEnabledCustomCommandsService from '@modules/cate
 import GetDefaultCommandByIdAndDiscordIdService from '@modules/default-commands/services/GetDefaultCommandByIdAndDiscordIdService';
 import CommandCategory from '@modules/categories/entities/CommandCategory';
 import ServerDefaultCommand from '@modules/default-commands/entities/ServerDefaultCommand';
+import DefaultCommand from '@modules/default-commands/entities/DefaultCommand';
 
 class HelpCommandRunner extends Commando.Command {
   private listEnabledCategoriesWithEnabledCustomCommands: ListEnabledCategoriesWithEnabledCustomCommandsService;
@@ -69,7 +70,7 @@ class HelpCommandRunner extends Commando.Command {
             categories,
             defaultCommandInfos.custom_default_command,
           )
-        : this.createEmbedMessage(msg, categories);
+        : this.createEmbedMessage(msg, categories, defaultCommandInfos);
 
     return msg.embed(embedMessage);
   }
@@ -88,6 +89,8 @@ class HelpCommandRunner extends Commando.Command {
     );
     embed.setAuthor(msg.member.displayName, msg.author.avatarURL() || '');
     embed.setFooter(customDefaultCommand.footer_text || 'Fly safe cmdr!');
+    embed.setThumbnail(customDefaultCommand.image_thumbnail);
+    embed.setImage(customDefaultCommand.image_content);
     embed.setTimestamp(new Date());
     return embed;
   }
@@ -95,21 +98,25 @@ class HelpCommandRunner extends Commando.Command {
   createEmbedMessage(
     msg: CommandoMessage,
     categories: CommandCategory[] | undefined,
+    defaultCommand: DefaultCommand,
   ): MessageEmbed {
     const embed = new MessageEmbed();
-    embed.setColor('#EE0000');
-    embed.setTitle('Comando de ajuda do Cobra Wing Bot');
-    embed.setDescription(this.getCategoriesDescription(categories));
+    embed.setColor(defaultCommand.color || '#EE0000');
+    embed.setTitle(defaultCommand.title || 'Comandos de ajuda.');
+    embed.setDescription(
+      this.formatMessageContent(defaultCommand.content) +
+        this.getCategoriesDescription(categories),
+    );
     embed.setAuthor(msg.member.displayName, msg.author.avatarURL() || '');
-    embed.setFooter('Fly safe cmdr!');
+    embed.setFooter(defaultCommand.footer_text || 'Fly safe cmdr!');
+    embed.setThumbnail(defaultCommand.image_thumbnail);
+    embed.setImage(defaultCommand.image_content);
     embed.setTimestamp(new Date());
     return embed;
   }
 
   getCategoriesDescription(categories: CommandCategory[] | undefined): string {
     let message = '\n\n';
-    message +=
-      'Abaixo os menus de categorias que você pode acessar digitando:\n\n';
     if (categories) {
       categories.forEach(category => {
         message += `**!${category.name}** - _${category.description}_`;
