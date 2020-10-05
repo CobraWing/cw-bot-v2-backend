@@ -45,11 +45,19 @@ class HelpCommandRunner extends Commando.Command {
     );
 
     if (!defaultCommandInfos) {
-      log.error('Error while get default command by id and discord id');
+      log.error(
+        '[HelpCommandRunner] Error while get default command by id and discord id',
+      );
       return msg.message;
     }
 
-    // console.log('defaultCommand', defaultCommandInfos);
+    if (!this.checkIfCommandIsEnabled(defaultCommandInfos)) {
+      log.error(
+        '[HelpCommandRunner] command is not enabled',
+        defaultCommandInfos,
+      );
+      return msg.message;
+    }
 
     const categories = await this.listEnabledCategoriesWithEnabledCustomCommands.execute(
       {
@@ -59,7 +67,7 @@ class HelpCommandRunner extends Commando.Command {
     );
 
     if (!categories) {
-      log.error('Error while list enabled categories');
+      log.error('[HelpCommandRunner] Error while list enabled categories');
     }
 
     const embedMessage =
@@ -140,6 +148,20 @@ class HelpCommandRunner extends Commando.Command {
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&amp;/g, '&');
+  }
+
+  checkIfCommandIsEnabled(defaultCommand: DefaultCommand): boolean {
+    let isEnabled = defaultCommand.enabled;
+    if (!isEnabled) {
+      return isEnabled;
+    }
+    const customDefaultCommand = defaultCommand.custom_default_command;
+
+    if (customDefaultCommand) {
+      isEnabled = customDefaultCommand.enabled;
+    }
+
+    return isEnabled;
   }
 }
 
