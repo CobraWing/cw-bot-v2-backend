@@ -69,7 +69,7 @@ class CustomCategoryRunner extends Commando.Command {
   ): MessageEmbed {
     const embed = new MessageEmbed();
     embed.setColor('#EE0000');
-    embed.setTitle(`Comandos da categoria: ${category.name}`);
+    embed.setTitle(`Lista de comandos da categoria: ${category.name}`);
     embed.setDescription(
       category.customCommands.map(customCommand => {
         return `**!${
@@ -79,6 +79,9 @@ class CustomCategoryRunner extends Commando.Command {
     );
     embed.setAuthor(msg.member.displayName, msg.author.avatarURL() || '');
     embed.setFooter('Fly safe cmdr!');
+    embed.setThumbnail(
+      'https://cdn.discordapp.com/attachments/340949096011399179/762496001063387146/icon-support.png',
+    );
     embed.setTimestamp(new Date());
     return embed;
   }
