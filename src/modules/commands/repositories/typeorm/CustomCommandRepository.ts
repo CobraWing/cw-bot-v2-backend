@@ -4,12 +4,16 @@ import ICustomCommandRepository from '@modules/commands/repositories/ICustomComm
 import ICreateCustomCommandDTO from '@modules/commands/dtos/ICreateCustomCommandDTO';
 
 import CustomCommand from '../../entities/CustomCommand';
+import CustomCommandAudit from '../../entities/CustomCommandAudit';
 
 class CustomCommandRepository implements ICustomCommandRepository {
   private ormRepository: Repository<CustomCommand>;
 
+  private ormAuditRepository: Repository<CustomCommandAudit>;
+
   constructor() {
     this.ormRepository = getRepository(CustomCommand);
+    this.ormAuditRepository = getRepository(CustomCommandAudit);
   }
 
   public async findByIdAndServerId(
@@ -53,13 +57,31 @@ class CustomCommandRepository implements ICustomCommandRepository {
   public async create(data: ICreateCustomCommandDTO): Promise<CustomCommand> {
     const customCommand = this.ormRepository.create(data);
 
-    await this.ormRepository.save(customCommand);
+    const customCommandSaved = await this.ormRepository.save(customCommand);
+
+    const customCommandAudit = new CustomCommandAudit();
+    Object.assign(customCommandAudit, {
+      ...customCommandSaved,
+    });
+
+    this.ormAuditRepository.save(
+      this.ormAuditRepository.create(customCommandAudit),
+    );
 
     return customCommand;
   }
 
   public async update(data: CustomCommand): Promise<CustomCommand> {
     const savedCustomCommand = await this.ormRepository.save(data);
+
+    const customCommandAudit = new CustomCommandAudit();
+    Object.assign(customCommandAudit, {
+      ...savedCustomCommand,
+    });
+
+    this.ormAuditRepository.save(
+      this.ormAuditRepository.create(customCommandAudit),
+    );
 
     return savedCustomCommand;
   }
