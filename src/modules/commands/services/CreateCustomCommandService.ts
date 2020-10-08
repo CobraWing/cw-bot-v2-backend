@@ -101,6 +101,7 @@ class CreateCustomCommandService {
       ...data,
       embedded: true,
       color: '#EE0000',
+      content: !data.content ? '<p></p>' : data.content,
     });
 
     this.registerCustoms.execute();
