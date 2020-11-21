@@ -47,6 +47,17 @@ class Server {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  getConfiguration(configuration_id: string): string | undefined {
+    if (!this.server_configurations) {
+      return undefined;
+    }
+    const config = this.server_configurations.find(
+      c => c.configuration_id === configuration_id,
+    );
+
+    return config?.value;
+  }
 }
 
 export default Server;
