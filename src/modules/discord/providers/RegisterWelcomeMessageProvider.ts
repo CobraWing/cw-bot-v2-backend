@@ -96,23 +96,23 @@ class RegisterWelcomeMessageProvider {
   }
 
   setDefaultRole(serverConfiguration: Server, member: GuildMember): void {
-    const defaultRoleName = serverConfiguration.getConfiguration(
+    const defaultRoleId = serverConfiguration.getConfiguration(
       'WELCOME_DEFAULT_ROLE',
     );
-    if (!defaultRoleName) {
+    if (!defaultRoleId) {
       log.warn('default role is not configured');
       return;
     }
 
     const roleFoundInGuild = member.guild.roles.cache.find(
-      r => r.name === defaultRoleName,
+      r => r.id === `${defaultRoleId}`,
     );
     if (!roleFoundInGuild) {
-      log.warn(`role: ${defaultRoleName} not found in guild`);
+      log.warn(`role: ${defaultRoleId} not found in guild`);
       return;
     }
 
-    log.info(`setting role: ${defaultRoleName}`);
+    log.info(`setting role: ${roleFoundInGuild?.name}`);
 
     member.roles.add(roleFoundInGuild);
   }
