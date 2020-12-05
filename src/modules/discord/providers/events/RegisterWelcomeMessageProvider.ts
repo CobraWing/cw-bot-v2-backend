@@ -3,10 +3,11 @@
 import { injectable, container } from 'tsyringe';
 
 import log from 'heroku-logger';
-import { MessageEmbed, GuildMember } from 'discord.js';
+import { MessageEmbed, GuildMember, Message, Guild } from 'discord.js';
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
 import Server from '@modules/servers/entities/Server';
+import serverConfig from '@config/serverConfig';
 
 @injectable()
 class RegisterWelcomeMessageProvider {
@@ -20,68 +21,82 @@ class RegisterWelcomeMessageProvider {
         .resolve(ClientProvider)
         .getCLient();
 
+      const findEnabledServerByDiscordId = container.resolve(
+        FindEnabledServerByDiscordIdService,
+      );
+
       commandoClient.on('guildMemberAdd', async member => {
-        log.info('new member has join on guild', {
+        log.info('new member has join in a guild', {
           memberName: member.displayName,
           tag: member.user.tag,
           guildName: member.guild.name,
         });
 
-        const findEnabledServerByDiscordId = container.resolve(
-          FindEnabledServerByDiscordIdService,
-        );
-
-        const guild = await findEnabledServerByDiscordId.execute({
+        const { guild } = member;
+        const server = await findEnabledServerByDiscordId.execute({
           discord_id: member.guild.id,
         });
 
-        if (
-          guild &&
-          guild.getConfiguration('WELCOME_MESSAGE_ENABLED') === 'true' &&
-          !!guild.getConfiguration('WELCOME_MESSAGE_CHANNEL')
-        ) {
-          log.info('welcome message is enabled, sending welcome message');
-
-          const welcomeChannel = guild.getConfiguration(
-            'WELCOME_MESSAGE_CHANNEL',
-          );
-
-          const channel = member.guild.channels.cache.find(
-            c => c.name === welcomeChannel,
-          );
-
-          if (!channel || !channel.isText()) {
-            log.error(`channel name ${welcomeChannel} not found`);
-            return;
-          }
-
-          channel.send(`Olá <@${member.id}>`);
-          channel.send(this.createEmbedMessage());
-
-          this.setDefaultRole(guild, member);
-        } else {
-          log.warn(
-            'welcome message is disabled or not configured, not send welcome message to member',
-          );
+        if (!server) {
+          log.error(`server id ${member.guild.id} is not found or enabled`);
+          return;
         }
+
+        const { key: keyToggle } = serverConfig.welcome_message_toggle;
+        const { key: keyChannel } = serverConfig.welcome_message_channel;
+        const { key: keyReactions } = serverConfig.welcome_reactions;
+        const eventEnabled = server.getConfiguration(keyToggle) === 'true';
+        const channelId = server.getConfiguration(keyChannel);
+        const reactions = server.getConfiguration(keyReactions);
+
+        if (!eventEnabled || !channelId) {
+          log.info(
+            'welcome message is disabled or not configured, not send welcome message to member',
+            { eventEnabled, channelId },
+          );
+          return;
+        }
+
+        log.info('welcome message is enabled, sending welcome message', {
+          eventEnabled,
+          channelId,
+        });
+
+        const channel = guild.channels.cache.find(c => c.id === channelId);
+
+        if (!channel || !channel.isText()) {
+          log.error(
+            `channel id ${channelId} not found or is not a text channel`,
+            { channel },
+          );
+          return;
+        }
+
+        channel.send(`Olá <@${member.id}>`);
+        const sentMessage = await channel.send(
+          this.createWelcomeEmbedMessage(),
+        );
+
+        this.setReactions(sentMessage, reactions, guild);
+        this.setDefaultRole(server, member);
       });
 
       log.info(
         '[RegisterWelcomeMessageProvider] Finished register welcome message',
       );
     } catch (e) {
-      log.error('Error while register welcome message', { e });
+      log.error('Error while execute welcome message', { e });
     }
   }
 
-  createEmbedMessage(): MessageEmbed {
+  createWelcomeEmbedMessage(): MessageEmbed {
     const welcomeMessage = `
             Seja bem-vindo(a) à **Cobra Wing**.
-            \nNo Elite Dangerous, nosso grupo privado é: **COBRA BR** e nosso esquadrão: **COBRA WING [CWBR]**.
+            \nNo Elite Dangerous, nosso grupo privado é: **COBRA BR** e nosso esquadrão: **Cobra Wing Academy [CWAC]**.
             \nPara solicitar acesso digite **!grupoprivado** e/ou **!esquadrao** e/ou **!inara** na sala <#309828038286114816> e siga as instruções.
             \nLeia as <#117579849794715652> e o <#729066883378184192>, também pedimos que __use o mesmo apelido em jogo aqui no discord__, para ajudar na nossa identificação.
             \nAgora você é um convidado, __após entrar para o nosso esquadrão e inara__ você terá acesso as demais salas aqui no nosso discord.
-            \nQuaisquer dúvidas é só perguntar. :wink:
+            \nQuaisquer dúvidas é só perguntar ou digitar !ajuda. :wink:
             `;
 
     const embed = new MessageEmbed();
@@ -95,26 +110,68 @@ class RegisterWelcomeMessageProvider {
     return embed;
   }
 
-  setDefaultRole(serverConfiguration: Server, member: GuildMember): void {
-    const defaultRoleId = serverConfiguration.getConfiguration(
-      'WELCOME_DEFAULT_ROLE',
-    );
-    if (!defaultRoleId) {
+  async setDefaultRole(
+    serverConfiguration: Server,
+    member: GuildMember,
+  ): Promise<void> {
+    const { key: keyDefaultRole } = serverConfig.welcome_default_role;
+    const roleId = serverConfiguration.getConfiguration(keyDefaultRole);
+
+    if (!roleId) {
       log.warn('default role is not configured');
       return;
     }
 
-    const roleFoundInGuild = member.guild.roles.cache.find(
-      r => r.id === `${defaultRoleId}`,
-    );
+    const roleFoundInGuild = await member.guild.roles.fetch(roleId);
+
     if (!roleFoundInGuild) {
-      log.warn(`role: ${defaultRoleId} not found in guild`);
+      log.warn(`role id: ${roleId} not found in guild`);
       return;
     }
 
-    log.info(`setting role: ${roleFoundInGuild?.name}`);
+    log.info(`setting role: ${roleFoundInGuild.name}`);
 
-    member.roles.add(roleFoundInGuild);
+    const roleSetted = await member.roles.add(
+      roleFoundInGuild,
+      'Cargo inicial, atribuído pelo bot.',
+    );
+
+    log.debug(`role setted`, { roleSetted });
+  }
+
+  async setReactions(
+    sentMessage: Message | undefined,
+    reactions: string | undefined,
+    guild: Guild,
+  ): Promise<void> {
+    if (!reactions || !sentMessage) {
+      return;
+    }
+
+    const reactionIds = reactions.split('|');
+
+    if (!reactionIds || reactionIds.length === 0) {
+      return;
+    }
+
+    reactionIds.forEach(react => {
+      if (react.length <= 2) {
+        sentMessage.react(`${react}`).catch(e => {
+          log.error('error while react with simple emoji', { e });
+        });
+      } else {
+        const customReactExists = guild.emojis.cache.find(
+          e => e.available === true && e.name === react,
+        );
+        if (customReactExists) {
+          sentMessage.react(customReactExists).catch(e => {
+            log.error('error while react with a custom emoji', { e });
+          });
+        } else {
+          log.error(`emoji name not found in guild`, { react });
+        }
+      }
+    });
   }
 }
 
