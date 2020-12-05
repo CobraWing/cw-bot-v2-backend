@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import { container } from 'tsyringe';
 import log from 'heroku-logger';
 import { Message, MessageEmbed } from 'discord.js';
@@ -40,9 +41,13 @@ class CustomCommandRunner extends Commando.Command {
         return msg.message;
       }
 
-      const embedMessage = this.createEmbedMessage(msg, command);
+      const embedMessages = this.createEmbedMessage(msg, command);
 
-      return msg.embed(embedMessage);
+      embedMessages.forEach(embedMessage => {
+        msg.embed(embedMessage);
+      });
+
+      return msg.message;
     }
     log.info(
       `command ${commandName} is not allowed in discord server name: ${msg.guild.name}`,
@@ -59,22 +64,41 @@ class CustomCommandRunner extends Commando.Command {
   createEmbedMessage(
     msg: CommandoMessage,
     command: CustomCommand,
-  ): MessageEmbed {
-    const embed = new MessageEmbed();
-    embed.setColor(command.color);
-    embed.setTitle(command.title || '');
-    embed.setDescription(
-      command.content ? this.formatMessageContent(command.content) : '',
-    );
-    embed.setImage(command.image_content || '');
-    embed.setThumbnail(command.image_thumbnail || '');
-    embed.setAuthor(msg.member.displayName, msg.author.avatarURL() || '');
-    embed.setFooter('Fly safe cmdr!');
-    embed.setTimestamp(new Date());
-    return embed;
+  ): MessageEmbed[] {
+    const embeds = [] as MessageEmbed[];
+
+    const contents = command.content
+      ? this.formatMessageContent(command.content)
+      : [''];
+
+    for (let index = 0; index < contents.length; index++) {
+      const content = contents[index];
+      const first = index === 0;
+      const last = index === contents.length - 1;
+      const embed = new MessageEmbed();
+
+      if (first) {
+        embed.setTitle(command.title || '');
+        embed.setAuthor(msg.member.displayName, msg.author.avatarURL() || '');
+      }
+
+      if (last) {
+        embed.setImage(command.image_content || '');
+        embed.setFooter('Fly safe cmdr!');
+        embed.setTimestamp(new Date());
+      }
+
+      embed.setThumbnail(command.image_thumbnail || '');
+      embed.setColor(command.color);
+      embed.setDescription(content || '');
+
+      embeds.push(embed);
+    }
+
+    return embeds;
   }
 
-  formatMessageContent(content: string): string {
+  formatMessageContent(content: string): string[] {
     return content
       .replace(/<\/p><p>/g, '\n')
       .replace(/<strong>|<\/strong>/g, '**')
@@ -84,9 +108,11 @@ class CustomCommandRunner extends Commando.Command {
       .replace(/<p>|<\/p>/g, '')
       .replace(/http:\/\/www\.|https:\/\/www\./g, 'www.')
       .replace(/www\./g, 'https://www.')
+      .replace(/&lt;\/&gt;/g, '</>')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&');
+      .replace(/&amp;/g, '&')
+      .split('</>');
   }
 }
 
