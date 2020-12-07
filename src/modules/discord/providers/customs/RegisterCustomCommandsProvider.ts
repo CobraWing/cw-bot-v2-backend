@@ -6,7 +6,7 @@ import Commando from 'discord.js-commando';
 import log from 'heroku-logger';
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import ListEnabledCustomCommandService from '@modules/commands/services/ListEnabledCustomCommandService';
-import CustomCommandRunner from '../runners/CustomCommandRunner';
+import CustomCommandRunner from '@modules/discord/runners/CustomCommandRunner';
 
 @injectable()
 class RegisterCustomCommandsProvider {

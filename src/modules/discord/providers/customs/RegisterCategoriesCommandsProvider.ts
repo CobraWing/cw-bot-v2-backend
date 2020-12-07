@@ -6,7 +6,7 @@ import Commando from 'discord.js-commando';
 import log from 'heroku-logger';
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import ListEnabledCategoriesWithEnabledCustomCommandsService from '@modules/categories/services/ListEnabledCategoriesWithEnabledCustomCommandsService';
-import CustomCategoryRunner from '../runners/CustomCategoryRunner';
+import CustomCategoryRunner from '@modules/discord/runners/CustomCategoryRunner';
 
 @injectable()
 class RegisterCategoriesCommandsProvider {
