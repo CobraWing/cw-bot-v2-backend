@@ -48,6 +48,7 @@ interface IEliteBGSDocResponse {
   faction_presence: IEliteBGSFactionsPresenceResponse[];
   numberOfSystems: number;
   numberOfControlledSystems: number;
+  lostInfos: boolean;
 }
 
 interface IEliteBGSResponse {
@@ -83,14 +84,14 @@ class GetFactionPresencesByNameService {
       throw new Error('Error while faction presence');
     }
 
-    const factionData = response.data.docs.find(doc => doc.name_lower === factionName);
+    let factionData = response.data.docs.find(doc => doc.name_lower === factionName);
 
     if (!factionData) {
       log.error('[GetFactionPresencesByNameService] Faction name not found in response data', factionData);
       throw new Error('Error while faction presence');
     }
 
-    factionData.faction_presence = await this.loadInfosFromEdsm(factionData.faction_presence, factionData.name);
+    factionData = await this.loadInfosFromEdsm(factionData);
 
     // log.info('systems', factionData.faction_presence);
 
@@ -113,14 +114,11 @@ class GetFactionPresencesByNameService {
     return states.get(state) || capitalize(state);
   }
 
-  public loadInfosFromEdsm(
-    factionPresences: IEliteBGSFactionsPresenceResponse[],
-    factionName: string,
-  ): Promise<IEliteBGSFactionsPresenceResponse[]> {
+  public loadInfosFromEdsm(factionData: IEliteBGSDocResponse): Promise<IEliteBGSDocResponse> {
     log.info('[GetFactionPresencesByNameService] Starting to get all system infos from edsm');
 
     const promises: Promise<IEdsmResponse>[] = [];
-    factionPresences.forEach(presence => {
+    factionData.faction_presence.forEach(presence => {
       const { system_name: systemName } = presence;
       promises.push(this.getSystemInfosByNameService.execute({ systemName }));
     });
@@ -130,15 +128,20 @@ class GetFactionPresencesByNameService {
         .then((results: IEdsmResponse[]) => {
           // for each system
           results.forEach(systemResult => {
-            const presenceIndex = factionPresences.findIndex(
+            if (!systemResult?.name) {
+              factionData.lostInfos = true;
+              return;
+            }
+
+            const presenceIndex = factionData.faction_presence.findIndex(
               presence => presence.system_name_lower === systemResult.name.toLowerCase(),
             );
 
             // check system controlled by faction
-            const constrolledByFaction = systemResult.controllingFaction.name === factionName;
-            factionPresences[presenceIndex].controlledByFaction = constrolledByFaction;
+            const constrolledByFaction = systemResult.controllingFaction.name === factionData.name;
+            factionData.faction_presence[presenceIndex].controlledByFaction = constrolledByFaction;
 
-            const factionInfosInSystem = systemResult.factions.find(faction => faction.name === factionName);
+            const factionInfosInSystem = systemResult.factions.find(faction => faction.name === factionData.name);
 
             // check if influence is increased
             if (factionInfosInSystem) {
@@ -147,19 +150,20 @@ class GetFactionPresencesByNameService {
               const penultimateIndex = influences.length - 2;
               const influenceIncreased = influences[lastIndex] >= influences[penultimateIndex];
 
-              factionPresences[presenceIndex].influenceIncreased = influenceIncreased;
-              factionPresences[presenceIndex].influence = influences[lastIndex];
+              factionData.faction_presence[presenceIndex].influenceIncreased = influenceIncreased;
+              factionData.faction_presence[presenceIndex].influence = influences[lastIndex];
             }
 
-            factionPresences[presenceIndex].system_url = systemResult.url;
+            factionData.faction_presence[presenceIndex].system_url = systemResult.url;
           });
         })
         .catch(err => {
+          factionData.lostInfos = true;
           log.error('[GetFactionPresencesByNameService] Error while fetch infos from edsm', err);
         })
         .finally(() => {
           log.info('[GetFactionPresencesByNameService] Finish get all system infos from edsm');
-          resolve(factionPresences);
+          resolve(factionData);
         });
     });
   }

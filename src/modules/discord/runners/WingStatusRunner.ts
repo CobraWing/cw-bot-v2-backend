@@ -66,8 +66,8 @@ class WingStatusRunner extends Commando.Command {
 
     const iconEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'orangeicon') || '👑';
     const controlledEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'cwlogo') || '👑';
-    const increasedUpEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'up') || '🟢';
-    const increasedDownEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'down') || '🔴';
+    let increasedUpEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'up') || '🟢';
+    let increasedDownEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'down') || '🔴';
 
     const numberOfSystems = wingStatus.faction_presence.length;
     const numberOfControlledSystems = wingStatus.faction_presence.filter(
@@ -78,11 +78,23 @@ class WingStatusRunner extends Commando.Command {
       .map(presence => `**${presence.system_name}**`);
     const numberOfConflictsSystems = namesOfConflictsSystems.length;
 
+    const incompletedInfos = wingStatus.lostInfos;
+    if (incompletedInfos) {
+      increasedUpEmoji = '';
+      increasedDownEmoji = '';
+    }
+
     let factionDescription = `${iconEmoji} Total de sistemas: **${numberOfSystems}**\n`;
-    factionDescription += `${controlledEmoji} Sistemas controlados: **${numberOfControlledSystems}**\n`;
+
     factionDescription += `⚔️ Sistemas em conflito: **${numberOfConflictsSystems}** - (${namesOfConflictsSystems.join(
       ', ',
-    )})`;
+    )})\n`;
+
+    if (incompletedInfos) {
+      factionDescription += '⚠️ Algumas informações estão incompletas por indisponibilidades de sistemas.';
+    } else {
+      factionDescription += `${controlledEmoji} Sistemas controlados: **${numberOfControlledSystems}**\n`;
+    }
     factionDescription += '\n\n_';
 
     let presenceCount = 0;
