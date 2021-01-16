@@ -26,6 +26,7 @@
     "@typescript-eslint/camelcase": "off",
     "no-useless-constructor": "off",
     "no-continue": "off",
+    "import/no-duplicates": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
