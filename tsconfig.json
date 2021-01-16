@@ -12,6 +12,9 @@
       "@config/*": ["config/*"],
       "@shared/*": ["shared/*"]
     },
+    "lib": [
+      "ES2020.Promise",
+    ],
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

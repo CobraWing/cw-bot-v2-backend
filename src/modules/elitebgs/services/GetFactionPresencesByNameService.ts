@@ -40,6 +40,7 @@ interface IEliteBGSFactionsPresenceResponse {
   updated_at: string;
   controlledByFaction: boolean;
   influenceIncreased: boolean;
+  foundInEdsm: boolean;
 }
 
 interface IEliteBGSDocResponse {
@@ -110,6 +111,7 @@ class GetFactionPresencesByNameService {
   public formatState(state: string): string {
     const states = new Map();
     states.set('infrastructurefailure', 'Infrastructure Failure');
+    states.set('war', 'War ⚔️');
 
     return states.get(state) || capitalize(state);
   }
@@ -124,38 +126,47 @@ class GetFactionPresencesByNameService {
     });
 
     return new Promise(resolve => {
-      Promise.all(promises)
-        .then((results: IEdsmResponse[]) => {
-          // for each system
-          results.forEach(systemResult => {
-            if (!systemResult?.name) {
-              factionData.lostInfos = true;
-              return;
-            }
+      Promise.allSettled(promises)
+        .then(data => {
+          data
+            .filter(p => p.status === 'fulfilled')
+            .forEach((result: PromiseSettledResult<IEdsmResponse>) => {
+              const systemResult: IEdsmResponse = result.value; // TS bug
 
-            const presenceIndex = factionData.faction_presence.findIndex(
-              presence => presence.system_name_lower === systemResult.name.toLowerCase(),
-            );
+              if (!systemResult?.name) {
+                factionData.lostInfos = true;
+                return;
+              }
 
-            // check system controlled by faction
-            const constrolledByFaction = systemResult.controllingFaction.name === factionData.name;
-            factionData.faction_presence[presenceIndex].controlledByFaction = constrolledByFaction;
+              const presenceIndex = factionData.faction_presence.findIndex(
+                presence => presence.system_name_lower === systemResult.name.toLowerCase(),
+              );
 
-            const factionInfosInSystem = systemResult.factions.find(faction => faction.name === factionData.name);
+              if (presenceIndex < 0) {
+                factionData.lostInfos = true;
+                return;
+              }
 
-            // check if influence is increased
-            if (factionInfosInSystem) {
-              const influences = Object.values(factionInfosInSystem.influenceHistory);
-              const lastIndex = influences.length - 1;
-              const penultimateIndex = influences.length - 2;
-              const influenceIncreased = influences[lastIndex] >= influences[penultimateIndex];
+              // check system controlled by faction
+              const constrolledByFaction = systemResult.controllingFaction.name === factionData.name;
+              factionData.faction_presence[presenceIndex].controlledByFaction = constrolledByFaction;
+              factionData.faction_presence[presenceIndex].foundInEdsm = true;
 
-              factionData.faction_presence[presenceIndex].influenceIncreased = influenceIncreased;
-              factionData.faction_presence[presenceIndex].influence = influences[lastIndex];
-            }
+              const factionInfosInSystem = systemResult.factions.find(faction => faction.name === factionData.name);
 
-            factionData.faction_presence[presenceIndex].system_url = systemResult.url;
-          });
+              // check if influence is increased
+              if (factionInfosInSystem) {
+                const influences = Object.values(factionInfosInSystem.influenceHistory);
+                const lastIndex = influences.length - 1;
+                const penultimateIndex = influences.length - 2;
+                const influenceIncreased = influences[lastIndex] >= influences[penultimateIndex];
+
+                factionData.faction_presence[presenceIndex].influenceIncreased = influenceIncreased;
+                factionData.faction_presence[presenceIndex].influence = influences[lastIndex];
+              }
+
+              factionData.faction_presence[presenceIndex].system_url = systemResult.url;
+            });
         })
         .catch(err => {
           factionData.lostInfos = true;

@@ -1,7 +1,7 @@
 /* eslint-disable no-new-wrappers */
 /* eslint-disable no-plusplus */
 import { container } from 'tsyringe';
-import { Message, MessageEmbed } from 'discord.js';
+import { GuildEmoji, Message, MessageEmbed } from 'discord.js';
 import Commando, { CommandoMessage } from 'discord.js-commando';
 import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -36,7 +36,7 @@ class WingStatusRunner extends Commando.Command {
 
   async run(msg: CommandoMessage, _: string | string[] | object): Promise<Message | Message[]> {
     const { id: discord_id } = msg.guild;
-    msg.react('⏳');
+    const waitMessage = await msg.channel.send('Aguarde um instante, consultando os sistemas...');
 
     const server = await this.findEnabledServerByDiscordId.execute({
       discord_id,
@@ -44,6 +44,9 @@ class WingStatusRunner extends Commando.Command {
 
     if (!server) {
       log.error(`server id ${discord_id} is not found or enabled`);
+      msg.react('👎');
+      msg.reply('Ocorreu algum problema nas consultas, tente novamente em alguns instantes.');
+      waitMessage.delete();
       return msg.message; // TODO: Mensagem de erro
     }
 
@@ -55,6 +58,9 @@ class WingStatusRunner extends Commando.Command {
 
     if (!commandEnabled || !factionName) {
       log.error(`command ${keyToggle} is not enabled or setupped`);
+      msg.react('👎');
+      msg.reply('Ocorreu algum problema nas consultas, tente novamente em alguns instantes.');
+      waitMessage.delete();
       return msg.message; // TODO: Mensagem de erro
     }
 
@@ -64,10 +70,10 @@ class WingStatusRunner extends Commando.Command {
 
     const { formatState } = this.getFactionPresencesByNameService;
 
-    const iconEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'orangeicon') || '👑';
+    const iconEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'orangeicon') || '🔸';
     const controlledEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'cwlogo') || '👑';
-    let increasedUpEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'up') || '🟢';
-    let increasedDownEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'down') || '🔴';
+    const increasedUpEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'up') || '🟢';
+    const increasedDownEmoji = msg.guild.emojis.cache.find(emoji => emoji.name === 'down') || '🔴';
 
     const numberOfSystems = wingStatus.faction_presence.length;
     const numberOfControlledSystems = wingStatus.faction_presence.filter(
@@ -79,23 +85,21 @@ class WingStatusRunner extends Commando.Command {
     const numberOfConflictsSystems = namesOfConflictsSystems.length;
 
     const incompletedInfos = wingStatus.lostInfos;
-    if (incompletedInfos) {
-      increasedUpEmoji = '';
-      increasedDownEmoji = '';
-    }
 
     let factionDescription = `${iconEmoji} Total de sistemas: **${numberOfSystems}**\n`;
 
-    factionDescription += `⚔️ Sistemas em conflito: **${numberOfConflictsSystems}** - (${namesOfConflictsSystems.join(
+    if (!incompletedInfos) {
+      factionDescription += `${controlledEmoji} Sistemas controlados: **${numberOfControlledSystems}**\n`;
+    }
+
+    factionDescription += `\n⚔️ Sistemas em conflito: **${numberOfConflictsSystems}** - (${namesOfConflictsSystems.join(
       ', ',
     )})\n`;
 
     if (incompletedInfos) {
       factionDescription += '⚠️ Algumas informações estão incompletas por indisponibilidades de sistemas.';
-    } else {
-      factionDescription += `${controlledEmoji} Sistemas controlados: **${numberOfControlledSystems}**\n`;
     }
-    factionDescription += '\n\n_';
+    factionDescription += '\n_';
 
     let presenceCount = 0;
     let embed = new MessageEmbed()
@@ -112,11 +116,15 @@ class WingStatusRunner extends Commando.Command {
         locale: ptBR,
       });
 
-      const systemName = `${presence.controlledByFaction ? controlledEmoji : ''} **${presence.system_name}**`;
+      const systemName = `${presence.controlledByFaction ? controlledEmoji : iconEmoji} **${presence.system_name}**`;
       updateAt = `\n${pad(capitalize(updateAt), 25, ' ')}➖`;
 
       const systemTitle = systemName + updateAt;
-      const increasedEmoji = presence.influenceIncreased ? increasedUpEmoji : increasedDownEmoji;
+
+      let increasedEmoji: GuildEmoji | string = '?';
+      if (presence.foundInEdsm) {
+        increasedEmoji = presence.influenceIncreased ? increasedUpEmoji : increasedDownEmoji;
+      }
 
       const inf = `Influencia: **${influence.toFixed(1)}%** ${increasedEmoji}`;
 
@@ -143,6 +151,7 @@ class WingStatusRunner extends Commando.Command {
 
     msg.embed(embed);
     msg.react('👍');
+    waitMessage.delete();
 
     return msg.message;
   }
