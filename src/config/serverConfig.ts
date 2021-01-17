@@ -14,6 +14,12 @@ const serverConfig = {
   welcome_reactions: {
     key: 'WELCOME_REACTIONS',
   },
+  wing_status_command_enabled: {
+    key: 'WING_STATUS_COMMAND_ENABLED',
+  },
+  wing_status_command_wing_name: {
+    key: 'WING_STATUS_COMMAND_WING_NAME',
+  },
 };
 
 export default serverConfig;
