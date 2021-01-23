@@ -79,10 +79,22 @@ class WingStatusRunner extends Commando.Command {
     const numberOfControlledSystems = wingStatus.faction_presence.filter(
       presence => presence.controlledByFaction === true,
     ).length;
+
     const namesOfConflictsSystems = wingStatus.faction_presence
       .filter(presence => presence.conflicts.length > 0)
+      .filter(presence => presence.state.toLowerCase() === 'war' || presence.state.toLowerCase() === 'election')
       .map(presence => `**${presence.system_name}**`);
     const numberOfConflictsSystems = namesOfConflictsSystems.length;
+
+    const namesOfPendingConflictsSystems = wingStatus.faction_presence
+      .filter(
+        presence =>
+          presence.pending_states.filter(
+            ps => ps.state.toLowerCase() === 'war' || ps.state.toLowerCase() === 'election',
+          ).length > 0,
+      )
+      .map(presence => `**${presence.system_name}**`);
+    const numberOfPendingConflictsSystems = namesOfPendingConflictsSystems.length;
 
     const incompletedInfos = wingStatus.lostInfos;
 
@@ -92,14 +104,24 @@ class WingStatusRunner extends Commando.Command {
       factionDescription += `${controlledEmoji} Sistemas controlados: **${numberOfControlledSystems}**\n`;
     }
 
-    factionDescription += `\n⚔️ Sistemas em conflito: **${numberOfConflictsSystems}** - (${namesOfConflictsSystems.join(
-      ', ',
-    )})\n`;
+    factionDescription += '\n⚔️ Sistemas em conflito: ';
+    if (numberOfConflictsSystems > 0) {
+      factionDescription += `**${numberOfConflictsSystems}** - (${namesOfConflictsSystems.join(', ')})`;
+    } else {
+      factionDescription += '**Nenhum**';
+    }
+
+    factionDescription += '\n⚔️ Sistemas pendente conflito: ';
+    if (numberOfPendingConflictsSystems > 0) {
+      factionDescription += `**${numberOfPendingConflictsSystems}** - (${namesOfPendingConflictsSystems.join(', ')})`;
+    } else {
+      factionDescription += '**Nenhum**';
+    }
 
     if (incompletedInfos) {
-      factionDescription += '⚠️ Algumas informações estão incompletas por indisponibilidades de sistemas.';
+      factionDescription += '\n\n⚠️ Algumas informações estão incompletas por indisponibilidades no EDSM.';
     }
-    factionDescription += '\n_';
+    factionDescription += '\n\n_';
 
     let presenceCount = 0;
     let embed = new MessageEmbed()
