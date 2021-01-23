@@ -1,11 +1,18 @@
-interface IEdsmInfluenceHistoryResponse {
+interface IEdsmStateResponse {
+  state: string;
+}
+
+interface IEdsmHistoryResponse {
   [key: string]: number;
 }
 
 interface IEdsmFactionResponse {
   name: string;
   influence: string;
-  influenceHistory: IEdsmInfluenceHistoryResponse;
+  influenceHistory: IEdsmHistoryResponse;
+  state: string;
+  activeStates: IEdsmStateResponse[];
+  pendingStates: IEdsmStateResponse[];
   lastUpdate: string;
 }
 

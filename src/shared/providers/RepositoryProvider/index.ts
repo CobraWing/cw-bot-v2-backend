@@ -15,27 +15,12 @@ import CustomCommandRepository from '@modules/commands/repositories/typeorm/Cust
 import IDefaultCommandRepository from '@modules/default-commands/repositories/IDefaultCommandRepository';
 import DefaultCommandRepository from '@modules/default-commands/repositories/typeorm/DefaultCommandRepository';
 
-container.registerSingleton<IServersRepository>(
-  'ServersRepository',
-  ServersRepository,
-);
+container.registerSingleton<IServersRepository>('ServersRepository', ServersRepository);
 
-container.registerSingleton<IConfigurationsRepository>(
-  'ConfigurationsRepository',
-  ConfigurationsRepository,
-);
+container.registerSingleton<IConfigurationsRepository>('ConfigurationsRepository', ConfigurationsRepository);
 
-container.registerSingleton<ICategoriesRepository>(
-  'CategoriesRepository',
-  CategoriesRepository,
-);
+container.registerSingleton<ICategoriesRepository>('CategoriesRepository', CategoriesRepository);
 
-container.registerSingleton<ICustomCommandRepository>(
-  'CustomCommandRepository',
-  CustomCommandRepository,
-);
+container.registerSingleton<ICustomCommandRepository>('CustomCommandRepository', CustomCommandRepository);
 
-container.registerSingleton<IDefaultCommandRepository>(
-  'DefaultCommandRepository',
-  DefaultCommandRepository,
-);
+container.registerSingleton<IDefaultCommandRepository>('DefaultCommandRepository', DefaultCommandRepository);

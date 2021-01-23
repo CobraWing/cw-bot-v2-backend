@@ -23,7 +23,6 @@ interface IEliteBGSConflictResponse {
 interface IEliteBGSStatesResponse {
   state: string;
   trend: number;
-  state_formatted: Function;
 }
 
 interface IEliteBGSFactionsPresenceResponse {
@@ -129,8 +128,13 @@ class GetFactionPresencesByNameService {
       Promise.allSettled(promises)
         .then(data => {
           data
-            .filter(p => p.status === 'fulfilled')
+            // .filter(p => p.status === 'fulfilled')
             .forEach((result: PromiseSettledResult<IEdsmResponse>) => {
+              if (result.status !== 'fulfilled') {
+                factionData.lostInfos = true;
+                return;
+              }
+
               const systemResult: IEdsmResponse = result.value; // TS bug
 
               if (!systemResult?.name) {
@@ -163,6 +167,25 @@ class GetFactionPresencesByNameService {
 
                 factionData.faction_presence[presenceIndex].influenceIncreased = influenceIncreased;
                 factionData.faction_presence[presenceIndex].influence = influences[lastIndex];
+
+                // set states and active states
+                factionData.faction_presence[presenceIndex].state = factionInfosInSystem.state;
+                factionData.faction_presence[presenceIndex].active_states = factionInfosInSystem.activeStates.map(
+                  as => {
+                    return {
+                      state: as.state,
+                    } as IEliteBGSStatesResponse;
+                  },
+                );
+
+                // set pending states
+                factionData.faction_presence[presenceIndex].pending_states = factionInfosInSystem.pendingStates.map(
+                  as => {
+                    return {
+                      state: as.state,
+                    } as IEliteBGSStatesResponse;
+                  },
+                );
               }
 
               factionData.faction_presence[presenceIndex].system_url = systemResult.url;
