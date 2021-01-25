@@ -20,6 +20,9 @@ const serverConfig = {
   wing_status_command_wing_name: {
     key: 'WING_STATUS_COMMAND_WING_NAME',
   },
+  tick_notification_channel: {
+    key: 'TICK_NOTIFICATION_CHANNEL',
+  },
 };
 
 export default serverConfig;

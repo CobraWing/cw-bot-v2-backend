@@ -15,26 +15,31 @@ interface ITick {
 @injectable()
 class GetLastTickService {
   public async execute(): Promise<ITick | undefined> {
-    log.debug('[GetLastTickService] Starting to fetch last tick');
-    const sw = new StopWatch();
-    sw.start();
+    try {
+      log.debug('[GetLastTickService] Starting to fetch last tick');
+      const sw = new StopWatch();
+      sw.start();
 
-    const { tickApiUrl } = integrationsConfig.eliteBGS;
+      const { tickApiUrl } = integrationsConfig.eliteBGS;
 
-    log.debug(`[GetLastTickService] fetch factions from ${tickApiUrl}`);
+      log.debug(`[GetLastTickService] fetch factions from ${tickApiUrl}`);
 
-    const response = await axios.get<ITick[]>(tickApiUrl);
+      const response = await axios.get<ITick[]>(tickApiUrl);
 
-    sw.stop();
+      sw.stop();
 
-    if (response?.status !== 200 || response?.data?.length === 0) {
-      log.error('[GetLastTickService] Error while check last tick', response?.data);
-      throw new Error('Error while check last tick');
+      if (response?.status !== 200 || response?.data?.length === 0) {
+        log.error('[GetLastTickService] Error while check last tick', response?.data);
+        throw new Error('Error while check last tick');
+      }
+
+      log.debug(`[GetLastTickService] Finish fetch in ${sw.getTotalTime()}ms `);
+
+      return response.data.pop();
+    } catch (e) {
+      log.error(e);
+      return undefined;
     }
-
-    log.debug(`[GetLastTickService] Finish fetch in ${sw.getTotalTime()}ms `);
-
-    return response.data.pop();
   }
 }
 
