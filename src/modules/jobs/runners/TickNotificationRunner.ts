@@ -11,7 +11,7 @@ class TickNotificationRunner {
 
     try {
       const job = new CronJob(
-        '* * * * *', // every minute
+        '*/5 * * * *', // every 5 minute
         () => {
           container.resolve(CheckLastTickAndNotifyServersService).execute();
         },
