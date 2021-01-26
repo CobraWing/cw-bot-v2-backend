@@ -1,8 +1,11 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-param-reassign */
 import { injectable, inject, container } from 'tsyringe';
 import log from 'heroku-logger';
-import { isEqual, isBefore } from 'date-fns';
-import { Guild } from 'discord.js';
+import { isEqual, isAfter, formatDistance, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Guild, GuildChannel, TextChannel } from 'discord.js';
 
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import GetLastTickService from '@modules/elitebgs/services/GetLastTickService';
@@ -12,7 +15,7 @@ import serverConfig from '@config/serverConfig';
 
 interface IGuildToNotificate {
   guild: Guild;
-  channel: string;
+  channel: GuildChannel;
 }
 
 interface ITick {
@@ -50,7 +53,15 @@ class CheckLastTickAndNotifyServersService {
 
       const guildToNotificate = await this.getGuildsToNotify();
 
-      log.info('test', { actualLastTick, recordedLastTick });
+      if (guildToNotificate.length === 0) {
+        return;
+      }
+
+      const messageToNotify = this.getMessageToNotify(actualLastTick);
+
+      await this.sendNotification(messageToNotify, guildToNotificate);
+
+      this.cachProvider.save('last-tick', actualLastTick);
     } catch (e) {
       log.error('[CheckLastTickAndNotifyServersService] error:', e);
     }
@@ -64,7 +75,7 @@ class CheckLastTickAndNotifyServersService {
     const actuakLastTickDate = new Date(actualLastTick.updated_at);
     const recordedLastTickDate = new Date(recordedLastTick.updated_at);
 
-    return !isEqual(actuakLastTickDate, recordedLastTickDate) && isBefore(actuakLastTickDate, recordedLastTickDate);
+    return isEqual(actuakLastTickDate, recordedLastTickDate) || !isAfter(actuakLastTickDate, recordedLastTickDate);
   }
 
   private async getGuildsToNotify(): Promise<IGuildToNotificate[]> {
@@ -73,23 +84,48 @@ class CheckLastTickAndNotifyServersService {
 
     const { key } = serverConfig.tick_notification_channel;
 
-    commandoClient.guilds.cache
-      .filter(guild => guild.available)
-      .map(guild => guild.id)
-      .forEach(async discord_id => {
-        const server = await this.serversRepository.findByIdDiscord(discord_id);
+    const guildIds = commandoClient.guilds.cache.filter(guild => guild.available).map(guild => guild.id);
 
-        if (server && server.getConfiguration(key)) {
-          const guildToNotificate: IGuildToNotificate = {
-            guild: commandoClient.guilds.cache.find(guild => guild.id === discord_id) || ({} as Guild),
-            channel: server.getConfiguration(key) || '',
-          };
+    for (const discord_id of guildIds) {
+      const server = await this.serversRepository.findByIdDiscord(discord_id);
 
-          guildsToNotificate.push(guildToNotificate);
+      if (server && server.getConfiguration(key)) {
+        const guild = commandoClient.guilds.cache.find(g => g.id === discord_id);
+        const channel = guild?.channels.cache.find(c => c.name === server.getConfiguration(key));
+
+        if (guild && channel && channel.isText()) {
+          guildsToNotificate.push({
+            guild,
+            channel,
+          });
         }
-      });
+      }
+    }
 
     return guildsToNotificate;
+  }
+
+  private getMessageToNotify(actualLastTick: ITick): string {
+    const tickDate = new Date(actualLastTick.updated_at);
+    const lastTickWas = formatDistance(tickDate, new Date(), {
+      includeSeconds: true,
+      addSuffix: true,
+      locale: ptBR,
+    });
+
+    const dateFormatted = format(tickDate, 'dd/MM/yyyy HH:mm', { locale: ptBR });
+
+    return `‼️ **NOTIFICAÇÃO:** ‼️\nO último tick aconteceu **${lastTickWas} em ${dateFormatted} (horário do Brasil)**`;
+  }
+
+  private async sendNotification(message: string, guildList: IGuildToNotificate[]): Promise<void> {
+    for (const itemList of guildList) {
+      log.info(
+        `[CheckLastTickAndNotifyServersService] Sending notification to ${itemList.channel.name} in ${itemList.guild.name}`,
+      );
+      const textChannel = itemList.channel as TextChannel;
+      await textChannel.send(message);
+    }
   }
 }
 
