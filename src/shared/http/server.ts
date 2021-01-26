@@ -12,6 +12,7 @@ import routes from './routes';
 import '@shared/typeorm';
 import '@shared/providers';
 import '@modules/discord';
+import '@modules/jobs';
 
 const app = express();
 
