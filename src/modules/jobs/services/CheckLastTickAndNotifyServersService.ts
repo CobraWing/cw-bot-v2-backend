@@ -3,7 +3,7 @@
 /* eslint-disable no-param-reassign */
 import { injectable, inject, container } from 'tsyringe';
 import log from 'heroku-logger';
-import { isEqual, isAfter, formatDistanceToNow } from 'date-fns';
+import { isEqual, isAfter, formatDistanceToNow, subHours } from 'date-fns';
 import { format, toDate } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 import { Guild, GuildChannel, TextChannel } from 'discord.js';
@@ -113,9 +113,7 @@ class CheckLastTickAndNotifyServersService {
       locale: ptBR,
     });
 
-    const dateFormatted = format(tickDate, 'dd/MM/yyyy HH:mm', {
-      timeZone: 'America/Sao_Paulo',
-    });
+    const dateFormatted = format(subHours(tickDate, 3), 'dd/MM/yyyy HH:mm');
 
     return `‼️ **NOTIFICAÇÃO:** ‼️\nO último tick aconteceu **${lastTickWas} em ${dateFormatted} (horário do Brasil)**`;
   }
