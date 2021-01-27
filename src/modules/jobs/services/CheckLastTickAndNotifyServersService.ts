@@ -4,7 +4,7 @@
 import { injectable, inject, container } from 'tsyringe';
 import log from 'heroku-logger';
 import { isEqual, isAfter, formatDistanceToNow } from 'date-fns';
-import { format } from 'date-fns-tz';
+import { format, toDate } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 import { Guild, GuildChannel, TextChannel } from 'discord.js';
 
@@ -107,7 +107,7 @@ class CheckLastTickAndNotifyServersService {
   }
 
   private getMessageToNotify(actualLastTick: ITick): string {
-    const tickDate = new Date(actualLastTick.time);
+    const tickDate = toDate(actualLastTick.time);
     const lastTickWas = formatDistanceToNow(tickDate, {
       addSuffix: true,
       locale: ptBR,
