@@ -15,7 +15,11 @@
 Docker image and run
 
 ```bash
-docker run --name cobrawing -e POSTGRES_USER=docker -e POSTGRES_PASSWORD=docker -p 5432:5432 -d postgres
+# Postgres
+docker run --name cw_postgres -e POSTGRES_USER=docker -e POSTGRES_PASSWORD=docker -p 5432:5432 -d postgres
+
+# Redis
+docker run --name cw_redis -p 6379:6379 -d -t redis:alpine
 ```
 
 ### 🚀 To start:

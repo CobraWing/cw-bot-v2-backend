@@ -4,6 +4,7 @@ const edsmApiUrl = 'https://www.edsm.net';
 const integrationsConfig = {
   eliteBGS: {
     factionsByNameApiUrl: `${eliteBGSApiUrl}/factions?name=<FACTION_NAME>`,
+    tickApiUrl: `${eliteBGSApiUrl}/ticks`,
   },
   edsm: {
     systemByNameApiUrl: `${edsmApiUrl}/api-system-v1/factions?systemName=<SYSTEM_NAME>&showHistory=1`,
