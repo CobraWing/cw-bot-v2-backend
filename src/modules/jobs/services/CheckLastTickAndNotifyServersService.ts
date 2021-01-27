@@ -3,7 +3,8 @@
 /* eslint-disable no-param-reassign */
 import { injectable, inject, container } from 'tsyringe';
 import log from 'heroku-logger';
-import { isEqual, isAfter, formatDistance, format } from 'date-fns';
+import { isEqual, isAfter, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 import { Guild, GuildChannel, TextChannel } from 'discord.js';
 
@@ -72,8 +73,8 @@ class CheckLastTickAndNotifyServersService {
       return false;
     }
 
-    const actuakLastTickDate = new Date(actualLastTick.updated_at);
-    const recordedLastTickDate = new Date(recordedLastTick.updated_at);
+    const actuakLastTickDate = new Date(actualLastTick.time);
+    const recordedLastTickDate = new Date(recordedLastTick.time);
 
     return isEqual(actuakLastTickDate, recordedLastTickDate) || !isAfter(actuakLastTickDate, recordedLastTickDate);
   }
@@ -106,14 +107,15 @@ class CheckLastTickAndNotifyServersService {
   }
 
   private getMessageToNotify(actualLastTick: ITick): string {
-    const tickDate = new Date(actualLastTick.updated_at);
-    const lastTickWas = formatDistance(tickDate, new Date(), {
-      includeSeconds: true,
+    const tickDate = new Date(actualLastTick.time);
+    const lastTickWas = formatDistanceToNow(tickDate, {
       addSuffix: true,
       locale: ptBR,
     });
 
-    const dateFormatted = format(tickDate, 'dd/MM/yyyy HH:mm', { locale: ptBR });
+    const dateFormatted = format(tickDate, 'dd/MM/yyyy HH:mm', {
+      timeZone: 'America/Sao_Paulo',
+    });
 
     return `‼️ **NOTIFICAÇÃO:** ‼️\nO último tick aconteceu **${lastTickWas} em ${dateFormatted} (horário do Brasil)**`;
   }

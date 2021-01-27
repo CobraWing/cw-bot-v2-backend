@@ -3,6 +3,7 @@ import { CronJob } from 'cron';
 
 import log from 'heroku-logger';
 import CheckLastTickAndNotifyServersService from '@modules/jobs/services/CheckLastTickAndNotifyServersService';
+import jobsConfig from '@config/jobsConfig';
 
 @injectable()
 class TickNotificationRunner {
@@ -11,7 +12,7 @@ class TickNotificationRunner {
 
     try {
       const job = new CronJob(
-        '*/5 * * * *', // every 5 minute
+        jobsConfig.tickNotification.cron,
         () => {
           container.resolve(CheckLastTickAndNotifyServersService).execute();
         },
