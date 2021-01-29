@@ -23,6 +23,9 @@ const serverConfig = {
   tick_notification_channel: {
     key: 'TICK_NOTIFICATION_CHANNEL',
   },
+  galnet_notification_channel: {
+    key: 'GALNET_NOTIFICATION_CHANNEL',
+  },
 };
 
 export default serverConfig;
