@@ -1,5 +1,6 @@
 const eliteBGSApiUrl = 'https://elitebgs.app/api/ebgs/v4';
 const edsmApiUrl = 'https://www.edsm.net';
+const edOficialCMSApiUrl = 'https://cms.elitedangerous.com/api';
 
 const integrationsConfig = {
   eliteBGS: {
@@ -8,6 +9,9 @@ const integrationsConfig = {
   },
   edsm: {
     systemByNameApiUrl: `${edsmApiUrl}/api-system-v1/factions?systemName=<SYSTEM_NAME>&showHistory=1`,
+  },
+  edOficial: {
+    galnetInfosApiUrl: `${edOficialCMSApiUrl}/galnet?_format=json`,
   },
 };
 
