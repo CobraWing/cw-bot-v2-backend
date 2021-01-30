@@ -26,6 +26,15 @@ const serverConfig = {
   galnet_notification_channel: {
     key: 'GALNET_NOTIFICATION_CHANNEL',
   },
+  auto_role_enabled: {
+    key: 'AUTO_ROLE_ENABLED',
+  },
+  auto_role_channel: {
+    key: 'AUTO_ROLE_CHANNEL',
+  },
+  auto_role_info: {
+    key: 'AUTO_ROLE_INFO',
+  },
 };
 
 export default serverConfig;

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-restricted-syntax */
 import { injectable, container } from 'tsyringe';
-
 import log from 'heroku-logger';
 import { MessageEmbed, GuildMember, Message, Guild } from 'discord.js';
+
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
 import Server from '@modules/servers/entities/Server';
@@ -12,18 +12,12 @@ import serverConfig from '@config/serverConfig';
 @injectable()
 class RegisterWelcomeMessageProvider {
   public async execute(): Promise<void> {
-    log.info(
-      '[RegisterWelcomeMessageProvider] Starting to register welcome message',
-    );
+    log.info('[RegisterWelcomeMessageProvider] Starting to register welcome message');
 
     try {
-      const commandoClient = await container
-        .resolve(ClientProvider)
-        .getCLient();
+      const commandoClient = await container.resolve(ClientProvider).getCLient();
 
-      const findEnabledServerByDiscordId = container.resolve(
-        FindEnabledServerByDiscordIdService,
-      );
+      const findEnabledServerByDiscordId = container.resolve(FindEnabledServerByDiscordIdService);
 
       commandoClient.on('guildMemberAdd', async member => {
         log.info('new member has join in a guild', {
@@ -50,10 +44,10 @@ class RegisterWelcomeMessageProvider {
         const reactions = server.getConfiguration(keyReactions);
 
         if (!eventEnabled || !channelId) {
-          log.info(
-            'welcome message is disabled or not configured, not send welcome message to member',
-            { eventEnabled, channelId },
-          );
+          log.info('welcome message is disabled or not configured, not send welcome message to member', {
+            eventEnabled,
+            channelId,
+          });
           return;
         }
 
@@ -65,25 +59,18 @@ class RegisterWelcomeMessageProvider {
         const channel = guild.channels.cache.find(c => c.id === channelId);
 
         if (!channel || !channel.isText()) {
-          log.error(
-            `channel id ${channelId} not found or is not a text channel`,
-            { channel },
-          );
+          log.error(`channel id ${channelId} not found or is not a text channel`, { channel });
           return;
         }
 
         channel.send(`Olá <@${member.id}>`);
-        const sentMessage = await channel.send(
-          this.createWelcomeEmbedMessage(),
-        );
+        const sentMessage = await channel.send(this.createWelcomeEmbedMessage());
 
         this.setReactions(sentMessage, reactions, guild);
         this.setDefaultRole(server, member);
       });
 
-      log.info(
-        '[RegisterWelcomeMessageProvider] Finished register welcome message',
-      );
+      log.info('[RegisterWelcomeMessageProvider] Finished register welcome message');
     } catch (e) {
       log.error('Error while execute welcome message', { e });
     }
@@ -110,10 +97,7 @@ class RegisterWelcomeMessageProvider {
     return embed;
   }
 
-  async setDefaultRole(
-    serverConfiguration: Server,
-    member: GuildMember,
-  ): Promise<void> {
+  async setDefaultRole(serverConfiguration: Server, member: GuildMember): Promise<void> {
     const { key: keyDefaultRole } = serverConfig.welcome_default_role;
     const roleId = serverConfiguration.getConfiguration(keyDefaultRole);
 
@@ -131,19 +115,12 @@ class RegisterWelcomeMessageProvider {
 
     log.info(`setting role: ${roleFoundInGuild.name}`);
 
-    const roleSetted = await member.roles.add(
-      roleFoundInGuild,
-      'Cargo inicial, atribuído pelo bot.',
-    );
+    const roleSetted = await member.roles.add(roleFoundInGuild, 'Cargo inicial, atribuído pelo bot.');
 
     log.debug(`role setted`, { roleSetted });
   }
 
-  async setReactions(
-    sentMessage: Message | undefined,
-    reactions: string | undefined,
-    guild: Guild,
-  ): Promise<void> {
+  async setReactions(sentMessage: Message | undefined, reactions: string | undefined, guild: Guild): Promise<void> {
     if (!reactions || !sentMessage) {
       return;
     }
@@ -160,9 +137,7 @@ class RegisterWelcomeMessageProvider {
           log.error('error while react with simple emoji', { e });
         });
       } else {
-        const customReactExists = guild.emojis.cache.find(
-          e => e.available === true && e.name === react,
-        );
+        const customReactExists = guild.emojis.cache.find(e => e.available === true && e.name === react);
         if (customReactExists) {
           sentMessage.react(customReactExists).catch(e => {
             log.error('error while react with a custom emoji', { e });

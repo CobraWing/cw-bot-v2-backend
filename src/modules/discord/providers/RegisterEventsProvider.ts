@@ -1,6 +1,6 @@
 import { injectable, container } from 'tsyringe';
 
-import RegisterWelcomeMessageProvider from './events/RegisterWelcomeMessageProvider';
+import RegisterWelcomeMessageProvider from '@modules/discord/providers/events/RegisterWelcomeMessageProvider';
 
 @injectable()
 class RegisterCustomsProvider {

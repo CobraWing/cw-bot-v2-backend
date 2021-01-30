@@ -7,14 +7,12 @@ import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import pad from 'pad';
 import capitalize from 'capitalize';
-
 import log from 'heroku-logger';
 
 import serverConfig from '@config/serverConfig';
-
 import GetFactionPresencesByNameService from '@modules/elitebgs/services/GetFactionPresencesByNameService';
 import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
-import RegisterWingCommandsProvider from '../providers/RegisterWingCommandsProvider';
+import RegisterWingCommandsProvider from '@modules/discord/providers/RegisterWingCommandsProvider';
 
 class WingStatusRunner extends Commando.Command {
   private getFactionPresencesByNameService: GetFactionPresencesByNameService;
