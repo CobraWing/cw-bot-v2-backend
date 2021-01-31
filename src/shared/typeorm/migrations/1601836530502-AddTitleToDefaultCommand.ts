@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
-export default class AddTitleToDefaultCommand1601836530502
-  implements MigrationInterface {
+export default class AddTitleToDefaultCommand1601836530502 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.addColumn(
       'default_commands',

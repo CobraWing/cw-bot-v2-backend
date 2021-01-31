@@ -15,10 +15,7 @@ class FindEnabledServerByDiscordIdService {
   ) {}
 
   public async execute({ discord_id }: IRequest): Promise<Server | undefined> {
-    const server = await this.serversRepository.findByIdDiscordAndEnabledServer(
-      discord_id,
-    );
-
+    const server = await this.serversRepository.findByIdDiscordAndEnabledServer(discord_id);
     return server;
   }
 }
