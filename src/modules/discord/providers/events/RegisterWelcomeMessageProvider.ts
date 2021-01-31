@@ -71,8 +71,8 @@ class RegisterWelcomeMessageProvider {
       });
 
       log.info('[RegisterWelcomeMessageProvider] Finished register welcome message');
-    } catch (e) {
-      log.error('Error while execute welcome message', { e });
+    } catch (err) {
+      log.error('Error while execute welcome message', [err.message, err.stack]);
     }
   }
 

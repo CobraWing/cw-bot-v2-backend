@@ -56,8 +56,8 @@ class RegisterCustomCommandsProvider {
       log.info(
         `[RegisterCustomCommandsProvider] Finished register custom commands, total of commands alias registered: ${aliases.length}`,
       );
-    } catch (e) {
-      log.error('Error while register custom commands', e);
+    } catch (err) {
+      log.error('Error while register custom commands', [err.message, err.stack]);
     }
   }
 

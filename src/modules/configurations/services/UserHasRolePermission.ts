@@ -20,36 +20,26 @@ class UserHasRolePermission {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    user_id,
-    discord_id,
-    configuration_key,
-  }: IRequest): Promise<boolean> {
+  public async execute({ user_id, discord_id, configuration_key }: IRequest): Promise<boolean> {
     try {
       log.info(
         `[UserHasRolePermission] Check if user id={${user_id}} has permit key={${configuration_key}} in discord id={${discord_id}}`,
       );
 
-      const server = await this.serversRepository
-        .findByIdDiscordAndEnabledServer(discord_id)
-        .catch(err => {
-          log.error('Error while find by id discord', [err.message, err.stack]);
-          throw new Error('Error while find by id discord');
-        });
+      const server = await this.serversRepository.findByIdDiscordAndEnabledServer(discord_id).catch(err => {
+        log.error('Error while find by id discord', [err.message, err.stack]);
+        throw new Error('Error while find by id discord');
+      });
 
       if (!server) {
         log.error(`Discord id={${discord_id}} not found`);
         throw new Error();
       }
 
-      const configuration = server.server_configurations.find(
-        config => config.configuration_id === configuration_key,
-      );
+      const configuration = server.server_configurations.find(config => config.configuration_id === configuration_key);
 
       if (!configuration) {
-        log.error(
-          `Discord id={${discord_id}} does not have configured key={${configuration_key}}`,
-        );
+        log.error(`Discord id={${discord_id}} does not have configured key={${configuration_key}}`);
         throw new Error();
       }
 
@@ -60,9 +50,7 @@ class UserHasRolePermission {
         throw new Error();
       }
 
-      const userGuild = discordClient.guilds.cache.find(
-        guild => guild.id === discord_id,
-      );
+      const userGuild = discordClient.guilds.cache.find(guild => guild.id === discord_id);
 
       if (!userGuild) {
         log.error('guild not found');
@@ -81,13 +69,11 @@ class UserHasRolePermission {
         throw new Error();
       }
 
-      const permissionRole = member.roles.cache.find(
-        role => role.name === configuration.value,
-      );
+      const permissionRole = member.roles.cache.find(role => role.name === configuration.value);
 
       return !!permissionRole;
     } catch (err) {
-      log.error('[UserHasRolePermission] Error: ', err);
+      log.error('[UserHasRolePermission] Error: ', [err.message, err.stack]);
       return false;
     }
   }

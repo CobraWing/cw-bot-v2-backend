@@ -19,8 +19,8 @@ class RegisterWingCommandsProvider {
       commandoClient.registry.registerCommands([new WingStatusRunner(commandoClient)]);
 
       log.info('[RegisterWingCommandsProvider] Finished register wing commands');
-    } catch (e) {
-      log.error('Error while register wing commands', e);
+    } catch (err) {
+      log.error('Error while register wing commands', [err.message, err.stack]);
     }
   }
 }

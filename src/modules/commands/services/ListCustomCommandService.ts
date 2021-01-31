@@ -19,26 +19,18 @@ class ListCustomCommandService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discord_id,
-  }: IRequest): Promise<CustomCommand[] | undefined> {
-    const serverExists = await this.serversRepository.findByIdDiscord(
-      discord_id,
-    );
+  public async execute({ discord_id }: IRequest): Promise<CustomCommand[] | undefined> {
+    const serverExists = await this.serversRepository.findByIdDiscord(discord_id);
 
     if (!serverExists) {
-      log.error(
-        `[ListCustomCommandService] server does not exists with id: ${discord_id}`,
-      );
+      log.error(`[ListCustomCommandService] server does not exists with id: ${discord_id}`);
       throw new AppError({
         message: 'Server not found.',
         message_ptbr: 'Servidor não encontrado.',
       });
     }
 
-    const customCommands = await this.customCommandRepository.listByServerId(
-      serverExists.id,
-    );
+    const customCommands = await this.customCommandRepository.listByServerId(serverExists.id);
 
     return customCommands;
   }

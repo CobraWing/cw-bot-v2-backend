@@ -164,8 +164,8 @@ class WingStatusRunner extends Commando.Command {
 
       msg.embed(embed);
       msg.react('👍');
-    } catch (e) {
-      log.error(e);
+    } catch (err) {
+      log.error('[WingStatusRunner] error while fetching', [err.message, err.stack]);
       msg.react('👎');
       msg.reply('Ocorreu algum problema nas consultas, tente novamente em alguns instantes.');
     }

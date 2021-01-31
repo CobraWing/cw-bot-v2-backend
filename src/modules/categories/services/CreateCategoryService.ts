@@ -48,31 +48,23 @@ class CreateCategoryService {
       });
     }
 
-    const checkCategoryExists = await this.categoriesRepository.findByNameAndServerId(
-      name,
-      server.id,
-    );
+    const checkCategoryExists = await this.categoriesRepository.findByNameAndServerId(name, server.id);
 
     if (checkCategoryExists) {
       throw new AppError({
         message: 'Category already registered.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe uma outra categoria com esse nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe uma outra categoria com esse nome, escolha um nome diferente.',
       });
     }
 
-    const existsCommandWithSameName = await this.customCommandRepository.findByNameAndServerId(
-      name,
-      server.id,
-    );
+    const existsCommandWithSameName = await this.customCommandRepository.findByNameAndServerId(name, server.id);
 
     if (existsCommandWithSameName) {
       throw new AppError({
         message: 'Exists a custom command with the same name.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
       });
     }
 

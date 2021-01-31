@@ -63,8 +63,8 @@ class CheckLastTickAndNotifyServersService {
       await this.sendNotification(messageToNotify, guildToNotificate);
 
       this.cachProvider.save('last-tick', actualLastTick);
-    } catch (e) {
-      log.error('[CheckLastTickAndNotifyServersService] error:', e);
+    } catch (err) {
+      log.error('[CheckLastTickAndNotifyServersService] error:', [err.message, err.stack]);
     }
   }
 

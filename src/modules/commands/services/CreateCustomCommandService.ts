@@ -55,10 +55,7 @@ class CreateCustomCommandService {
       });
     }
 
-    const categoryExists = await this.categoriesRepository.findByIdAndServerId(
-      data.category_id,
-      server.id,
-    );
+    const categoryExists = await this.categoriesRepository.findByIdAndServerId(data.category_id, server.id);
 
     if (!categoryExists) {
       throw new AppError({
@@ -77,22 +74,17 @@ class CreateCustomCommandService {
       throw new AppError({
         message: 'Custom command name already registered.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
       });
     }
 
-    const checkNameAlreadyExists = await this.categoriesRepository.findByNameAndServerId(
-      data.name,
-      server.id,
-    );
+    const checkNameAlreadyExists = await this.categoriesRepository.findByNameAndServerId(data.name, server.id);
 
     if (checkNameAlreadyExists) {
       throw new AppError({
         message: 'Category already registered.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe uma categoria com o mesmo nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe uma categoria com o mesmo nome, escolha um nome diferente.',
       });
     }
 

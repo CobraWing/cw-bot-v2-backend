@@ -17,8 +17,8 @@ class RegisterDefaultsCommandsProvider {
       commandoClient.registry.registerCommands([new HelpCommandRunner(commandoClient)]);
 
       log.info('[RegisterDefaultsCommandsProvider] Finished register default commands');
-    } catch (e) {
-      log.error('Error while register defaults commands', e);
+    } catch (err) {
+      log.error('Error while register defaults commands', [err.message, err.stack]);
     }
   }
 }

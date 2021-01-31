@@ -58,8 +58,8 @@ class RegisterCategoriesCommandsProvider {
       log.info(
         `[RegisterCategoriesCommandsProvider] Finished register custom categories, total of categories alias registered: ${aliases.length}`,
       );
-    } catch (e) {
-      log.error('Error while register custom categories', e);
+    } catch (err) {
+      log.error('Error while register custom categories', [err.message, err.stack]);
     }
   }
 

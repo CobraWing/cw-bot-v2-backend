@@ -37,8 +37,8 @@ class RegisterAutoRoleProvider {
           log.info('NOT isNecessaryToAddMessage');
         }
       }
-    } catch (e) {
-      log.error('[RegisterAutoRoleProvider] Error while execute load auto role', { e });
+    } catch (err) {
+      log.error('[RegisterAutoRoleProvider] Error while execute load auto role', [err.message, err.stack]);
     }
   }
 
