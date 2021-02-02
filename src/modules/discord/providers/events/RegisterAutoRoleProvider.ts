@@ -3,7 +3,7 @@
 /* eslint-disable no-restricted-syntax */
 import { injectable, container } from 'tsyringe';
 import log from 'heroku-logger';
-import { MessageEmbed, Guild, TextChannel, MessageReaction, User } from 'discord.js';
+import { MessageEmbed, Guild, TextChannel, MessageReaction, User, Message } from 'discord.js';
 
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
@@ -14,7 +14,7 @@ interface IGuildToAddAutoRole {
   guild: Guild;
   textChannel: TextChannel;
   autoRoleInfos: ServerConfiguration[];
-  messageIdWithRoles: string;
+  messageWithRoles?: Message;
 }
 
 @injectable()
@@ -43,81 +43,22 @@ class RegisterAutoRoleProvider {
 
     const commandoClient = await container.resolve(ClientProvider).getCLient();
 
-    commandoClient.on('raw', async (packet: any) => {
-      if (packet.t !== 'MESSAGE_REACTION_ADD' && packet.t !== 'MESSAGE_REACTION_REMOVE') return;
-
-      // We don't want this to run on unrelated packets
-      // if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
-
-      // Grab the channel to check the message from
-      // const channel = commandoClient.channels.get(packet.d.channel_id);
-
-      const channel = commandoClient.channels.cache.find(c => c.id === packet.d.channel_id);
-
-      if (!channel || !channel.isText) {
-        log.info('channel not found');
-        return;
-      }
-
-      // There's no need to emit if the message is cached, because the event will fire anyway for that
-      if ((channel as TextChannel).messages.cache.find(m => m.id === packet.d.message_id)) {
-        log.info("There's no need to emit if the message is cached, because the event will fire anyway for that");
-        return;
-      }
-
-      const messages = await (channel as TextChannel).messages.fetch(undefined, false, true);
-
-      log.info(`messages length: ${messages.size}`);
-
-      for await (const [, message] of messages) {
-        // Since we have confirmed the message is not cached, let's fetch it
-        // channel.fetchMessage(packet.d.message_id).then(message => {
-
-        // Emojis can have identifiers of name:id format, so we have to account for that case as well
-        // const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
-        // This gives us the reaction we need to emit the event properly, in top of the message object
-        // const reaction = message.reactions.get(emoji);
-
-        let reaction;
-
-        if (packet.d.emoji.id) {
-          reaction = message.reactions.cache.find(r => r.emoji.id === packet.d.emoji.id);
-        } else {
-          reaction = message.reactions.cache.find(r => r.emoji.name === packet.d.emoji.name);
-        }
-
-        if (!reaction) return;
-
-        // const reaction = message.reactions.cache.find(r => r.emoji === emoji);
-
-        // message.reactions
-
-        // Adds the currently reacting user to the reaction's users collection.
-        // if (reaction) reaction.users.set(packet.d.user_id, commandoClient.users.get(packet.d.user_id));
-
-        const user = commandoClient.users.cache.find(u => u.id === packet.d.user_id);
-
-        if (!user) return;
-
-        reaction.users.cache.set(packet.d.user_id, user);
-
-        // Check which type of event it is before emitting
-
-        if (packet.t === 'MESSAGE_REACTION_ADD') {
-          // commandoClient.emit('messageReactionAdd', reaction, commandoClient.users.get(packet.d.user_id));
-          log.info('emit add');
-          commandoClient.emit('messageReactionAdd', reaction, user);
-        }
-        if (packet.t === 'MESSAGE_REACTION_REMOVE') {
-          // commandoClient.emit('messageReactionRemove', reaction, commandoClient.users.get(packet.d.user_id));
-          log.info('emit remove');
-          commandoClient.emit('messageReactionRemove', reaction, user);
-        }
-      }
-    });
-
-    commandoClient.on('messageReactionAdd', (messageReaction: MessageReaction, user: User) => {
+    commandoClient.on('messageReactionAdd', async (messageReaction: MessageReaction, user: User) => {
       log.info('add', [messageReaction.emoji.name, messageReaction.emoji.id, user.username]);
+      const guildAutoRole = this.getGuildAutoRoleFromMessageReacted(messageReaction);
+
+      if (!guildAutoRole) return;
+
+      const autoRole = this.getAutoRoleInfoFromMessageReaction(guildAutoRole, messageReaction);
+
+      if (!autoRole) {
+        const reaction = guildAutoRole.messageWithRoles?.reactions.cache.find(
+          r => r.emoji.name === messageReaction.emoji.name,
+        );
+        if (reaction) {
+          reaction.remove();
+        }
+      }
     });
 
     commandoClient.on('messageReactionRemove', (messageReaction: MessageReaction, user: User) => {
@@ -152,7 +93,6 @@ class RegisterAutoRoleProvider {
           guild,
           textChannel: channel as TextChannel,
           autoRoleInfos,
-          messageIdWithRoles: '',
         });
       }
     }
@@ -196,6 +136,8 @@ class RegisterAutoRoleProvider {
       }
     }
 
+    guildToAdd.messageWithRoles = autoRoleMessage;
+
     return false;
   }
 
@@ -225,7 +167,7 @@ class RegisterAutoRoleProvider {
 
     const addedMessage = await guildToAdd.textChannel.send(embed);
 
-    guildToAdd.messageIdWithRoles = addedMessage.id;
+    guildToAdd.messageWithRoles = addedMessage;
 
     emojis.forEach(emoji => {
       addedMessage.react(emoji);
@@ -246,6 +188,25 @@ class RegisterAutoRoleProvider {
     }
 
     return value;
+  }
+
+  private getGuildAutoRoleFromMessageReacted(messageReaction: MessageReaction): IGuildToAddAutoRole | undefined {
+    const guildToAddAutoRole = this.guildsToNotificate.find(
+      guild => guild.messageWithRoles?.id === messageReaction.message.id,
+    );
+
+    return guildToAddAutoRole;
+  }
+
+  private getAutoRoleInfoFromMessageReaction(
+    guildToAddAutoRole: IGuildToAddAutoRole,
+    messageReaction: MessageReaction,
+  ): ServerConfiguration | undefined {
+    const autoRoleInfo = guildToAddAutoRole.autoRoleInfos.find(
+      info => info.value_alternative === messageReaction.emoji.name,
+    );
+
+    return autoRoleInfo;
   }
 }
 
