@@ -44,7 +44,7 @@ class RegisterAutoRoleProvider {
     const commandoClient = await container.resolve(ClientProvider).getCLient();
 
     commandoClient.on('messageReactionAdd', async (messageReaction: MessageReaction, user: User) => {
-      log.info('add', [messageReaction.emoji.name, messageReaction.emoji.id, user.username]);
+      // log.info('add', [messageReaction.emoji.name, messageReaction.emoji.id, user.username]);
       const guildAutoRole = this.getGuildAutoRoleFromMessageReacted(messageReaction);
 
       if (!guildAutoRole) return;
@@ -58,11 +58,40 @@ class RegisterAutoRoleProvider {
         if (reaction) {
           reaction.remove();
         }
+        return;
       }
+
+      const guildRole = guildAutoRole.guild.roles.cache.find(r => r.name === autoRole.value);
+
+      if (!guildRole) return;
+
+      const guildMember = await guildAutoRole.guild.members.fetch(user);
+
+      if (!guildMember) return;
+
+      guildMember.roles.add(guildRole);
     });
 
-    commandoClient.on('messageReactionRemove', (messageReaction: MessageReaction, user: User) => {
-      log.info('remove', [messageReaction.emoji.name, messageReaction.emoji.id, user.username]);
+    commandoClient.on('messageReactionRemove', async (messageReaction: MessageReaction, user: User) => {
+      // log.info('remove', [messageReaction.emoji.name, messageReaction.emoji.id, user.username]);
+
+      const guildAutoRole = this.getGuildAutoRoleFromMessageReacted(messageReaction);
+
+      if (!guildAutoRole) return;
+
+      const autoRole = this.getAutoRoleInfoFromMessageReaction(guildAutoRole, messageReaction);
+
+      if (!autoRole) return;
+
+      const guildRole = guildAutoRole.guild.roles.cache.find(r => r.name === autoRole.value);
+
+      if (!guildRole) return;
+
+      const guildMember = await guildAutoRole.guild.members.fetch(user);
+
+      if (!guildMember) return;
+
+      guildMember.roles.remove(guildRole);
     });
   }
 
