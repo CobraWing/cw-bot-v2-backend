@@ -3,17 +3,7 @@
 /* eslint-disable no-restricted-syntax */
 import { injectable, container } from 'tsyringe';
 import log from 'heroku-logger';
-import {
-  MessageEmbed,
-  Guild,
-  TextChannel,
-  MessageReaction,
-  User,
-  Message,
-  GuildMember,
-  RoleManager,
-  Role,
-} from 'discord.js';
+import { MessageEmbed, Guild, TextChannel, MessageReaction, User, Message, Role } from 'discord.js';
 
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
