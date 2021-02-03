@@ -3,7 +3,17 @@
 /* eslint-disable no-restricted-syntax */
 import { injectable, container } from 'tsyringe';
 import log from 'heroku-logger';
-import { MessageEmbed, Guild, TextChannel, MessageReaction, User, Message } from 'discord.js';
+import {
+  MessageEmbed,
+  Guild,
+  TextChannel,
+  MessageReaction,
+  User,
+  Message,
+  GuildMember,
+  RoleManager,
+  Role,
+} from 'discord.js';
 
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
@@ -49,19 +59,7 @@ class RegisterAutoRoleProvider {
 
       if (!guildAutoRole) return;
 
-      const autoRole = this.getAutoRoleInfoFromMessageReaction(guildAutoRole, messageReaction);
-
-      if (!autoRole) {
-        const reaction = guildAutoRole.messageWithRoles?.reactions.cache.find(
-          r => r.emoji.name === messageReaction.emoji.name,
-        );
-        if (reaction) {
-          reaction.remove();
-        }
-        return;
-      }
-
-      const guildRole = guildAutoRole.guild.roles.cache.find(r => r.name === autoRole.value);
+      const guildRole = this.validateAndGetGuildRole(guildAutoRole, messageReaction);
 
       if (!guildRole) return;
 
@@ -79,11 +77,7 @@ class RegisterAutoRoleProvider {
 
       if (!guildAutoRole) return;
 
-      const autoRole = this.getAutoRoleInfoFromMessageReaction(guildAutoRole, messageReaction);
-
-      if (!autoRole) return;
-
-      const guildRole = guildAutoRole.guild.roles.cache.find(r => r.name === autoRole.value);
+      const guildRole = this.validateAndGetGuildRole(guildAutoRole, messageReaction);
 
       if (!guildRole) return;
 
@@ -93,6 +87,23 @@ class RegisterAutoRoleProvider {
 
       guildMember.roles.remove(guildRole);
     });
+  }
+
+  public validateAndGetGuildRole(
+    guildAutoRole: IGuildToAddAutoRole,
+    messageReaction: MessageReaction,
+  ): Role | undefined {
+    const autoRole = this.getAutoRoleInfoFromMessageReaction(guildAutoRole, messageReaction);
+
+    if (!autoRole) {
+      const mReaction = guildAutoRole.messageWithRoles?.reactions.resolve(messageReaction);
+      if (mReaction) {
+        mReaction.remove();
+      }
+      return undefined;
+    }
+
+    return guildAutoRole.guild.roles.cache.find(r => r.name === autoRole.value);
   }
 
   public async getGuildsWithEnabledFeature(): Promise<void> {
