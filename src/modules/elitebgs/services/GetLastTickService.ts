@@ -35,7 +35,7 @@ class GetLastTickService {
 
       log.debug(`[GetLastTickService] Finish fetch in ${sw.getTotalTime()}ms `);
 
-      return response.data.pop();
+      return response.data.reverse().pop();
     } catch (e) {
       log.error(e);
       return undefined;
