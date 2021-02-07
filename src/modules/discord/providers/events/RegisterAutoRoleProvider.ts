@@ -137,7 +137,7 @@ class RegisterAutoRoleProvider {
       const channelIdentifier = server.getConfiguration(autoRoleChannel);
       const autoRoleInfos = server.findConfiguration(autoRoleInfo);
 
-      if (!server.getConfiguration(autoRoleEnabled) || !channelIdentifier) continue;
+      if (server.getConfiguration(autoRoleEnabled) !== 'true' || !channelIdentifier) continue;
 
       const channel = guild?.channels.cache.find(c => c.name === channelIdentifier);
 
