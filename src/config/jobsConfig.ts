@@ -4,6 +4,9 @@ const jobsConfig = {
   },
   galnetNotification: {
     cron: process.env.CRON_GALNET_NOTIFICATION || '*/5 * * * *', // every minute
+    defaultCacheExpiration: process.env.CACHE_GALNET_EXPIRATION
+      ? parseInt(process.env.CACHE_GALNET_EXPIRATION, 10)
+      : 86400, // 1 day in seconds
   },
 };
 

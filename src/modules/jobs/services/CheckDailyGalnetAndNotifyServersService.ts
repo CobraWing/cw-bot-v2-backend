@@ -14,6 +14,7 @@ import IGalnetResponse from '@modules/ed-oficial/dtos/IGalnetResponse';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import ICacheProvider from '@shared/providers/CacheProvider/models/ICacheProvider';
 import serverConfig from '@config/serverConfig';
+import jobsConfig from '@config/jobsConfig';
 
 interface IGuildToNotificate {
   guild: Guild;
@@ -68,11 +69,8 @@ class CheckDailyGalnetAndNotifyServersService {
       if (recordedLastGalnetEvents) {
         allEventsSent.push(...recordedLastGalnetEvents);
       }
-      this.cachProvider.save(cacheKey, allEventsSent);
-
-      // remove last day cache
-      const lastDayCacheKey = `galnet-${format(subDays(eventsDate, 1), 'dd-MMM-yyyy').toUpperCase()}`;
-      this.cachProvider.invalidate(lastDayCacheKey);
+      const expiration = jobsConfig.galnetNotification.defaultCacheExpiration;
+      this.cachProvider.saveWithExpirationInSeconds(cacheKey, allEventsSent, expiration);
     } catch (err) {
       log.error('[CheckDailyGalnetAndNotifyServersService] error:', [err.message, err.stack]);
     }
