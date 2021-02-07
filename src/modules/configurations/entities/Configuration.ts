@@ -12,13 +12,9 @@ class Configuration {
   @Column()
   value_default_alternative: string;
 
-  @OneToMany(
-    () => ServerConfiguration,
-    serverConfiguration => serverConfiguration.configuration,
-    {
-      cascade: true,
-    },
-  )
+  @OneToMany(() => ServerConfiguration, serverConfiguration => serverConfiguration.configuration, {
+    cascade: true,
+  })
   server_configurations: ServerConfiguration[];
 }
 

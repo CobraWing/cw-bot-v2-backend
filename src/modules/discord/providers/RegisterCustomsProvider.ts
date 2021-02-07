@@ -1,7 +1,7 @@
 import { injectable, container } from 'tsyringe';
 
-import RegisterCategoriesCommandsProvider from './customs/RegisterCategoriesCommandsProvider';
-import RegisterCustomCommandsProvider from './customs/RegisterCustomCommandsProvider';
+import RegisterCategoriesCommandsProvider from '@modules/discord/providers/customs/RegisterCategoriesCommandsProvider';
+import RegisterCustomCommandsProvider from '@modules/discord/providers/customs/RegisterCustomCommandsProvider';
 
 @injectable()
 class RegisterCustomsProvider {

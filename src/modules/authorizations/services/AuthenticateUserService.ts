@@ -16,9 +16,7 @@ interface IRequest {
 @injectable()
 class AuthenticateUserService {
   public async execute({ code }: IRequest): Promise<Authentication> {
-    const getUserAndGuildInfos = container.resolve(
-      GetUserAndGuildInfosFromToken,
-    );
+    const getUserAndGuildInfos = container.resolve(GetUserAndGuildInfosFromToken);
     const filterPermittedGuilds = container.resolve(FilterPermittedGuilds);
     const { tokenUrl, tokenParams } = authConfig.discord;
     const { secret, expiresIn } = authConfig.jwt;
@@ -45,17 +43,14 @@ class AuthenticateUserService {
           token: response.data.access_token,
         })
         .catch(err => {
-          log.error('Error while get user and guild infos', [
-            err.message,
-            err.stack,
-          ]);
+          log.error('Error while get user and guild infos', [err.message, err.stack]);
           throw new Error('Error while get user and guild infos');
         });
 
-      log.info(
-        `[AuthenticateUserService] found user: [userInfo] and guilds: [guildsInfo] from user`,
-        { userInfo: user, guildsInfo: guilds },
-      );
+      log.info(`[AuthenticateUserService] found user: [userInfo] and guilds: [guildsInfo] from user`, {
+        userInfo: user,
+        guildsInfo: guilds,
+      });
 
       const { id: uId, username: name, avatar } = user;
 
@@ -67,17 +62,11 @@ class AuthenticateUserService {
           guilds,
         })
         .catch(err => {
-          log.error('Error while filter permitted guilds', [
-            err.message,
-            err.stack,
-          ]);
+          log.error('Error while filter permitted guilds', [err.message, err.stack]);
           throw new Error('Error while filter permitted guilds');
         });
 
-      log.info(
-        `[AuthenticateUserService] guilds permitted: [permittedGuilds]`,
-        { permittedGuilds },
-      );
+      log.info(`[AuthenticateUserService] guilds permitted: [permittedGuilds]`, { permittedGuilds });
 
       const authorization = new Authentication();
       const gIds = permittedGuilds.map(guild => guild.id);

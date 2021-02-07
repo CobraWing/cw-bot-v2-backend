@@ -25,24 +25,17 @@ class DeleteCategoryByIdService {
   }
 
   public async execute({ discord_id, category_id }: IRequest): Promise<void> {
-    const serverExists = await this.serversRepository.findByIdDiscord(
-      discord_id,
-    );
+    const serverExists = await this.serversRepository.findByIdDiscord(discord_id);
 
     if (!serverExists) {
-      log.error(
-        `[DeleteCategoryByIdService] server does not exists with id: ${discord_id}`,
-      );
+      log.error(`[DeleteCategoryByIdService] server does not exists with id: ${discord_id}`);
       throw new AppError({
         message: 'Server not found.',
         message_ptbr: 'Servidor não encontrado.',
       });
     }
 
-    await this.categoriesRepository.deleteByIdAndServerId(
-      category_id,
-      serverExists.id,
-    );
+    await this.categoriesRepository.deleteByIdAndServerId(category_id, serverExists.id);
 
     this.registerCustomsProvider.execute();
   }

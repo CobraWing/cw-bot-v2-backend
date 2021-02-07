@@ -43,6 +43,15 @@ class ServerConfiguration {
 
   @Column()
   updated_by: string;
+
+  @Column()
+  extra1: string;
+
+  @Column()
+  extra2: string;
+
+  @Column()
+  extra3: string;
 }
 
 export default ServerConfiguration;

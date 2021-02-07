@@ -12,9 +12,7 @@ class ServersRepository implements IServersRepository {
     this.ormRepository = getRepository(Server);
   }
 
-  public async findByIdDiscord(
-    id_discord: string,
-  ): Promise<Server | undefined> {
+  public async findByIdDiscord(id_discord: string): Promise<Server | undefined> {
     const server = await this.ormRepository.findOne({
       where: { id_discord },
       relations: ['server_configurations'],
@@ -23,9 +21,7 @@ class ServersRepository implements IServersRepository {
     return server;
   }
 
-  public async findByIdDiscordAndEnabledServer(
-    id_discord: string,
-  ): Promise<Server | undefined> {
+  public async findByIdDiscordAndEnabledServer(id_discord: string): Promise<Server | undefined> {
     const server = await this.ormRepository.findOne({
       where: { id_discord, enabled: true },
       relations: ['server_configurations'],

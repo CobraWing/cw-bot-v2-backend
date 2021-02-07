@@ -73,8 +73,8 @@ class CheckDailyGalnetAndNotifyServersService {
       // remove last day cache
       const lastDayCacheKey = `galnet-${format(subDays(eventsDate, 1), 'dd-MMM-yyyy').toUpperCase()}`;
       this.cachProvider.invalidate(lastDayCacheKey);
-    } catch (e) {
-      log.error('[CheckDailyGalnetAndNotifyServersService] error:', e?.message);
+    } catch (err) {
+      log.error('[CheckDailyGalnetAndNotifyServersService] error:', [err.message, err.stack]);
     }
   }
 
