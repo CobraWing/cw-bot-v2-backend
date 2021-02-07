@@ -3,6 +3,7 @@
 import { injectable, container } from 'tsyringe';
 import { Permissions } from 'discord.js';
 import log from 'heroku-logger';
+
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import UserHasRolePermission from '@modules/configurations/services/UserHasRolePermission';
 import FindEnabledServerByDiscordIdService from '@modules/servers/services/FindEnabledServerByDiscordIdService';
@@ -23,15 +24,10 @@ interface IRequest {
 
 @injectable()
 class FilterPermittedGuilds {
-  public async execute({
-    user_id,
-    guilds: userGuilds,
-  }: IRequest): Promise<IGuild[]> {
+  public async execute({ user_id, guilds: userGuilds }: IRequest): Promise<IGuild[]> {
     const discordClient = await container.resolve(ClientProvider).getCLient();
     const userHasRolePermission = container.resolve(UserHasRolePermission);
-    const findEnabledServerByDiscordId = container.resolve(
-      FindEnabledServerByDiscordIdService,
-    );
+    const findEnabledServerByDiscordId = container.resolve(FindEnabledServerByDiscordIdService);
     const { baseCDNUrl } = discordConfig.api;
 
     log.info(`[FilterPermittedGuilds] filter guilds for [user_id]`, {
@@ -43,9 +39,7 @@ class FilterPermittedGuilds {
       const permittedGuilds: IGuild[] = [];
 
       for (const botGuild of botGuilds.array()) {
-        const botGuildWithUser = userGuilds.find(
-          userGuild => userGuild.id === botGuild.id,
-        );
+        const botGuildWithUser = userGuilds.find(userGuild => userGuild.id === botGuild.id);
 
         if (!botGuildWithUser) {
           continue;
@@ -54,9 +48,7 @@ class FilterPermittedGuilds {
         botGuildWithUser.icon = `${baseCDNUrl}/icons/${botGuildWithUser.id}/${botGuildWithUser.icon}.png`;
 
         const userInGuild = await botGuild.members.fetch(user_id);
-        const userOwnerOrAdmin =
-          botGuildWithUser.owner ||
-          userInGuild.hasPermission(new Permissions('ADMINISTRATOR'));
+        const userOwnerOrAdmin = botGuildWithUser.owner || userInGuild.hasPermission(new Permissions('ADMINISTRATOR'));
 
         if (userOwnerOrAdmin) {
           log.info(
@@ -67,10 +59,7 @@ class FilterPermittedGuilds {
           });
 
           if (server) {
-            log.info(
-              '[FilterPermittedGuilds] guild is enabled, add to permitted guilds list',
-              { server },
-            );
+            log.info('[FilterPermittedGuilds] guild is enabled, add to permitted guilds list', { server });
             permittedGuilds.push(botGuildWithUser);
           } else {
             log.info('[FilterPermittedGuilds] guild not exists or disabled');
@@ -78,9 +67,7 @@ class FilterPermittedGuilds {
         } else {
           const { key } = serverConfig.manage_server_role;
 
-          log.info(
-            `[FilterPermittedGuilds] check if user contains role: ${key} in guild ${botGuild.name}`,
-          );
+          log.info(`[FilterPermittedGuilds] check if user contains role: ${key} in guild ${botGuild.name}`);
 
           const hasPermission = await userHasRolePermission
             .execute({
@@ -89,16 +76,11 @@ class FilterPermittedGuilds {
               configuration_key: key,
             })
             .catch(err => {
-              log.error('Error while check if user has role permission', [
-                err.message,
-                err.stack,
-              ]);
+              log.error('Error while check if user has role permission', [err.message, err.stack]);
             });
 
           if (hasPermission) {
-            log.info(
-              `[FilterPermittedGuilds] User contains role, add in permitted guilds list`,
-            );
+            log.info(`[FilterPermittedGuilds] User contains role, add in permitted guilds list`);
             permittedGuilds.push(botGuildWithUser);
           }
         }
@@ -106,10 +88,7 @@ class FilterPermittedGuilds {
 
       return permittedGuilds;
     } catch (err) {
-      log.error('Error while filter permitted guilds', [
-        err.message,
-        err.stack,
-      ]);
+      log.error('Error while filter permitted guilds', [err.message, err.stack]);
       throw new Error('Error while filter permitted guilds');
     }
   }

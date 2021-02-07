@@ -80,14 +80,14 @@ class GetFactionPresencesByNameService {
     const response = await axios.get<IEliteBGSResponse>(requestUrl);
 
     if (response?.status !== 200 || !response?.data?.docs) {
-      log.error('[GetFactionPresencesByNameService] Error while get faction presences', response);
+      log.error('[GetFactionPresencesByNameService] Error while get faction presences', { response });
       throw new Error('Error while faction presence');
     }
 
     let factionData = response.data.docs.find(doc => doc.name_lower === factionName);
 
     if (!factionData) {
-      log.error('[GetFactionPresencesByNameService] Faction name not found in response data', factionData);
+      log.error('[GetFactionPresencesByNameService] Faction name not found in response data');
       throw new Error('Error while faction presence');
     }
 
@@ -193,7 +193,7 @@ class GetFactionPresencesByNameService {
         })
         .catch(err => {
           factionData.lostInfos = true;
-          log.error('[GetFactionPresencesByNameService] Error while fetch infos from edsm', err);
+          log.error('[GetFactionPresencesByNameService] Error while fetch infos from edsm', [err.message, err.stack]);
         })
         .finally(() => {
           log.info('[GetFactionPresencesByNameService] Finish get all system infos from edsm');

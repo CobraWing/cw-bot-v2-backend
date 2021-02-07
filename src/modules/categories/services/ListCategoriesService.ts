@@ -24,27 +24,18 @@ class ListCategoriesService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discord_id,
-    countCommands,
-  }: IRequest): Promise<CommandCategory[] | undefined> {
-    const serverExists = await this.serversRepository.findByIdDiscord(
-      discord_id,
-    );
+  public async execute({ discord_id, countCommands }: IRequest): Promise<CommandCategory[] | undefined> {
+    const serverExists = await this.serversRepository.findByIdDiscord(discord_id);
 
     if (!serverExists) {
-      log.error(
-        `[ListCategoriesService] server does not exists with id: ${discord_id}`,
-      );
+      log.error(`[ListCategoriesService] server does not exists with id: ${discord_id}`);
       throw new AppError({
         message: 'Server not found.',
         message_ptbr: 'Servidor não encontrado.',
       });
     }
 
-    const categories = await this.categoriesRepository.listByServerId(
-      serverExists.id,
-    );
+    const categories = await this.categoriesRepository.listByServerId(serverExists.id);
 
     if (categories) {
       categories.sort((a, b) => (a.name > b.name ? 1 : -1));
@@ -52,10 +43,7 @@ class ListCategoriesService {
 
     if (categories && countCommands) {
       for await (const category of categories) {
-        const [
-          ,
-          counter,
-        ] = await this.customCommandRepository.countByCategoryId(category.id);
+        const [, counter] = await this.customCommandRepository.countByCategoryId(category.id);
         category.commands_count = counter;
       }
     }

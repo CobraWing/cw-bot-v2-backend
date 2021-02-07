@@ -32,8 +32,8 @@ class GetSystemInfosByNameService {
           log.debug(`[GetSystemInfosByNameService] Finish fetch system ${systemName} in ${sw.getTotalTime()}ms`);
           resolve(response.data);
         })
-        .catch(() => {
-          log.error('[GetSystemInfosByNameService] Error while fetch system by name');
+        .catch(err => {
+          log.error('[GetSystemInfosByNameService] Error while fetch system by name', [err.message, err.stack]);
           reject();
         });
     });

@@ -17,9 +17,7 @@ class CreateServerService {
   ) {}
 
   public async execute({ name, id_discord }: IRequest): Promise<Server> {
-    const checkServerExists = await this.serversRepository.findByIdDiscord(
-      id_discord,
-    );
+    const checkServerExists = await this.serversRepository.findByIdDiscord(id_discord);
 
     if (checkServerExists) {
       throw new AppError({

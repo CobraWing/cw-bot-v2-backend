@@ -71,8 +71,8 @@ class CheckDailyGalnetAndNotifyServersService {
       }
       const expiration = jobsConfig.galnetNotification.defaultCacheExpiration;
       this.cachProvider.saveWithExpirationInSeconds(cacheKey, allEventsSent, expiration);
-    } catch (e) {
-      log.error('[CheckDailyGalnetAndNotifyServersService] error:', e?.message);
+    } catch (err) {
+      log.error('[CheckDailyGalnetAndNotifyServersService] error:', [err.message, err.stack]);
     }
   }
 

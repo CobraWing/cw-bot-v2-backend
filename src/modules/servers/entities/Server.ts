@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import ServerConfiguration from '@modules/configurations/entities/ServerConfiguration';
 import ServerDefaultCommand from '@modules/default-commands/entities/ServerDefaultCommand';
 
@@ -23,23 +16,15 @@ class Server {
   @Column()
   enabled: boolean;
 
-  @OneToMany(
-    () => ServerConfiguration,
-    serverConfiguration => serverConfiguration.server,
-    {
-      cascade: true,
-      eager: true,
-    },
-  )
+  @OneToMany(() => ServerConfiguration, serverConfiguration => serverConfiguration.server, {
+    cascade: true,
+    eager: true,
+  })
   server_configurations: ServerConfiguration[];
 
-  @OneToMany(
-    () => ServerDefaultCommand,
-    serverDefaultCommand => serverDefaultCommand.server,
-    {
-      cascade: true,
-    },
-  )
+  @OneToMany(() => ServerDefaultCommand, serverDefaultCommand => serverDefaultCommand.server, {
+    cascade: true,
+  })
   server_default_command: ServerDefaultCommand[];
 
   @CreateDateColumn()
@@ -52,11 +37,17 @@ class Server {
     if (!this.server_configurations) {
       return undefined;
     }
-    const config = this.server_configurations.find(
-      c => c.configuration_id === configuration_id,
-    );
+    const config = this.server_configurations.find(c => c.configuration_id === configuration_id);
 
     return config?.value;
+  }
+
+  findConfiguration(configuration_id: string): ServerConfiguration[] | undefined {
+    if (!this.server_configurations) {
+      return undefined;
+    }
+    const configurations = this.server_configurations.filter(c => c.configuration_id === configuration_id);
+    return configurations && configurations.length > 0 ? configurations : undefined;
   }
 }
 

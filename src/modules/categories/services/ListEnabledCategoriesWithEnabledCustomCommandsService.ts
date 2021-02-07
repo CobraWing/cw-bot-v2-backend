@@ -21,13 +21,8 @@ class ListEnabledCategoriesWithEnabledCustomCommandsService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discord_id,
-    show_in_menu,
-  }: IRequest): Promise<CommandCategory[] | undefined> {
-    const serverExists = await this.serversRepository.findByIdDiscord(
-      discord_id,
-    );
+  public async execute({ discord_id, show_in_menu }: IRequest): Promise<CommandCategory[] | undefined> {
+    const serverExists = await this.serversRepository.findByIdDiscord(discord_id);
 
     if (!serverExists) {
       log.error(
