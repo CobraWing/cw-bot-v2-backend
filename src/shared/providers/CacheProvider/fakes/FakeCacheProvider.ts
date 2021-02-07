@@ -11,6 +11,10 @@ export default class FakeCacheProvider implements ICacheProvider {
     this.cache[key] = JSON.stringify(value);
   }
 
+  public async saveWithExpirationInSeconds(key: string, value: any, _: number): Promise<void> {
+    this.cache[key] = JSON.stringify(value);
+  }
+
   public async recovery<T>(key: string): Promise<T | null> {
     const data = this.cache[key];
 
@@ -26,9 +30,7 @@ export default class FakeCacheProvider implements ICacheProvider {
   }
 
   public async invalidatePrefix(prefix: string): Promise<void> {
-    const keys = Object.keys(this.cache).filter(key =>
-      key.startsWith(`${prefix}:`),
-    );
+    const keys = Object.keys(this.cache).filter(key => key.startsWith(`${prefix}:`));
 
     keys.forEach(key => {
       delete this.cache[key];
