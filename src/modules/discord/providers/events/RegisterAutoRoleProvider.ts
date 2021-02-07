@@ -15,12 +15,12 @@ interface IGuildToAddAutoRole {
   guild: Guild;
   textChannel: TextChannel;
   autoRoleInfos: ServerConfiguration[];
-  messageWithRoles?: Message;
+  messageWithRoles: Message;
 }
 
 interface ICheckChannelMessage {
   necessarySend: boolean;
-  foundMessage?: MessageEmbed;
+  messageToUpdate?: MessageEmbed;
 }
 
 @injectable()
@@ -33,16 +33,16 @@ class RegisterAutoRoleProvider {
     log.info('[RegisterAutoRoleProvider] Starting load auto role');
 
     try {
-      await this.getGuildsWithEnabledFeature();
+      await this.loadGuildsWithEnabledFeature();
 
       for await (const guildToAdd of this.guildsToNotificate) {
-        const { necessarySend, foundMessage } = await this.isNecessaryToAddMessage(guildToAdd);
+        const { necessarySend, messageToUpdate } = await this.isNecessaryToAddMessage(guildToAdd);
 
         if (necessarySend) {
           log.info('isNecessaryToAddMessage');
 
-          if (foundMessage) {
-            this.updateMessageWithAutoRoles(guildToAdd, foundMessage);
+          if (messageToUpdate) {
+            this.updateMessageWithAutoRoles(guildToAdd, messageToUpdate);
           } else {
             this.sendNewMessageWithAutoRoles(guildToAdd);
           }
@@ -58,6 +58,9 @@ class RegisterAutoRoleProvider {
 
     commandoClient.on('messageReactionAdd', async (messageReaction: MessageReaction, user: User) => {
       // log.info('add', [messageReaction.emoji.name, messageReaction.emoji.id, user.username]);
+
+      if (user.bot) return;
+
       const guildAutoRole = this.getGuildAutoRoleFromMessageReacted(messageReaction);
 
       if (!guildAutoRole) return;
@@ -75,6 +78,8 @@ class RegisterAutoRoleProvider {
 
     commandoClient.on('messageReactionRemove', async (messageReaction: MessageReaction, user: User) => {
       // log.info('remove', [messageReaction.emoji.name, messageReaction.emoji.id, user.username]);
+
+      if (user.bot) return;
 
       const guildAutoRole = this.getGuildAutoRoleFromMessageReacted(messageReaction);
 
@@ -99,7 +104,7 @@ class RegisterAutoRoleProvider {
     const autoRole = this.getAutoRoleInfoFromMessageReaction(guildAutoRole, messageReaction);
 
     if (!autoRole) {
-      const mReaction = guildAutoRole.messageWithRoles?.reactions.resolve(messageReaction);
+      const mReaction = guildAutoRole.messageWithRoles.reactions.resolve(messageReaction);
       if (mReaction) {
         mReaction.remove();
       }
@@ -109,7 +114,7 @@ class RegisterAutoRoleProvider {
     return guildAutoRole.guild.roles.cache.find(r => r.name === autoRole.value);
   }
 
-  public async getGuildsWithEnabledFeature(): Promise<void> {
+  public async loadGuildsWithEnabledFeature(): Promise<void> {
     const commandoClient = await container.resolve(ClientProvider).getCLient();
     const findEnabledServerByDiscordIdService = container.resolve(FindEnabledServerByDiscordIdService);
 
@@ -136,6 +141,7 @@ class RegisterAutoRoleProvider {
           guild,
           textChannel: channel as TextChannel,
           autoRoleInfos,
+          messageWithRoles: {} as Message,
         });
       }
     }
@@ -160,7 +166,7 @@ class RegisterAutoRoleProvider {
     const autoRoleMessageReactions = autoRoleMessage.reactions.cache;
 
     if (autoRoleMessageReactions.size !== guildToAdd.autoRoleInfos.length)
-      return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
+      return { necessarySend: true, messageToUpdate: autoRoleMessageEmbed };
 
     for await (const info of guildToAdd.autoRoleInfos) {
       guildToAdd.messageWithRoles = autoRoleMessage;
@@ -168,21 +174,21 @@ class RegisterAutoRoleProvider {
       // Check if some emoji has been updated
       if (!autoRoleMessageReactions.find(reaction => reaction.emoji.name === info.value_alternative)) {
         // await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause roles has been changed.');
-        return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
+        return { necessarySend: true, messageToUpdate: autoRoleMessageEmbed };
       }
       // Check if some description has been updated
       if (!autoRoleMessageEmbed.description?.includes(info.extra1.replace(/\\n/g, ''))) {
         // await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause description roles has been changed.');
-        return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
+        return { necessarySend: true, messageToUpdate: autoRoleMessageEmbed };
       }
       // Check if some tag name has been updated
       if (!autoRoleMessageEmbed.description?.includes(info.value)) {
         // await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause description roles has been changed.');
-        return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
+        return { necessarySend: true, messageToUpdate: autoRoleMessageEmbed };
       }
     }
 
-    return { necessarySend: false, foundMessage: autoRoleMessageEmbed };
+    return { necessarySend: false, messageToUpdate: autoRoleMessageEmbed };
   }
 
   public async updateMessageWithAutoRoles(
@@ -220,12 +226,12 @@ class RegisterAutoRoleProvider {
 
     // find new config that not contains in current message and add it
     listOfEmojiNamesForNewConfig.forEach(newConfig => {
-      const foundEmoji = guildToAdd.messageWithRoles?.reactions.cache.find(
+      const foundEmoji = guildToAdd.messageWithRoles.reactions.cache.find(
         currentReaction => currentReaction.emoji.name === newConfig,
       );
       if (!foundEmoji) {
         const emoji = this.resolveEmoji(guildToAdd.guild, newConfig);
-        guildToAdd.messageWithRoles?.react(emoji);
+        guildToAdd.messageWithRoles.react(emoji);
       }
     });
 
