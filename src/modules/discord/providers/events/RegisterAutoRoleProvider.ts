@@ -39,15 +39,21 @@ class RegisterAutoRoleProvider {
         const { necessarySend, messageToUpdate } = await this.isNecessaryToAddMessage(guildToAdd);
 
         if (necessarySend) {
-          log.info('isNecessaryToAddMessage');
-
           if (messageToUpdate) {
+            log.debug(
+              `[RegisterAutoRoleProvider] is necessary to update auto role message in guild: ${guildToAdd.guild.name}`,
+            );
             this.updateMessageWithAutoRoles(guildToAdd, messageToUpdate);
           } else {
+            log.debug(
+              `[RegisterAutoRoleProvider] is necessary to send auto role message in guild: ${guildToAdd.guild.name}`,
+            );
             this.sendNewMessageWithAutoRoles(guildToAdd);
           }
         } else {
-          log.info('NOT isNecessaryToAddMessage');
+          log.debug(
+            `[RegisterAutoRoleProvider] not is necessary to update or create auto role message in guild: ${guildToAdd.guild.name}`,
+          );
         }
       }
     } catch (err) {

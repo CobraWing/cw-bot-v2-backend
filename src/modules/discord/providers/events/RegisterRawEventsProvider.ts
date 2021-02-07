@@ -30,7 +30,6 @@ class RegisterRawEventsProvider {
 
       if (!message) return;
 
-      // for await (const [, message] of messages) {
       let reaction;
 
       if (packet.d.emoji.id) {
@@ -53,7 +52,6 @@ class RegisterRawEventsProvider {
       if (packet.t === 'MESSAGE_REACTION_REMOVE') {
         commandoClient.emit('messageReactionRemove', reaction, user);
       }
-      // }
     });
   }
 }
