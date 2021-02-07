@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-restricted-syntax */
@@ -17,6 +18,11 @@ interface IGuildToAddAutoRole {
   messageWithRoles?: Message;
 }
 
+interface ICheckChannelMessage {
+  necessarySend: boolean;
+  foundMessage?: MessageEmbed;
+}
+
 @injectable()
 class RegisterAutoRoleProvider {
   private TITLE = 'Seleção de Tags!';
@@ -30,9 +36,16 @@ class RegisterAutoRoleProvider {
       await this.getGuildsWithEnabledFeature();
 
       for await (const guildToAdd of this.guildsToNotificate) {
-        if (await this.isNecessaryToAddMessage(guildToAdd)) {
+        const { necessarySend, foundMessage } = await this.isNecessaryToAddMessage(guildToAdd);
+
+        if (necessarySend) {
           log.info('isNecessaryToAddMessage');
-          this.sendNewMessageWithAutoRoles(guildToAdd);
+
+          if (foundMessage) {
+            this.updateMessageWithAutoRoles(guildToAdd, foundMessage);
+          } else {
+            this.sendNewMessageWithAutoRoles(guildToAdd);
+          }
         } else {
           log.info('NOT isNecessaryToAddMessage');
         }
@@ -128,7 +141,7 @@ class RegisterAutoRoleProvider {
     }
   }
 
-  public async isNecessaryToAddMessage(guildToAdd: IGuildToAddAutoRole): Promise<boolean> {
+  public async isNecessaryToAddMessage(guildToAdd: IGuildToAddAutoRole): Promise<ICheckChannelMessage> {
     const commandoClient = await container.resolve(ClientProvider).getCLient();
 
     const channel = (await guildToAdd.textChannel.fetch(true)) as TextChannel;
@@ -138,37 +151,87 @@ class RegisterAutoRoleProvider {
       .map(m => m.embeds[0])
       .find(e => e.title === this.TITLE);
 
-    if (!autoRoleMessageEmbed) return true;
+    if (!autoRoleMessageEmbed) return { necessarySend: true };
 
     const autoRoleMessage = messages.find(m => m.embeds.includes(autoRoleMessageEmbed));
 
-    if (!autoRoleMessage) return true;
+    if (!autoRoleMessage) return { necessarySend: true };
 
     const autoRoleMessageReactions = autoRoleMessage.reactions.cache;
 
-    if (autoRoleMessageReactions.size !== guildToAdd.autoRoleInfos.length) return true;
+    if (autoRoleMessageReactions.size !== guildToAdd.autoRoleInfos.length)
+      return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
 
     for await (const info of guildToAdd.autoRoleInfos) {
+      guildToAdd.messageWithRoles = autoRoleMessage;
+
       // Check if some emoji has been updated
       if (!autoRoleMessageReactions.find(reaction => reaction.emoji.name === info.value_alternative)) {
-        await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause roles has been changed.');
-        return true;
+        // await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause roles has been changed.');
+        return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
       }
       // Check if some description has been updated
       if (!autoRoleMessageEmbed.description?.includes(info.extra1.replace(/\\n/g, ''))) {
-        await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause description roles has been changed.');
-        return true;
+        // await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause description roles has been changed.');
+        return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
       }
       // Check if some tag name has been updated
       if (!autoRoleMessageEmbed.description?.includes(info.value)) {
-        await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause description roles has been changed.');
-        return true;
+        // await guildToAdd.textChannel.messages.delete(autoRoleMessage, 'Cause description roles has been changed.');
+        return { necessarySend: true, foundMessage: autoRoleMessageEmbed };
       }
     }
 
-    guildToAdd.messageWithRoles = autoRoleMessage;
+    return { necessarySend: false, foundMessage: autoRoleMessageEmbed };
+  }
 
-    return false;
+  public async updateMessageWithAutoRoles(
+    guildToAdd: IGuildToAddAutoRole,
+    messageToUpdate: MessageEmbed,
+  ): Promise<void> {
+    if (!guildToAdd.messageWithRoles) return;
+
+    const listOfEmojiNamesForNewConfig: any[] = [];
+    let roleDescriptions = 'Saudações comandante!';
+    roleDescriptions += '\n';
+    roleDescriptions += 'Escolha as suas tags aqui no servidor de acordo com o seu modo de jogo.';
+    roleDescriptions += '\n';
+    roleDescriptions += 'Para isso, basta reagir ao emojis abaixo (quantos desejar):';
+    roleDescriptions += '\n\n';
+    roleDescriptions += guildToAdd.autoRoleInfos
+      .map(info => {
+        const emoji = this.resolveEmoji(guildToAdd.guild, info.value_alternative);
+        listOfEmojiNamesForNewConfig.push(info.value_alternative);
+
+        return `${emoji} - **${info.value}** - ${info.extra1.replace('\\n', '\n')}`;
+      })
+      .join('\n');
+
+    messageToUpdate.setDescription(roleDescriptions);
+    guildToAdd.messageWithRoles.edit(messageToUpdate);
+
+    // find current emoji in config, if not found, remove it.
+    guildToAdd.messageWithRoles.reactions.cache.forEach(currentEmoji => {
+      const foundEmoji = listOfEmojiNamesForNewConfig.find(emojiName => emojiName === currentEmoji.emoji.name);
+      if (!foundEmoji) {
+        currentEmoji.remove();
+      }
+    });
+
+    // find new config that not contains in current message and add it
+    listOfEmojiNamesForNewConfig.forEach(newConfig => {
+      const foundEmoji = guildToAdd.messageWithRoles?.reactions.cache.find(
+        currentReaction => currentReaction.emoji.name === newConfig,
+      );
+      if (!foundEmoji) {
+        const emoji = this.resolveEmoji(guildToAdd.guild, newConfig);
+        guildToAdd.messageWithRoles?.react(emoji);
+      }
+    });
+
+    log.info(
+      `[RegisterAutoRoleProvider] update message for auto role in guild: ${guildToAdd.guild.name} for channel: ${guildToAdd.textChannel.name}`,
+    );
   }
 
   public async sendNewMessageWithAutoRoles(guildToAdd: IGuildToAddAutoRole): Promise<void> {

@@ -52,6 +52,8 @@ class CheckLastTickAndNotifyServersService {
         return;
       }
 
+      await this.cachProvider.save('last-tick', actualLastTick);
+
       const guildToNotificate = await this.getGuildsToNotify();
 
       if (guildToNotificate.length === 0) {
@@ -61,8 +63,6 @@ class CheckLastTickAndNotifyServersService {
       const messageToNotify = this.getMessageToNotify(actualLastTick);
 
       await this.sendNotification(messageToNotify, guildToNotificate);
-
-      this.cachProvider.save('last-tick', actualLastTick);
     } catch (err) {
       log.error('[CheckLastTickAndNotifyServersService] error:', [err.message, err.stack]);
     }
