@@ -4,9 +4,7 @@ import ICreateServerDTO from '../dtos/ICreateServerDTO';
 export default interface IServersRepository {
   findByIdDiscord(id_discord: string): Promise<Server | undefined>;
 
-  findByIdDiscordAndEnabledServer(
-    id_discord: string,
-  ): Promise<Server | undefined>;
+  findByIdDiscordAndEnabledServer(id_discord: string): Promise<Server | undefined>;
 
   findByServerId(server_id: string): Promise<Server | undefined>;
 

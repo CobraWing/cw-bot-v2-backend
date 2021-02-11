@@ -19,26 +19,18 @@ class ListEnabledCustomCommandService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discord_id,
-  }: IRequest): Promise<CustomCommand[] | undefined> {
-    const serverEnabled = await this.serversRepository.findByIdDiscordAndEnabledServer(
-      discord_id,
-    );
+  public async execute({ discord_id }: IRequest): Promise<CustomCommand[] | undefined> {
+    const serverEnabled = await this.serversRepository.findByIdDiscordAndEnabledServer(discord_id);
 
     if (!serverEnabled) {
-      log.warn(
-        `[ListEnabledCustomCommandService] server id: ${discord_id} is not enabled`,
-      );
+      log.warn(`[ListEnabledCustomCommandService] server id: ${discord_id} is not enabled`);
       throw new AppError({
         message: 'Server not found.',
         message_ptbr: 'Servidor não encontrado.',
       });
     }
 
-    const customCommands = await this.customCommandRepository.listEnabledByServerId(
-      serverEnabled.id,
-    );
+    const customCommands = await this.customCommandRepository.listEnabledByServerId(serverEnabled.id);
 
     return customCommands;
   }

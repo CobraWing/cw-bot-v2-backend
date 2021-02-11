@@ -19,8 +19,8 @@ class TickNotificationRunner {
         null,
       );
       job.start();
-    } catch (e) {
-      log.error('[TickNotificationRunner] Error while registering', e);
+    } catch (err) {
+      log.error('[TickNotificationRunner] Error while registering', [err.message, err.stack]);
     }
   }
 }

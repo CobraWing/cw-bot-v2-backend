@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 import log from 'heroku-logger';
 import { Message, MessageEmbed } from 'discord.js';
 import Commando, { CommandInfo, CommandoMessage } from 'discord.js-commando';
+
 import GetCustomCommandByNameService from '@modules/commands/services/GetCustomCommandByNameService';
 import CustomCommand from '@modules/commands/entities/CustomCommand';
 
@@ -13,21 +14,12 @@ interface IGuildEnabledCommands {
 class CustomCommandRunner extends Commando.Command {
   private getCustomCommandByName: GetCustomCommandByNameService;
 
-  constructor(
-    private guildEnabledCommands: IGuildEnabledCommands,
-    client: Commando.CommandoClient,
-    info: CommandInfo,
-  ) {
+  constructor(private guildEnabledCommands: IGuildEnabledCommands, client: Commando.CommandoClient, info: CommandInfo) {
     super(client, info);
-    this.getCustomCommandByName = container.resolve(
-      GetCustomCommandByNameService,
-    );
+    this.getCustomCommandByName = container.resolve(GetCustomCommandByNameService);
   }
 
-  async run(
-    msg: CommandoMessage,
-    _: string | string[] | object,
-  ): Promise<Message | Message[]> {
+  async run(msg: CommandoMessage, _: string | string[] | object): Promise<Message | Message[]> {
     const [commandName] = msg.content.toLowerCase().replace('!', '').split(' ');
     const { id: discord_id } = msg.guild;
 
@@ -49,9 +41,7 @@ class CustomCommandRunner extends Commando.Command {
 
       return msg.message;
     }
-    log.info(
-      `command ${commandName} is not allowed in discord server name: ${msg.guild.name}`,
-    );
+    log.info(`command ${commandName} is not allowed in discord server name: ${msg.guild.name}`);
 
     return msg.message;
   }
@@ -61,15 +51,10 @@ class CustomCommandRunner extends Commando.Command {
     return guildRegisterCommands && guildRegisterCommands.includes(commandName);
   }
 
-  createEmbedMessage(
-    msg: CommandoMessage,
-    command: CustomCommand,
-  ): MessageEmbed[] {
+  createEmbedMessage(msg: CommandoMessage, command: CustomCommand): MessageEmbed[] {
     const embeds = [] as MessageEmbed[];
 
-    const contents = command.content
-      ? this.formatMessageContent(command.content)
-      : [''];
+    const contents = command.content ? this.formatMessageContent(command.content) : [''];
 
     for (let index = 0; index < contents.length; index++) {
       const content = contents[index];

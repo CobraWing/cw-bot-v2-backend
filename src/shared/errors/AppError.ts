@@ -11,7 +11,7 @@ class AppError {
 
   public readonly message_ptbr?: string;
 
-  constructor({ message, statusCode = 400, message_ptbr }: IAppError) {
+  constructor({ message, statusCode = 400, message_ptbr = '' }: IAppError) {
     this.message = message;
     this.statusCode = statusCode;
     this.message_ptbr = message_ptbr;

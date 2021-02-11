@@ -21,18 +21,11 @@ class GetCategoryByNameWithEnabledCustomCommandsService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    discord_id,
-    name,
-  }: IRequest): Promise<CommandCategory | undefined> {
-    const serverExists = await this.serversRepository.findByIdDiscord(
-      discord_id,
-    );
+  public async execute({ discord_id, name }: IRequest): Promise<CommandCategory | undefined> {
+    const serverExists = await this.serversRepository.findByIdDiscord(discord_id);
 
     if (!serverExists) {
-      log.error(
-        `[GetCategoryByNameWithEnabledCustomCommandsService] server does not exists with id: ${discord_id}`,
-      );
+      log.error(`[GetCategoryByNameWithEnabledCustomCommandsService] server does not exists with id: ${discord_id}`);
       throw new AppError({
         message: 'Server not found.',
         message_ptbr: 'Servidor não encontrado.',

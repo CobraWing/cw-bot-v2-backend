@@ -15,18 +15,14 @@ interface ITokenPayload {
   sub: string;
 }
 
-export default function ensureAuthenticated(
-  request: Request,
-  response: Response,
-  next: NextFunction,
-): void {
+export default function ensureAuthenticated(request: Request, response: Response, next: NextFunction): void {
   const { authorization, guildid } = request.headers;
 
   if (!authorization) {
-    throw new AppError('JWT token is missing', 401);
+    throw new AppError({ message: 'JWT token is missing', statusCode: 401 });
   }
   if (!guildid) {
-    throw new AppError('Guild information is missing', 400);
+    throw new AppError({ message: 'Guild information is missing', statusCode: 400 });
   }
 
   const [, token] = authorization.split(' ');
@@ -48,6 +44,6 @@ export default function ensureAuthenticated(
 
     return next();
   } catch {
-    throw new AppError('Invalid credentials', 401);
+    throw new AppError({ message: 'Invalid credentials', statusCode: 401 });
   }
 }

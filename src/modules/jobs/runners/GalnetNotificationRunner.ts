@@ -19,8 +19,8 @@ class GalnetNotificationRunner {
         null,
       );
       job.start();
-    } catch (e) {
-      log.error('[GalnetNotificationRunner] Error while registering', e);
+    } catch (err) {
+      log.error('[GalnetNotificationRunner] Error while registering', [err.message, err.stack]);
     }
   }
 }

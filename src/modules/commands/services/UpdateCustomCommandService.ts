@@ -56,10 +56,7 @@ class UpdateCustomCommandService {
       });
     }
 
-    const categoryExists = await this.categoriesRepository.findByIdAndServerId(
-      data.category_id,
-      server.id,
-    );
+    const categoryExists = await this.categoriesRepository.findByIdAndServerId(data.category_id, server.id);
 
     if (!categoryExists) {
       throw new AppError({
@@ -69,17 +66,13 @@ class UpdateCustomCommandService {
       });
     }
 
-    const checkCategoryNameAlreadyExists = await this.categoriesRepository.findByNameAndServerId(
-      data.name,
-      server.id,
-    );
+    const checkCategoryNameAlreadyExists = await this.categoriesRepository.findByNameAndServerId(data.name, server.id);
 
     if (checkCategoryNameAlreadyExists) {
       throw new AppError({
         message: 'Category already registered.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe uma categoria com o mesmo nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe uma categoria com o mesmo nome, escolha um nome diferente.',
       });
     }
 
@@ -93,15 +86,11 @@ class UpdateCustomCommandService {
       throw new AppError({
         message: 'Custom command name already exists.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe um outro comando customizado com o mesmo nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe um outro comando customizado com o mesmo nome, escolha um nome diferente.',
       });
     }
 
-    const customCommandExists = await this.customCommandRepository.findByIdAndServerId(
-      data.id,
-      server.id,
-    );
+    const customCommandExists = await this.customCommandRepository.findByIdAndServerId(data.id, server.id);
 
     if (!customCommandExists) {
       throw new AppError({
@@ -115,9 +104,7 @@ class UpdateCustomCommandService {
       ...data,
     });
 
-    const customCommandUpdated = await this.customCommandRepository.update(
-      customCommandExists,
-    );
+    const customCommandUpdated = await this.customCommandRepository.update(customCommandExists);
 
     this.registerCustomsProvider.execute();
 

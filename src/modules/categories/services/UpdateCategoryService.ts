@@ -42,10 +42,7 @@ class UpdateCategoryService {
       });
     }
 
-    const categoryFound = await this.categoriesRepository.findByIdAndServerId(
-      data.categoryId,
-      server.id,
-    );
+    const categoryFound = await this.categoriesRepository.findByIdAndServerId(data.categoryId, server.id);
 
     if (!categoryFound) {
       throw new AppError({
@@ -65,22 +62,17 @@ class UpdateCategoryService {
       throw new AppError({
         message: 'Category name already exists.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe uma outra categoria com o mesmo nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe uma outra categoria com o mesmo nome, escolha um nome diferente.',
       });
     }
 
-    const existsCommandWithSameName = await this.customCommandRepository.findByNameAndServerId(
-      data.name,
-      server.id,
-    );
+    const existsCommandWithSameName = await this.customCommandRepository.findByNameAndServerId(data.name, server.id);
 
     if (existsCommandWithSameName) {
       throw new AppError({
         message: 'Exists a custom command with the same name.',
         statusCode: 409,
-        message_ptbr:
-          'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
+        message_ptbr: 'Já existe um comando customizado com o mesmo nome, escolha um nome diferente.',
       });
     }
 

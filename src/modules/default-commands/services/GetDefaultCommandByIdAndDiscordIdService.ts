@@ -21,28 +21,18 @@ class GetDefaultCommandByIdAndDiscordIdService {
     private serversRepository: IServersRepository,
   ) {}
 
-  public async execute({
-    id,
-    discord_id,
-  }: IRequest): Promise<DefaultCommand | undefined> {
-    const serverExists = await this.serversRepository.findByIdDiscord(
-      discord_id,
-    );
+  public async execute({ id, discord_id }: IRequest): Promise<DefaultCommand | undefined> {
+    const serverExists = await this.serversRepository.findByIdDiscord(discord_id);
 
     if (!serverExists) {
-      log.error(
-        `[GetDefaultCommandByIdAndDiscordIdService] server does not exists with id: ${discord_id}`,
-      );
+      log.error(`[GetDefaultCommandByIdAndDiscordIdService] server does not exists with id: ${discord_id}`);
       throw new AppError({
         message: 'Server not found.',
         message_ptbr: 'Servidor não encontrado.',
       });
     }
 
-    const defaultCommand = await this.defaultCommandRepository.findByIdAndServerId(
-      id,
-      serverExists.id,
-    );
+    const defaultCommand = await this.defaultCommandRepository.findByIdAndServerId(id, serverExists.id);
 
     if (defaultCommand && defaultCommand.server_default_command) {
       defaultCommand.custom_default_command = defaultCommand.server_default_command.find(
