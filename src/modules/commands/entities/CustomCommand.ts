@@ -114,6 +114,11 @@ class CustomCommand {
   @Expose()
   @Column()
   updated_by: string;
+
+  @Expose({ name: 'channel_whitelist' })
+  getChannelWhiteList(): object | undefined {
+    return this.channel_whitelist ? JSON.parse(this.channel_whitelist) : undefined;
+  }
 }
 
 export default CustomCommand;
