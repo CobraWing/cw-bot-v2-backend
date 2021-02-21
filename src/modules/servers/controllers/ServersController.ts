@@ -20,9 +20,7 @@ class ServersController {
   }
 
   public async index(request: Request, response: Response): Promise<Response> {
-    const findAllEnabledServers = container.resolve(
-      FindAllEnabledServersService,
-    );
+    const findAllEnabledServers = container.resolve(FindAllEnabledServersService);
 
     const servers = await findAllEnabledServers.execute();
 

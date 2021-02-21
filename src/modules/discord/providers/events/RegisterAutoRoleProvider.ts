@@ -79,7 +79,7 @@ class RegisterAutoRoleProvider {
 
       if (!guildMember) return;
 
-      guildMember.roles.add(guildRole);
+      guildMember.roles.add(guildRole, 'Adicionado por auto-tag');
     });
 
     commandoClient.on('messageReactionRemove', async (messageReaction: MessageReaction, user: User) => {
@@ -99,7 +99,7 @@ class RegisterAutoRoleProvider {
 
       if (!guildMember) return;
 
-      guildMember.roles.remove(guildRole);
+      guildMember.roles.remove(guildRole, 'Removido por auto-tag');
     });
   }
 

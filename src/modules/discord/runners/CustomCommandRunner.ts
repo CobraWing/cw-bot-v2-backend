@@ -11,6 +11,11 @@ interface IGuildEnabledCommands {
   [key: string]: string[];
 }
 
+interface IChannelWhiteList {
+  label: string;
+  value: string;
+}
+
 class CustomCommandRunner extends Commando.Command {
   private getCustomCommandByName: GetCustomCommandByNameService;
 
@@ -31,6 +36,31 @@ class CustomCommandRunner extends Commando.Command {
 
       if (!command) {
         return msg.message;
+      }
+
+      if (command.channel_limited) {
+        const permitChannels = JSON.parse(command.channel_whitelist) as IChannelWhiteList[];
+        const channelFound = permitChannels.find(pc => pc.value === msg.channel.id);
+
+        if (!channelFound) {
+          const channelNames = permitChannels.map(pc => `> - ${pc.label}`).join('\n ');
+          const plural = permitChannels.length > 1 ? 's' : '';
+
+          msg
+            .reply(
+              `Esse comando só pode ser executado na${plural} seguinte${plural} sala${plural}:\n **${channelNames}**`,
+            )
+            .then((warnMsg: Message | Message[]) => {
+              setTimeout(() => {
+                if (warnMsg instanceof Message) {
+                  msg.delete();
+                  warnMsg.delete();
+                }
+              }, 10000);
+            });
+
+          return msg.message;
+        }
       }
 
       const embedMessages = this.createEmbedMessage(msg, command);

@@ -10,49 +10,51 @@ customCommandRouter.use(ensureAuthenticated);
 
 customCommandRouter.post(
   '/',
-  celebrate({
-    [Segments.BODY]: {
-      category_id: Joi.string().required(),
-      name: Joi.string().required(),
-      description: Joi.string().required(),
-      title: Joi.string().optional().allow('').allow(null),
-      content: Joi.string().optional().allow('').allow(null),
-      image_content: Joi.string().optional().allow('').allow(null),
-      image_thumbnail: Joi.string().optional().allow('').allow(null),
-      enabled: Joi.boolean().required(),
-      show_in_menu: Joi.boolean().required(),
+  celebrate(
+    {
+      [Segments.BODY]: {
+        category_id: Joi.string().required(),
+        name: Joi.string().required(),
+        description: Joi.string().required(),
+        title: Joi.string().optional().allow('').allow(null),
+        content: Joi.string().optional().allow('').allow(null),
+        image_content: Joi.string().optional().allow('').allow(null),
+        image_thumbnail: Joi.string().optional().allow('').allow(null),
+        enabled: Joi.boolean().required(),
+        show_in_menu: Joi.boolean().required(),
+      },
     },
-  }),
+    { allowUnknown: true },
+  ),
   customCommandController.create,
 );
 
 customCommandRouter.put(
   '/:id',
-  celebrate({
-    [Segments.PARAMS]: {
-      id: Joi.string().uuid().required(),
+  celebrate(
+    {
+      [Segments.PARAMS]: {
+        id: Joi.string().uuid().required(),
+      },
+      [Segments.BODY]: {
+        category_id: Joi.string().required(),
+        name: Joi.string().required(),
+        description: Joi.string().required(),
+        title: Joi.string().optional().allow('').allow(null),
+        content: Joi.string().optional().allow('').allow(null),
+        image_content: Joi.string().optional().allow('').allow(null),
+        image_thumbnail: Joi.string().optional().allow('').allow(null),
+        enabled: Joi.boolean().required(),
+        show_in_menu: Joi.boolean().required(),
+        embedded: Joi.boolean().optional(),
+        color: Joi.string().optional().allow('').allow(null),
+        footer_text: Joi.string().optional().allow('').allow(null),
+        role_limited: Joi.boolean().optional().allow(null),
+        channel_limited: Joi.boolean().optional().allow(null),
+      },
     },
-    [Segments.BODY]: {
-      category_id: Joi.string().required(),
-      name: Joi.string().required(),
-      description: Joi.string().required(),
-      title: Joi.string().optional().allow('').allow(null),
-      content: Joi.string().optional().allow('').allow(null),
-      image_content: Joi.string().optional().allow('').allow(null),
-      image_thumbnail: Joi.string().optional().allow('').allow(null),
-      enabled: Joi.boolean().required(),
-      show_in_menu: Joi.boolean().required(),
-      embedded: Joi.boolean().optional(),
-      color: Joi.string().optional().allow('').allow(null),
-      footer_text: Joi.string().optional().allow('').allow(null),
-      role_limited: Joi.boolean().optional().allow(null),
-      role_blacklist: Joi.string().optional().allow('').allow(null),
-      role_whitelist: Joi.string().optional().allow('').allow(null),
-      channel_limited: Joi.boolean().optional().allow(null),
-      channel_blacklist: Joi.string().optional().allow('').allow(null),
-      channel_whitelist: Joi.string().optional().allow('').allow(null),
-    },
-  }),
+    { allowUnknown: true },
+  ),
   customCommandController.update,
 );
 

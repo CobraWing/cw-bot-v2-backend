@@ -10,33 +10,14 @@ import DeleteCustomCommandByIdService from '@modules/commands/services/DeleteCus
 
 export default class CustomCommandController {
   public async create(request: Request, response: Response): Promise<Response> {
-    const {
-      category_id,
-      name,
-      description,
-      title,
-      enabled,
-      show_in_menu,
-      content,
-      image_content,
-      image_thumbnail,
-    } = request.body;
     const { discordId } = request.guild;
     const { name: updated_by } = request.user;
 
     const createCustomCommand = container.resolve(CreateCustomCommandService);
 
     const customCommand = await createCustomCommand.execute({
+      ...request.body,
       discordId,
-      category_id,
-      name,
-      description,
-      title,
-      enabled,
-      show_in_menu,
-      content,
-      image_content,
-      image_thumbnail,
       updated_by,
     });
 
@@ -45,52 +26,15 @@ export default class CustomCommandController {
 
   public async update(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
-    const {
-      category_id,
-      enabled,
-      show_in_menu,
-      name,
-      description,
-      title,
-      content,
-      image_content,
-      image_thumbnail,
-      embedded,
-      color,
-      footer_text,
-      role_limited,
-      role_blacklist,
-      role_whitelist,
-      channel_limited,
-      channel_blacklist,
-      channel_whitelist,
-    } = request.body;
     const { discordId } = request.guild;
     const { name: updated_by } = request.user;
 
     const updateCustomCommand = container.resolve(UpdateCustomCommandService);
 
     const customCommandUpdated = await updateCustomCommand.execute({
+      ...request.body,
       discordId,
       id,
-      category_id,
-      enabled,
-      show_in_menu,
-      name,
-      description,
-      title,
-      content,
-      image_content,
-      image_thumbnail,
-      embedded,
-      color,
-      footer_text,
-      role_limited,
-      role_blacklist,
-      role_whitelist,
-      channel_limited,
-      channel_blacklist,
-      channel_whitelist,
       updated_by,
     });
 
@@ -134,9 +78,7 @@ export default class CustomCommandController {
     const { id } = request.params;
     const { discordId: discord_id } = request.guild;
 
-    const deleteCustomCommandById = container.resolve(
-      DeleteCustomCommandByIdService,
-    );
+    const deleteCustomCommandById = container.resolve(DeleteCustomCommandByIdService);
 
     await deleteCustomCommandById.execute({ id, discord_id });
 
