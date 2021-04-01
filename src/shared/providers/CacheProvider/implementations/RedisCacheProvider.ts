@@ -1,12 +1,12 @@
 import Redis, { Redis as RedisClient } from 'ioredis';
-import cacheConfig from '@config/cache';
+// import cacheConfig from '@config/cache';
 import ICacheProvider from '../models/ICacheProvider';
 
 export default class RedisCacheProvider implements ICacheProvider {
   private client: RedisClient;
 
   constructor() {
-    this.client = new Redis(cacheConfig.config.redis);
+    this.client = new Redis(process.env.STACKHERO_REDIS_URL_CLEAR);
   }
 
   public async save(key: string, value: any): Promise<void> {
