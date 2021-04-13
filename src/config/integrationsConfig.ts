@@ -1,4 +1,4 @@
-const eliteBGSApiUrl = 'https://elitebgs.app/api/ebgs/v4';
+const eliteBGSApiUrl = 'https://elitebgs.app/api/ebgs/v5';
 const edsmApiUrl = 'https://www.edsm.net';
 const edOficialCMSApiUrl = 'https://cms.elitedangerous.com/api';
 
