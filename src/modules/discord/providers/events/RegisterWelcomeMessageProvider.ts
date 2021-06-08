@@ -27,6 +27,18 @@ class RegisterWelcomeMessageProvider {
         });
 
         const { guild } = member;
+        const usersBlacklist = process.env.USERS_BLACKLIST;
+
+        if (usersBlacklist) {
+          const users = usersBlacklist.split(';');
+          const isUserBlocked =
+            users.filter(uName => member.displayName.trim().toLowerCase().includes(uName)).length > 0;
+          if (isUserBlocked) {
+            member.kick(`Kick user: ${member.displayName} / ID:${member.id} by blacklist`);
+            return;
+          }
+        }
+
         const server = await findEnabledServerByDiscordId.execute({
           discord_id: member.guild.id,
         });
