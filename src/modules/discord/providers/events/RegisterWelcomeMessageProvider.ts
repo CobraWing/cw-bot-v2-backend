@@ -91,7 +91,7 @@ class RegisterWelcomeMessageProvider {
   createWelcomeEmbedMessage(): MessageEmbed {
     const welcomeMessage = `
             Seja bem-vindo(a) à **Cobra Wing**.
-            \nNo Elite Dangerous, nosso grupo privado é: **COBRA BR** e nosso esquadrão: **Cobra Wing Academy [CWAC]**.
+            \nNo Elite Dangerous, nosso grupo privado é: **COBRA BR** e nosso esquadrão: **Cobra Wing [CWBR]**.
             \nPara solicitar acesso digite **!grupoprivado** e/ou **!esquadrao** e/ou **!inara** na sala <#309828038286114816> e siga as instruções.
             \nLeia as <#117579849794715652> e o <#729066883378184192>, também pedimos que __use o mesmo apelido em jogo aqui no discord__, para ajudar na nossa identificação.
             \nAgora você é um convidado, __após entrar para o nosso esquadrão e inara__ você terá acesso as demais salas aqui no nosso discord.
