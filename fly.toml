@@ -1,4 +1,4 @@
-# fly.toml file generated for cw-backend-v2-prd on 2022-10-19T14:10:03-03:00
+# fly.toml file generated for cw-backend-v2-prd on 2022-10-19T14:10:03-03:00.
 
 app = "cw-backend-v2-prd"
 kill_signal = "SIGINT"
