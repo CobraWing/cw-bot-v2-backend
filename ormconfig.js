@@ -1,13 +1,13 @@
 let entities, migrations, migrationsDir;
 
 if (process.env.NODE_ENV === 'production') {
-  entities = ['./dist/modules/**/entities/*.js'];
-  migrations = ['./dist/shared/typeorm/migrations/*.js'];
-  migrationsDir = './dist/shared/typeorm/migrations';
+  entities = [__dirname + '/dist/modules/**/entities/*.js'];
+  migrations = [__dirname + '/dist/shared/typeorm/migrations/*.js'];
+  migrationsDir = __dirname + '/dist/shared/typeorm/migrations';
 } else {
-  entities = ['./src/modules/**/entities/*.ts'];
-  migrations = ['./src/shared/typeorm/migrations/*.ts'];
-  migrationsDir = './src/shared/typeorm/migrations';
+  entities = [__dirname + '/src/modules/**/entities/*.ts'];
+  migrations = [__dirname + '/src/shared/typeorm/migrations/*.ts'];
+  migrationsDir = __dirname + '/src/shared/typeorm/migrations';
 }
 
 module.exports = [
