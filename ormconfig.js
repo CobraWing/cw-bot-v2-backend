@@ -14,6 +14,7 @@ module.exports = [
   {
     name: 'default',
     type: 'postgres',
+    autoLoadEntities: true,
     host: process.env.POSTGRES_HOST || '127.0.0.1',
     port: process.env.POSTGRES_PORT || 5432,
     username: process.env.POSTGRES_USER || 'docker',
