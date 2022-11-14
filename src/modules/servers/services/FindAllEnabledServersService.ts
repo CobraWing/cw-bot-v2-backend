@@ -1,12 +1,13 @@
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, delay } from 'tsyringe';
 
 import IServersRepository from '../repositories/IServersRepository';
 import Server from '../entities/Server';
+import ServersRepository from '../repositories/typeorm/ServersRepository';
 
 @injectable()
 class FindAllEnabledServersService {
   constructor(
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

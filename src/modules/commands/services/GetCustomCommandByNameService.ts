@@ -1,10 +1,12 @@
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, delay } from 'tsyringe';
 import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
 import ICustomCommandRepository from '../repositories/ICustomCommandRepository';
 import IServersRepository from '../../servers/repositories/IServersRepository';
 import CustomCommand from '../entities/CustomCommand';
+import CustomCommandRepository from '../repositories/typeorm/CustomCommandRepository';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IRequest {
   discord_id: string;
@@ -14,9 +16,9 @@ interface IRequest {
 @injectable()
 class GetCustomCommandByNameService {
   constructor(
-    @inject('CustomCommandRepository')
+    @inject(delay(() => CustomCommandRepository))
     private customCommandRepository: ICustomCommandRepository,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

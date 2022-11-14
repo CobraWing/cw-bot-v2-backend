@@ -1,11 +1,13 @@
 /* eslint-disable no-restricted-syntax */
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, delay } from 'tsyringe';
 import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import IDefaultCommandRepository from '../repositories/IDefaultCommandRepository';
 import DefaultCommand from '../entities/DefaultCommand';
+import DefaultCommandRepository from '../repositories/typeorm/DefaultCommandRepository';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IRequest {
   id: string;
@@ -15,9 +17,9 @@ interface IRequest {
 @injectable()
 class GetDefaultCommandByIdAndDiscordIdService {
   constructor(
-    @inject('DefaultCommandRepository')
+    @inject(delay(() => DefaultCommandRepository))
     private defaultCommandRepository: IDefaultCommandRepository,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

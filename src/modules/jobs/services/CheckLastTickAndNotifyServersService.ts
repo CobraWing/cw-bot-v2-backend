@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-param-reassign */
-import { injectable, inject, container } from 'tsyringe';
+import { injectable, inject, container, delay } from 'tsyringe';
 import log from 'heroku-logger';
 import { isEqual, isAfter, formatDistanceToNow, subHours } from 'date-fns';
 import { format, toDate } from 'date-fns-tz';
@@ -13,6 +13,8 @@ import GetLastTickService from '@modules/elitebgs/services/GetLastTickService';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import ICacheProvider from '@shared/providers/CacheProvider/models/ICacheProvider';
 import serverConfig from '@config/serverConfig';
+import RedisCacheProvider from '@shared/providers/CacheProvider/implementations/RedisCacheProvider';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IGuildToNotificate {
   guild: Guild;
@@ -30,9 +32,9 @@ class CheckLastTickAndNotifyServersService {
   private getLastTickService: GetLastTickService;
 
   constructor(
-    @inject('CacheProvider')
+    @inject(delay(() => RedisCacheProvider))
     private cachProvider: ICacheProvider,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {
     this.getLastTickService = container.resolve(GetLastTickService);

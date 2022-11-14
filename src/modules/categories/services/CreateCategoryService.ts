@@ -1,4 +1,4 @@
-import { injectable, inject, container } from 'tsyringe';
+import { injectable, inject, container, delay } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
@@ -6,6 +6,9 @@ import ICustomCommandRepository from '@modules/commands/repositories/ICustomComm
 import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import CommandCategory from '../entities/CommandCategory';
+import CategoriesRepository from '../repositories/typeorm/CategoriesRepository';
+import CustomCommandRepository from '@modules/commands/repositories/typeorm/CustomCommandRepository';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IRequest {
   discordId: string;
@@ -21,11 +24,11 @@ class CreateCategoryService {
   private registerCustoms: RegisterCustomsProvider;
 
   constructor(
-    @inject('CategoriesRepository')
+    @inject(delay(() => CategoriesRepository))
     private categoriesRepository: ICategoriesRepository,
-    @inject('CustomCommandRepository')
+    @inject(delay(() => CustomCommandRepository))
     private customCommandRepository: ICustomCommandRepository,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {
     this.registerCustoms = container.resolve(RegisterCustomsProvider);

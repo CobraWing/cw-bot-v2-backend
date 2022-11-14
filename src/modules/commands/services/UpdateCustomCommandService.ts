@@ -1,4 +1,4 @@
-import { injectable, inject, container } from 'tsyringe';
+import { injectable, inject, container, delay } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
@@ -6,6 +6,9 @@ import ICategoriesRepository from '@modules/categories/repositories/ICategoriesR
 import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICustomCommandRepository from '../repositories/ICustomCommandRepository';
 import CustomCommand from '../entities/CustomCommand';
+import CustomCommandRepository from '../repositories/typeorm/CustomCommandRepository';
+import CategoriesRepository from '@modules/categories/repositories/typeorm/CategoriesRepository';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IRequest {
   discordId: string;
@@ -36,11 +39,11 @@ class UpdateCustomCommandService {
   private registerCustomsProvider: RegisterCustomsProvider;
 
   constructor(
-    @inject('CustomCommandRepository')
+    @inject(delay(() => CustomCommandRepository))
     private customCommandRepository: ICustomCommandRepository,
-    @inject('CategoriesRepository')
+    @inject(delay(() => CategoriesRepository))
     private categoriesRepository: ICategoriesRepository,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {
     this.registerCustomsProvider = container.resolve(RegisterCustomsProvider);
