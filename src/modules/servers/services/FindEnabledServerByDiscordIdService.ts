@@ -1,7 +1,8 @@
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, delay } from 'tsyringe';
 
 import IServersRepository from '../repositories/IServersRepository';
 import Server from '../entities/Server';
+import ServersRepository from '../repositories/typeorm/ServersRepository';
 
 interface IRequest {
   discord_id: string;
@@ -10,7 +11,7 @@ interface IRequest {
 @injectable()
 class FindEnabledServerByDiscordIdService {
   constructor(
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

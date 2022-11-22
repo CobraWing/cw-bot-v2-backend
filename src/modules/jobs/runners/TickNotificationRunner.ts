@@ -10,12 +10,12 @@ class TickNotificationRunner {
   public async execute(): Promise<void> {
     log.info('[TickNotificationRunner] Starting register job');
 
+    const checkLastTickAndNotifyServersService = container.resolve(CheckLastTickAndNotifyServersService);
+
     try {
       const job = new CronJob(
         jobsConfig.tickNotification.cron,
-        () => {
-          container.resolve(CheckLastTickAndNotifyServersService).execute();
-        },
+        () => checkLastTickAndNotifyServersService.execute(),
         null,
       );
       job.start();

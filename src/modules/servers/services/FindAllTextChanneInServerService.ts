@@ -1,8 +1,9 @@
-import { injectable, inject, container } from 'tsyringe';
+import { injectable, inject, container, delay } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import ClientProvider from '@modules/discord/providers/ClientProvider';
+import ServersRepository from '../repositories/typeorm/ServersRepository';
 
 interface IChannel {
   label: string;
@@ -16,7 +17,7 @@ interface IRequest {
 @injectable()
 class FindAllTextChanneInServerService {
   constructor(
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

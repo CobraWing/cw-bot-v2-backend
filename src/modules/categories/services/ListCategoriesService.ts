@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, delay } from 'tsyringe';
 import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
@@ -7,6 +7,9 @@ import ICustomCommandRepository from '@modules/commands/repositories/ICustomComm
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import IServersRepository from '../../servers/repositories/IServersRepository';
 import CommandCategory from '../entities/CommandCategory';
+import CategoriesRepository from '../repositories/typeorm/CategoriesRepository';
+import CustomCommandRepository from '@modules/commands/repositories/typeorm/CustomCommandRepository';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IRequest {
   discord_id: string;
@@ -16,11 +19,11 @@ interface IRequest {
 @injectable()
 class ListCategoriesService {
   constructor(
-    @inject('CategoriesRepository')
+    @inject(delay(() => CategoriesRepository))
     private categoriesRepository: ICategoriesRepository,
-    @inject('CustomCommandRepository')
+    @inject(delay(() => CustomCommandRepository))
     private customCommandRepository: ICustomCommandRepository,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

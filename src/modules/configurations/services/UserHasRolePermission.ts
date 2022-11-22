@@ -1,9 +1,11 @@
-import { injectable, inject, container } from 'tsyringe';
+import { injectable, inject, container, delay } from 'tsyringe';
 import log from 'heroku-logger';
 
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import IServersRepository from '@modules/servers/repositories/IServersRepository';
 import IConfigurationsRepository from '../repositories/IConfigurationsRepository';
+import ConfigurationsRepository from '../repositories/typeorm/ConfigurationsRepository';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IRequest {
   user_id: string;
@@ -14,9 +16,9 @@ interface IRequest {
 @injectable()
 class UserHasRolePermission {
   constructor(
-    @inject('ConfigurationsRepository')
+    @inject(delay(() => ConfigurationsRepository))
     private configurationsRepository: IConfigurationsRepository,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

@@ -1,8 +1,9 @@
-import { injectable, inject } from 'tsyringe';
+import { injectable, inject, delay } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 import IServersRepository from '../repositories/IServersRepository';
 import Server from '../entities/Server';
+import ServersRepository from '../repositories/typeorm/ServersRepository';
 
 interface IRequest {
   name: string;
@@ -12,7 +13,7 @@ interface IRequest {
 @injectable()
 class CreateServerService {
   constructor(
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {}
 

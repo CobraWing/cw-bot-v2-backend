@@ -1,10 +1,12 @@
-import { injectable, inject, container } from 'tsyringe';
+import { injectable, inject, container, delay } from 'tsyringe';
 import log from 'heroku-logger';
 
 import AppError from '@shared/errors/AppError';
 import RegisterCustomsProvider from '@modules/discord/providers/RegisterCustomsProvider';
 import ICategoriesRepository from '../repositories/ICategoriesRepository';
 import IServersRepository from '../../servers/repositories/IServersRepository';
+import CategoriesRepository from '../repositories/typeorm/CategoriesRepository';
+import ServersRepository from '@modules/servers/repositories/typeorm/ServersRepository';
 
 interface IRequest {
   discord_id: string;
@@ -16,9 +18,9 @@ class DeleteCategoryByIdService {
   private registerCustomsProvider: RegisterCustomsProvider;
 
   constructor(
-    @inject('CategoriesRepository')
+    @inject(delay(() => CategoriesRepository))
     private categoriesRepository: ICategoriesRepository,
-    @inject('ServersRepository')
+    @inject(delay(() => ServersRepository))
     private serversRepository: IServersRepository,
   ) {
     this.registerCustomsProvider = container.resolve(RegisterCustomsProvider);
