@@ -7,6 +7,7 @@ import { isEqual, isAfter, formatDistanceToNow, subHours } from 'date-fns';
 import { format, toDate } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 import { Guild, GuildChannel, TextChannel } from 'discord.js';
+import jobsConfig from '@config/jobsConfig';
 
 import ClientProvider from '@modules/discord/providers/ClientProvider';
 import GetLastTickService from '@modules/elitebgs/services/GetLastTickService';
@@ -48,13 +49,13 @@ class CheckLastTickAndNotifyServersService {
 
       if (!actualLastTick) throw new Error('');
 
-      const recordedLastTick = await this.cachProvider.recovery<ITick>('last-tick');
+      const recordedLastTick = await this.cachProvider.recovery<ITick>(`${jobsConfig.tickNotification.dbPrefix}-last-tick`);
 
       if (this.skipSendNotification(actualLastTick, recordedLastTick)) {
         return;
       }
 
-      await this.cachProvider.save('last-tick', actualLastTick);
+      await this.cachProvider.save(`${jobsConfig.tickNotification.dbPrefix}-last-tick`, actualLastTick);
 
       const guildToNotificate = await this.getGuildsToNotify();
 
