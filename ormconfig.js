@@ -14,22 +14,11 @@ module.exports = [
   {
     name: 'default',
     type: 'postgres',
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: process.env.POSTGRES_PORT || 5432,
-    username: process.env.POSTGRES_USER || 'postgres',
-    password: process.env.POSTGRES_PASSWORD || 'postgres',
-    database: process.env.POSTGRES_DATABASE || 'postgres',
+    url: process.env.DATABASE_URL,
     entities,
     migrations,
     cli: {
       migrationsDir,
-    },
-    logging: false,
-    ssl: true,
-    extra: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
     },
   },
 ];
